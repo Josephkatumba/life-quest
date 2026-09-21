@@ -1,6 +1,44 @@
 // ==========================================
-// LIFE QUEST V2
+// LIFE QUEST V3
+// An accessible quiz adventure for high school students.
+//
+// What's new in V3 (see the settings ⚙️ button in the game):
+//   • Accessibility: text size, high contrast, easy-to-read font,
+//     reduced motion, read-aloud, keyboard play (keys 1-4), screen-reader support
+//   • Learning supports: 50/50 hints, second chances, breathing breaks,
+//     "Practice Mistakes" quests that revisit missed questions
+//   • Life-skills worlds: 💼 Work Ready and 🤝 Social Skills
+//   • Stars, confetti, level-up and achievement toasts (no timers, no pressure)
+//   • Multiple players on one shared computer + a printable / CSV progress report
+//   • Safer saving (works even if the browser blocks storage) and old saves are migrated
+//
+// HOW TO ADD QUESTIONS
+//   Use the mc() helper inside a category:
+//     mc("Question?", "The correct answer", ["Wrong 1", "Wrong 2", "Wrong 3"],
+//        "easy" | "medium" | "hard", "Short, kind explanation.")
+//   Answers are shuffled every time a question is shown, and number-only
+//   answers are sorted from smallest to largest automatically.
+//   Existing questions can keep using the { question, answers, correct, ... } format.
 // ==========================================
+
+"use strict";
+
+
+// ------------------------------
+// QUESTION HELPER
+// ------------------------------
+
+function mc(question, correctAnswer, wrongAnswers, difficulty, explanation) {
+
+    return {
+        question: question,
+        answers: [correctAnswer, ...wrongAnswers],
+        correct: 0, // shuffled when the question is shown
+        difficulty: difficulty,
+        explanation: explanation
+    };
+}
+
 
 // ------------------------------
 // QUESTION BANK
@@ -636,76 +674,341 @@ const categories = {
             }
 
         ]
+    },
+
+
+    // ------------------------------------------
+    // NEW IN V3: life-skills worlds
+    // ------------------------------------------
+
+    work: {
+        name: "💼 Work Ready",
+        questions: [
+
+            mc("It's your first day at a new job and you don't understand a task. What's the best thing to do?",
+                "Politely ask for the task to be explained again",
+                ["Guess and hope it works out", "Wait and do nothing", "Go home"],
+                "easy",
+                "Asking questions shows you care about doing the job well. Good workers ask for help when they need it."),
+
+            mc("You'll be late for work because your bus is delayed. What should you do?",
+                "Tell your manager as soon as you can",
+                ["Say nothing and hope no one notices", "Skip the shift without telling anyone", "Blame a coworker"],
+                "easy",
+                "Letting your manager know early is responsible and helps the team plan."),
+
+            mc("What is a good way to get ready for a job interview?",
+                "Practice answers to common questions",
+                ["Show up 30 minutes late", "Wear pajamas", "Plan to look at your phone the whole time"],
+                "easy",
+                "Practicing helps you feel calm and confident. A family member, friend, or teacher can help you practice."),
+
+            mc("What is a paycheck?",
+                "Money your employer pays you for the work you did",
+                ["A gift card from a friend", "A school report card", "A coupon for a store"],
+                "easy",
+                "A paycheck is the pay you earn for your work."),
+
+            mc("What is a resume?",
+                "A short document that lists your skills, education, and experience",
+                ["A type of uniform", "A list of your favorite foods", "A bus schedule"],
+                "easy",
+                "A resume helps an employer learn about you. School projects and volunteering count as experience too!"),
+
+            mc("Why do some workers wear safety gear like gloves or safety glasses?",
+                "To help prevent injuries",
+                ["To look silly", "To hide from customers", "Because it's a costume"],
+                "easy",
+                "Safety gear protects workers from getting hurt on the job."),
+
+            mc("Which shows that you are dependable at work?",
+                "Showing up on time and doing what you said you would do",
+                ["Leaving early without telling anyone", "Forgetting instructions on purpose", "Using your phone during the whole shift"],
+                "easy",
+                "Being dependable means people can count on you. That's one of the most valuable job skills."),
+
+            mc("A customer is upset with you at work. What is a calm way to respond?",
+                "Listen, then say you will get help to solve the problem",
+                ["Yell back", "Walk away without a word", "Laugh at them"],
+                "medium",
+                "Staying calm and listening helps solve problems. If you can't fix it, it's okay to ask a supervisor for help."),
+
+            mc("You want to ask for a day off. What is the best way?",
+                "Ask politely and early, following your workplace's rules",
+                ["Just don't show up", "Ask a coworker to lie for you", "Send an angry message"],
+                "medium",
+                "Asking early and politely gives your workplace time to plan."),
+
+            mc("A coworker asks you to clock in for them while they aren't there. What should you do?",
+                "Politely say no",
+                ["Do it to be nice", "Do it just this once", "Ask them to pay you first"],
+                "medium",
+                "Clocking in for someone else is dishonest and could get you both in trouble. It's okay to say no."),
+
+            mc("On a paycheck, what is 'net pay'?",
+                "The money you take home after taxes and deductions",
+                ["The money you earned before anything is taken out", "The amount of tax you owe", "A bonus"],
+                "medium",
+                "Gross pay is what you earn before deductions. Net pay is what you actually take home."),
+
+            mc("You earn $12 an hour and work 5 hours. How much do you earn before taxes?",
+                "$60",
+                ["$17", "$50", "$72"],
+                "medium",
+                "5 × $12 = $60."),
+
+            mc("In the U.S., what does 'overtime pay' usually mean?",
+                "Extra pay for hours worked over a weekly limit",
+                ["Pay for time you were asleep", "Less pay for working longer", "A free day off"],
+                "medium",
+                "Many hourly workers in the U.S. earn a higher rate, often 1.5 times their normal pay, for hours over 40 in a week."),
+
+            mc("You work 6 hours a day for 4 days at $11 an hour. How much do you earn before taxes?",
+                "$264",
+                ["$66", "$242", "$246"],
+                "hard",
+                "6 × 4 = 24 hours, and 24 × $11 = $264.")
+
+        ]
+    },
+
+    social: {
+        name: "🤝 Social Skills",
+        questions: [
+
+            mc("You feel overwhelmed in a loud, crowded room. What is a healthy thing to do?",
+                "Ask for a short break or move somewhere quieter",
+                ["Yell at everyone", "Throw something", "Stay and never tell anyone"],
+                "easy",
+                "Taking a break can help your body and mind calm down. It's okay to ask for what you need."),
+
+            mc("You don't understand the teacher's directions. What's a good way to speak up?",
+                "Raise your hand and ask for the directions again",
+                ["Stay quiet and guess", "Copy from a classmate", "Give up"],
+                "easy",
+                "Asking questions is a strength. Teachers want to help you understand."),
+
+            mc("What does it mean to be a good listener?",
+                "Paying attention and waiting for your turn to talk",
+                ["Interrupting often", "Looking at your phone", "Talking louder than the speaker"],
+                "easy",
+                "Good listeners pay attention and give the other person a chance to finish."),
+
+            mc("A friend seems sad. What is a kind thing to do?",
+                "Ask if they are okay and listen",
+                ["Laugh at them", "Ignore them", "Tell everyone their business"],
+                "easy",
+                "Checking in and listening shows you care."),
+
+            mc("You disagree with a friend. What is a good way to handle it?",
+                "Use a calm voice and explain how you feel",
+                ["Shout at them", "Spread rumors", "Never speak to them again"],
+                "easy",
+                "Calm words help people understand each other, even when they disagree."),
+
+            mc("Someone asks you to do something that feels unsafe or wrong. What can you do?",
+                "Say no and tell a trusted adult",
+                ["Do it so they will like you", "Do it and keep it a secret", "Pretend you didn't hear"],
+                "easy",
+                "You always have the right to say no to things that feel unsafe. A trusted adult can help."),
+
+            mc("Which shows someone that you are listening?",
+                "Facing them and giving nods or short replies",
+                ["Turning your back", "Rolling your eyes", "Walking away mid-sentence"],
+                "easy",
+                "There are many ways to show you are listening. Eye contact is one way, but it isn't the only way, and it's okay if it feels hard."),
+
+            mc("You made a mistake. What is a good way to respond?",
+                "Say sorry and try to fix it",
+                ["Blame someone else", "Hide it", "Pretend it didn't happen"],
+                "easy",
+                "Everyone makes mistakes. What matters is how we work to fix them."),
+
+            mc("What can help you calm down when you feel upset?",
+                "Taking slow, deep breaths",
+                ["Holding your breath", "Yelling at someone", "Breaking something"],
+                "easy",
+                "Slow breathing tells your body it's safe to relax. Try the 🌿 Break button in this game!"),
+
+            mc("Who are trusted adults you can talk to at school?",
+                "A teacher, counselor, or other staff member you trust",
+                ["A stranger online", "No one", "Someone who asks you to keep secrets"],
+                "easy",
+                "Trusted adults are there to help you stay safe and supported."),
+
+            mc("A classmate says hello to you. What is a friendly response?",
+                "Say hello back",
+                ["Ignore them", "Walk away", "Make a face"],
+                "easy",
+                "A simple hello can start a friendship."),
+
+            mc("What is self-advocacy?",
+                "Speaking up for what you need and want",
+                ["Bragging about yourself", "Arguing with everyone", "Never asking for help"],
+                "medium",
+                "Self-advocacy means speaking up for yourself, like asking for extra time, a quiet space, or a different way to learn."),
+
+            mc("Your group is working on a class project. What does a good teammate do?",
+                "Does their part and listens to others' ideas",
+                ["Does nothing", "Takes over everything", "Makes fun of other people's ideas"],
+                "medium",
+                "Teamwork works best when everyone shares the work and respects each other's ideas."),
+
+            mc("What is a polite way to join a conversation?",
+                "Wait for a pause, then say something related",
+                ["Shout over people", "Interrupt with a totally different topic", "Grab someone's arm"],
+                "medium",
+                "Waiting for a pause and staying on topic helps everyone feel respected."),
+
+            mc("You feel too nervous to speak in front of the class. What can you do?",
+                "Tell your teacher and ask about other ways to share, like writing it down",
+                ["Never come to class again", "Leave without telling anyone", "Pretend to be sick every day"],
+                "medium",
+                "Teachers can offer options, like writing your answer, sharing one-on-one, or practicing first.")
+
+        ]
     }
 };
 
 
+
 // ==========================================
-// PLAYER DATA
+// QUESTION BANK PREPARATION
+// Gives every question a stable id and checks the data for mistakes.
+// Problems are reported in the browser console (F12) for whoever maintains the game.
 // ==========================================
 
-let player = {
-    name: "",
-    xp: 0,
-    level: 1,
-    questionsAnswered: 0,
-    correctAnswers: 0,
-    currentStreak: 0,
-    bestStreak: 0,
-    questsCompleted: 0,
+const questionById = Object.create(null);
 
-    categoryXP: {
-        world: 0,
-        pop: 0,
-        brain: 0,
-        life: 0,
-        school: 0,
-        sports: 0
-    },
+function hashText(text) {
 
-    achievements: []
+    let hash = 5381;
+
+    for (const character of String(text)) {
+        hash = ((hash << 5) + hash) ^ character.codePointAt(0);
+    }
+
+    return (hash >>> 0).toString(36);
+}
+
+
+function prepareQuestionBank() {
+
+    Object.keys(categories).forEach(key => {
+
+        categories[key].questions.forEach((q, index) => {
+
+            q.category = key;
+            q.id = key + "-" + hashText(q.question);
+
+            const problems = [];
+
+            if (!q.question) problems.push("missing question text");
+
+            if (!Array.isArray(q.answers) || q.answers.length < 2) {
+                problems.push("needs at least 2 answers");
+            } else {
+                if (!Number.isInteger(q.correct) || q.correct < 0 || q.correct >= q.answers.length) {
+                    problems.push("'correct' does not point at an answer");
+                }
+                if (new Set(q.answers).size !== q.answers.length) {
+                    problems.push("has duplicate answers");
+                }
+            }
+
+            if (!["easy", "medium", "hard"].includes(q.difficulty)) {
+                problems.push("difficulty must be easy, medium or hard");
+            }
+
+            if (!q.explanation) problems.push("missing explanation");
+
+            if (questionById[q.id]) problems.push("duplicate question");
+
+            if (problems.length) {
+                console.warn(
+                    "[Life Quest] " + key + " question " + (index + 1) +
+                    " (" + q.question + "): " + problems.join(", ")
+                );
+            }
+
+            questionById[q.id] = q;
+        });
+    });
+}
+
+prepareQuestionBank();
+
+
+// ==========================================
+// CONFIGURATION
+// ==========================================
+
+const STORAGE_KEYS = {
+    legacyPlayer: "lifeQuestPlayer",        // V1/V2 single-player save (migrated automatically)
+    profiles: "lifeQuestProfiles",
+    activePlayer: "lifeQuestActivePlayer",
+    settings: "lifeQuestSettings"
 };
 
-
-// ==========================================
-// GAME STATE
-// ==========================================
-
-let currentCategory = "";
-let currentQuestion = null;
-let currentQuestionIndex = 0;
-let questScore = 0;
-let questCorrect = 0;
-let questQuestions = [];
-
-let currentQuestMode = "rookie";
+const MAX_NAME_LENGTH = 24;
+const PRACTICE_SIZE = 5;
+const PRACTICE_LABEL = "🔁 Practice Mistakes";
 
 const questModes = {
 
     rookie: {
         name: "🟢 ROOKIE QUEST",
-        description: "5 easy questions",
+        icon: "🟢",
+        title: "ROOKIE QUEST",
+        label: "easy",
         questions: 5,
-        xp: 100,
+        difficulties: ["easy"],
         className: "rookie"
     },
 
     challenge: {
         name: "🟡 CHALLENGE QUEST",
-        description: "10 mixed-difficulty questions",
+        icon: "🟡",
+        title: "CHALLENGE QUEST",
+        label: "mixed",
         questions: 10,
-        xp: 150,
+        difficulties: ["easy", "medium"],
         className: "challenge"
     },
 
     championship: {
         name: "🔴 CHAMPIONSHIP",
-        description: "15 tough mixed questions",
+        icon: "🔴",
+        title: "CHAMPIONSHIP",
+        label: "challenging",
         questions: 15,
-        xp: 200,
+        difficulties: ["easy", "medium", "hard"],
         className: "championship"
     }
+};
 
+// XP for a correct answer, by quest type and question difficulty
+const XP_TABLE = {
+    rookie:       { easy: 100, medium: 100, hard: 100 },
+    challenge:    { easy: 100, medium: 150, hard: 150 },
+    championship: { easy: 150, medium: 200, hard: 250 },
+    practice:     { easy: 75,  medium: 100, hard: 125 }
+};
+
+const LEVEL_XP = [0, 500, 1000, 1500, 2000, 3000, 4000, 5500, 7500, 10000];
+
+const CORRECT_TITLES = [
+    "CORRECT!", "NICE WORK!", "YOU GOT IT!", "AWESOME!", "GREAT JOB!", "EXACTLY RIGHT!"
+];
+
+const MISS_TITLES = [
+    "GOOD TRY!", "ALMOST!", "THAT'S OKAY!", "YOU'RE LEARNING!"
+];
+
+const RESULT_MESSAGES = {
+    3: "Amazing focus! You really know your stuff.",
+    2: "Great work! You're getting stronger every quest.",
+    1: "You finished the quest, and that takes effort. Every try makes you better."
 };
 
 
@@ -717,88 +1020,669 @@ const achievements = {
 
     first_steps: {
         name: "🌱 FIRST STEPS",
-        description: "Answer your first question."
+        description: "Answer your first question.",
+        test: p => p.questionsAnswered >= 1
     },
 
     sharp_shooter: {
         name: "🎯 SHARP SHOOTER",
-        description: "Get 5 correct answers in a row."
+        description: "Get 5 correct answers in a row.",
+        test: p => p.bestStreak >= 5
     },
 
     on_fire: {
         name: "🔥 ON FIRE",
-        description: "Get 10 correct answers in a row."
+        description: "Get 10 correct answers in a row.",
+        test: p => p.bestStreak >= 10
     },
 
     world_traveler: {
         name: "🌍 WORLD TRAVELER",
-        description: "Complete a World Explorer quest."
+        description: "Complete a World Explorer quest.",
+        test: (p, ctx) => ctx.questCompleted && ctx.category === "world"
     },
 
     life_ready: {
         name: "💰 LIFE READY",
-        description: "Complete a Real Life quest."
+        description: "Complete a Real Life quest.",
+        test: (p, ctx) => ctx.questCompleted && ctx.category === "life"
+    },
+
+    work_ready: {
+        name: "💼 WORK READY",
+        description: "Complete a Work Ready quest.",
+        test: (p, ctx) => ctx.questCompleted && ctx.category === "work"
+    },
+
+    good_communicator: {
+        name: "🤝 GOOD COMMUNICATOR",
+        description: "Complete a Social Skills quest.",
+        test: (p, ctx) => ctx.questCompleted && ctx.category === "social"
     },
 
     brainiac: {
         name: "🧠 BRAINIAC",
-        description: "Earn 1,000 Brain Power XP."
+        description: "Earn 1,000 Brain Power XP.",
+        test: p => p.categoryXP.brain >= 1000
+    },
+
+    never_give_up: {
+        name: "💪 NEVER GIVE UP",
+        description: "Get a question right on your second try.",
+        test: p => p.secondChanceWins >= 1
+    },
+
+    perfect_quest: {
+        name: "⭐ PERFECT QUEST",
+        description: "Get every question right in a quest.",
+        test: (p, ctx) => ctx.questCompleted && ctx.perfect
+    },
+
+    mistake_master: {
+        name: "🔁 MISTAKE MASTER",
+        description: "Finish a Practice Mistakes quest.",
+        test: (p, ctx) => ctx.questCompleted && ctx.category === "practice"
+    },
+
+    all_rounder: {
+        name: "🧭 ALL-ROUNDER",
+        description: "Earn XP in every world.",
+        test: p => Object.keys(categories).every(key => (p.categoryXP[key] || 0) > 0)
     },
 
     quest_master: {
         name: "🏆 QUEST MASTER",
-        description: "Complete 10 quests."
+        description: "Complete 10 quests.",
+        test: p => p.questsCompleted >= 10
     },
 
     legend: {
         name: "👑 LEGEND",
-        description: "Reach Level 10."
+        description: "Reach Level 10.",
+        test: p => getLevel(p.xp) >= 10
     }
 };
 
 
 // ==========================================
-// SAVE / LOAD
+// GAME STATE
 // ==========================================
 
-function savePlayer() {
+let screen = "welcome";           // which screen is showing (used to come back from Settings)
+let settingsReturnScreen = "profile";
+let welcomeHTML = "";             // the sign-in form from index.html, kept so we can return to it
 
-    localStorage.setItem(
-        "lifeQuestPlayer",
-        JSON.stringify(player)
-    );
+let profiles = Object.create(null);   // saved players, keyed by lower-case name
+let activeKey = "";
+let player = createDefaultPlayer();
+
+let currentCategory = "";
+let currentQuestion = null;
+let currentQuestionIndex = 0;
+let questScore = 0;
+let questCorrect = 0;
+let questQuestions = [];
+let questMissedIds = [];
+let currentQuestMode = "rookie";
+
+let qState = null;                // per-question state: shuffled answers, hints, tries
+let lastFeedback = null;
+let lastResult = null;
+
+let storageOK = true;
+
+
+// ==========================================
+// SAFE STORAGE
+// School browsers sometimes block localStorage. The game keeps working;
+// it just can't remember progress, and it tells the player so.
+// ==========================================
+
+const storage = {
+
+    get(key, fallback = null) {
+        try {
+            const value = window.localStorage.getItem(key);
+            return value === null ? fallback : value;
+        } catch (error) {
+            storageOK = false;
+            return fallback;
+        }
+    },
+
+    set(key, value) {
+        try {
+            window.localStorage.setItem(key, value);
+            return true;
+        } catch (error) {
+            storageOK = false;
+            return false;
+        }
+    },
+
+    remove(key) {
+        try {
+            window.localStorage.removeItem(key);
+        } catch (error) {
+            storageOK = false;
+        }
+    }
+};
+
+
+function isPlainObject(value) {
+    return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
 
-function loadProfile() {
+// ==========================================
+// SETTINGS
+// ==========================================
 
-    const saved = localStorage.getItem("lifeQuestPlayer");
+const TEXT_SIZES = ["normal", "large", "xlarge"];
 
-    if (saved) {
+function prefersReducedMotion() {
+    return typeof window.matchMedia === "function" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function defaultSettings() {
+    return {
+        textSize: "normal",
+        highContrast: false,
+        readableFont: false,
+        reduceMotion: prefersReducedMotion(),
+        sound: false,          // off by default: sudden sounds can be stressful
+        autoRead: false,
+        secondChances: true
+    };
+}
+
+let settings = defaultSettings();
+
+function loadSettings() {
+
+    const defaults = defaultSettings();
+    const raw = storage.get(STORAGE_KEYS.settings);
+
+    if (!raw) return defaults;
+
+    try {
+        const saved = JSON.parse(raw);
+        const merged = { ...defaults };
+
+        if (isPlainObject(saved)) {
+            if (TEXT_SIZES.includes(saved.textSize)) merged.textSize = saved.textSize;
+            ["highContrast", "readableFont", "reduceMotion", "sound", "autoRead", "secondChances"]
+                .forEach(key => {
+                    if (typeof saved[key] === "boolean") merged[key] = saved[key];
+                });
+        }
+
+        return merged;
+
+    } catch (error) {
+        return defaults;
+    }
+}
+
+function saveSettings() {
+    storage.set(STORAGE_KEYS.settings, JSON.stringify(settings));
+}
+
+function applySettings() {
+
+    const body = document.body;
+
+    if (!body) return;
+
+    body.classList.toggle("lq-text-large", settings.textSize === "large");
+    body.classList.toggle("lq-text-xlarge", settings.textSize === "xlarge");
+    body.classList.toggle("lq-high-contrast", settings.highContrast);
+    body.classList.toggle("lq-readable-font", settings.readableFont);
+    body.classList.toggle("lq-reduce-motion", settings.reduceMotion);
+}
+
+
+// ==========================================
+// STYLES ADDED BY THE GAME
+// Accessibility modes and the new V3 screens. Your own CSS file is untouched;
+// everything here is prefixed with "lq-" so it can't clash with it.
+// ==========================================
+
+const LQ_CSS = `
+
+.lq-sr-only {
+    position: absolute !important;
+    width: 1px; height: 1px;
+    margin: -1px; padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* ----- keyboard focus you can actually see ----- */
+#game-card:focus { outline: none; }
+#game-card :focus-visible,
+.lq-fab:focus-visible {
+    outline: 4px solid #f59e0b;
+    outline-offset: 3px;
+}
+/* headings we move focus to (for screen readers) don't need a ring */
+#game-card [tabindex="-1"]:focus,
+#game-card [tabindex="-1"]:focus-visible { outline: none; }
+
+/* ----- comfortable tap targets ----- */
+#game-card button { min-height: 48px; }
+
+/* ----- text size ----- */
+body.lq-text-large  #game-card { zoom: 1.15; }
+body.lq-text-xlarge #game-card { zoom: 1.3; }
+@supports not (zoom: 1) {
+    body.lq-text-large  #game-card { font-size: 1.15em; }
+    body.lq-text-xlarge #game-card { font-size: 1.3em; }
+}
+
+/* ----- easy-to-read font ----- */
+body.lq-readable-font #game-card,
+body.lq-readable-font #game-card * {
+    font-family: "Atkinson Hyperlegible", "Lexend", Verdana, "Trebuchet MS", sans-serif !important;
+    letter-spacing: 0.03em;
+    word-spacing: 0.1em;
+}
+body.lq-readable-font #game-card { line-height: 1.6; }
+
+/* ----- reduced motion ----- */
+body.lq-reduce-motion *,
+body.lq-reduce-motion *::before,
+body.lq-reduce-motion *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+}
+
+/* ----- high contrast ----- */
+body.lq-high-contrast { background: #000 !important; }
+body.lq-high-contrast #game-card {
+    background: #000 !important;
+    color: #fff !important;
+    border: 3px solid #fff !important;
+    box-shadow: none !important;
+}
+body.lq-high-contrast #game-card :is(div, section, p, h1, h2, h3, span, small, strong) {
+    background: transparent !important;
+    background-image: none !important;
+    color: #fff !important;
+    text-shadow: none !important;
+}
+body.lq-high-contrast #game-card button {
+    background: #000 !important;
+    background-image: none !important;
+    color: #ffeb3b !important;
+    border: 3px solid #ffeb3b !important;
+    box-shadow: none !important;
+}
+body.lq-high-contrast #game-card button * { color: #ffeb3b !important; background: transparent !important; }
+body.lq-high-contrast #game-card button:hover:not(:disabled) { background: #ffeb3b !important; color: #000 !important; }
+body.lq-high-contrast #game-card button:hover:not(:disabled) * { color: #000 !important; }
+body.lq-high-contrast #game-card :is(.profile-category, .rank-card) { border: 2px solid #fff !important; }
+body.lq-high-contrast #game-card .progress-bar,
+body.lq-high-contrast #game-card .lq-quest-progress,
+body.lq-high-contrast #game-card .lq-report-bar { background: #333 !important; border: 2px solid #fff !important; }
+body.lq-high-contrast #game-card .progress-fill,
+body.lq-high-contrast #game-card .lq-quest-progress > span,
+body.lq-high-contrast #game-card .lq-report-bar > span { background: #ffeb3b !important; }
+body.lq-high-contrast #game-card .lq-switch[aria-checked="true"],
+body.lq-high-contrast #game-card .lq-seg[aria-pressed="true"] { background: #ffeb3b !important; color: #000 !important; }
+body.lq-high-contrast #game-card .lq-switch[aria-checked="true"] *,
+body.lq-high-contrast #game-card .lq-seg[aria-pressed="true"] * { color: #000 !important; }
+body.lq-high-contrast #game-card input { background: #000 !important; color: #fff !important; border: 3px solid #fff !important; }
+body.lq-high-contrast .lq-fab { background: #000; color: #ffeb3b; border-color: #ffeb3b; }
+body.lq-high-contrast .lq-toast { background: #000 !important; border: 3px solid #ffeb3b; }
+body.lq-high-contrast .lq-toast * { color: #fff !important; }
+
+/* ----- settings button ----- */
+.lq-fab {
+    position: fixed; top: 14px; right: 14px; z-index: 900;
+    width: 52px; height: 52px; padding: 0;
+    display: grid; place-items: center;
+    border-radius: 50%;
+    border: 3px solid #172033;
+    background: #fff; color: #172033;
+    font-size: 26px; line-height: 1;
+    cursor: pointer;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+.lq-fab:hover { background: #eef2ff; }
+
+/* ----- question screen ----- */
+.lq-quest-progress {
+    height: 12px; margin: 6px 0 10px;
+    border-radius: 999px; background: #e2e8f0; overflow: hidden;
+}
+.lq-quest-progress > span {
+    display: block; height: 100%;
+    background: #7c3aed; border-radius: 999px;
+}
+#game-card .lq-answer {
+    display: flex; align-items: center; justify-content: flex-start;
+    gap: 0.7em; text-align: left;
+}
+.lq-key {
+    flex: none; display: inline-grid; place-items: center;
+    width: 1.9em; height: 1.9em;
+    border: 2px solid currentColor; border-radius: 8px;
+    font-weight: 800; font-size: 0.9em;
+}
+#game-card .lq-answer.lq-eliminated { opacity: 0.35; text-decoration: line-through; }
+#game-card .lq-answer.lq-tried { opacity: 0.55; }
+.lq-tools { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin: 18px 0 6px; }
+#game-card .lq-tool {
+    min-height: 48px; padding: 10px 16px;
+    border-radius: 14px; border: 2px solid #c7d2fe;
+    background: #eef2ff; color: #1e293b;
+    font: inherit; font-weight: 700; cursor: pointer;
+}
+#game-card .lq-tool:hover:not(:disabled) { background: #e0e7ff; }
+#game-card .lq-tool:disabled { opacity: 0.5; cursor: not-allowed; }
+.lq-message { min-height: 1.6em; margin: 8px 0; font-weight: 700; color: #b45309; text-align: center; }
+.lq-note { margin: 8px 0; opacity: 0.85; }
+.lq-warning { margin: 10px 0; padding: 10px 14px; border-radius: 12px; background: #fef3c7; color: #78350f; font-weight: 700; }
+.lq-stars { margin: 6px 0; font-size: 2.6em; letter-spacing: 0.1em; }
+
+/* ----- practice world ----- */
+.quest-map .quest-world.world-practice {
+    background: linear-gradient(135deg, #14b8a6, #0f766e); color: #fff;
+}
+.quest-map .quest-world.world-work {
+    background: linear-gradient(135deg, #0ea5e9, #1d4ed8); color: #fff;
+}
+.quest-map .quest-world.world-social {
+    background: linear-gradient(135deg, #f472b6, #be185d); color: #fff;
+}
+
+/* ----- settings screen ----- */
+.lq-setting {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 14px 4px; text-align: left;
+    border-bottom: 1px solid rgba(100, 116, 139, 0.35);
+}
+.lq-setting-label { font-weight: 800; }
+.lq-setting-help { font-size: 0.9em; opacity: 0.8; }
+.lq-segment { display: flex; flex-wrap: wrap; gap: 8px; }
+#game-card .lq-seg, #game-card .lq-switch {
+    min-height: 48px; padding: 8px 16px;
+    border-radius: 12px; border: 3px solid #64748b;
+    background: #e2e8f0; color: #0f172a;
+    font: inherit; font-weight: 800; cursor: pointer;
+}
+#game-card .lq-switch { flex: none; min-width: 88px; border-radius: 999px; }
+#game-card .lq-seg[aria-pressed="true"] { background: #4338ca; border-color: #312e81; color: #fff; }
+#game-card .lq-switch[aria-checked="true"] { background: #16a34a; border-color: #166534; color: #fff; }
+#game-card .lq-switch:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ----- progress report ----- */
+.lq-stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; margin: 14px 0; }
+.lq-stat { padding: 12px; border-radius: 14px; background: rgba(99, 102, 241, 0.12); text-align: center; }
+.lq-stat b { display: block; font-size: 1.6em; }
+.lq-report-row {
+    display: grid; grid-template-columns: minmax(120px, 1.2fr) 2fr auto;
+    gap: 12px; align-items: center; padding: 10px 0; text-align: left;
+}
+.lq-report-bar { height: 14px; border-radius: 999px; background: #e2e8f0; overflow: hidden; }
+.lq-report-bar > span { display: block; height: 100%; background: #16a34a; }
+@media (max-width: 560px) { .lq-report-row { grid-template-columns: 1fr; gap: 4px; } }
+
+/* ----- player picker ----- */
+.lq-player-list { display: grid; gap: 10px; margin: 16px 0; }
+.lq-input {
+    width: 100%; max-width: 360px; padding: 14px;
+    border-radius: 12px; border: 3px solid #64748b;
+    font: inherit; font-size: 1.1em;
+}
+
+/* ----- breathing break ----- */
+.lq-breathe {
+    width: 170px; height: 170px; margin: 22px auto;
+    display: grid; place-items: center;
+    border-radius: 50%; color: #fff; font-weight: 800;
+    background: radial-gradient(circle at 35% 30%, #a5f3fc, #38bdf8 60%, #2563eb);
+    animation: lq-breathe 10s ease-in-out infinite;
+}
+@keyframes lq-breathe {
+    0%, 100% { transform: scale(0.7); }
+    40%      { transform: scale(1.05); }
+}
+
+/* ----- toasts ----- */
+#lq-toasts {
+    position: fixed; top: 14px; left: 50%; transform: translateX(-50%);
+    z-index: 9999; display: grid; gap: 10px;
+    width: min(92vw, 460px); pointer-events: none;
+}
+.lq-toast {
+    padding: 18px 24px; border-radius: 20px;
+    background: #fff; color: #172033; text-align: center;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+    animation: lq-pop 0.35s ease;
+}
+.lq-toast-eyebrow { font-weight: 800; color: #7c3aed; }
+.lq-toast-title { margin-top: 4px; font-size: 1.5em; font-weight: 900; }
+.lq-toast-body { margin-top: 6px; color: #475569; }
+@keyframes lq-pop {
+    from { opacity: 0; transform: translateY(-14px) scale(0.96); }
+    to   { opacity: 1; transform: none; }
+}
+
+/* ----- confetti ----- */
+.lq-confetti { position: fixed; inset: 0; z-index: 9998; overflow: hidden; pointer-events: none; }
+.lq-confetti i {
+    position: absolute; top: -16px; width: 10px; height: 16px; border-radius: 2px;
+    animation: lq-fall linear forwards;
+}
+@keyframes lq-fall { to { transform: translate3d(var(--lq-x), 110vh, 0) rotate(720deg); } }
+
+@media print {
+    .lq-fab, #lq-toasts, #game-card button { display: none !important; }
+}
+`;
+
+function injectStyles() {
+
+    if (document.getElementById("lq-styles")) return;
+
+    const style = document.createElement("style");
+
+    style.id = "lq-styles";
+    style.textContent = LQ_CSS;
+
+    document.head.appendChild(style);
+}
+
+
+// ==========================================
+// PLAYER DATA
+// ==========================================
+
+function createDefaultPlayer(name = "") {
+
+    const categoryXP = {};
+    const categoryStats = {};
+
+    Object.keys(categories).forEach(key => {
+        categoryXP[key] = 0;
+        categoryStats[key] = { answered: 0, correct: 0 };
+    });
+
+    return {
+        name: name,
+        xp: 0,
+        level: 1,
+        questionsAnswered: 0,
+        correctAnswers: 0,
+        currentStreak: 0,
+        bestStreak: 0,
+        questsCompleted: 0,
+        hintsUsed: 0,
+        secondChanceWins: 0,
+        categoryXP: categoryXP,
+        categoryStats: categoryStats,
+        achievements: [],
+        bestStars: {},
+        missed: []
+    };
+}
+
+
+// Turns anything read from storage into a complete, safe player record.
+// This is also how saves from older versions get upgraded.
+function normalizePlayer(saved) {
+
+    const name = String(saved.name || "").trim().slice(0, MAX_NAME_LENGTH);
+    const base = createDefaultPlayer(name);
+    const p = { ...base, ...saved, name: name };
+
+    [
+        "xp", "questionsAnswered", "correctAnswers", "currentStreak",
+        "bestStreak", "questsCompleted", "hintsUsed", "secondChanceWins"
+    ].forEach(field => {
+        p[field] = Number.isFinite(p[field]) && p[field] >= 0 ? Math.floor(p[field]) : 0;
+    });
+
+    p.categoryXP = { ...base.categoryXP };
+    p.categoryStats = { ...base.categoryStats };
+
+    if (isPlainObject(saved.categoryXP)) {
+        Object.keys(saved.categoryXP).forEach(key => {
+            const value = saved.categoryXP[key];
+            if (Number.isFinite(value) && value >= 0) p.categoryXP[key] = value;
+        });
+    }
+
+    if (isPlainObject(saved.categoryStats)) {
+        Object.keys(saved.categoryStats).forEach(key => {
+            const s = saved.categoryStats[key];
+            if (isPlainObject(s) && Number.isFinite(s.answered) && Number.isFinite(s.correct)) {
+                p.categoryStats[key] = {
+                    answered: Math.max(0, Math.floor(s.answered)),
+                    correct: Math.max(0, Math.floor(s.correct))
+                };
+            }
+        });
+    }
+
+    p.achievements = Array.isArray(saved.achievements)
+        ? saved.achievements.filter(id => typeof id === "string")
+        : [];
+
+    p.missed = Array.isArray(saved.missed)
+        ? saved.missed.filter(id => typeof id === "string")
+        : [];
+
+    p.bestStars = {};
+    if (isPlainObject(saved.bestStars)) {
+        Object.keys(saved.bestStars).forEach(key => {
+            const stars = saved.bestStars[key];
+            if (Number.isInteger(stars) && stars >= 1 && stars <= 3) p.bestStars[key] = stars;
+        });
+    }
+
+    p.level = getLevel(p.xp);
+
+    return p;
+}
+
+
+// ==========================================
+// SAVE / LOAD (several players can share one computer)
+// ==========================================
+
+function profileKey(name) {
+    return String(name).trim().toLowerCase();
+}
+
+
+function persistProfiles() {
+
+    storage.set(STORAGE_KEYS.profiles, JSON.stringify(profiles));
+
+    if (activeKey) {
+        storage.set(STORAGE_KEYS.activePlayer, activeKey);
+    } else {
+        storage.remove(STORAGE_KEYS.activePlayer);
+    }
+}
+
+
+function savePlayer() {
+
+    if (!player.name) return;
+
+    activeKey = activeKey || profileKey(player.name);
+    profiles[activeKey] = player;
+
+    persistProfiles();
+}
+
+
+function loadProfiles() {
+
+    profiles = Object.create(null);
+
+    const raw = storage.get(STORAGE_KEYS.profiles);
+
+    if (raw) {
 
         try {
 
-            player = JSON.parse(saved);
+            const parsed = JSON.parse(raw);
 
-            // Safety for older saved profiles
-            player.categoryXP = player.categoryXP || {};
-
-            player.categoryXP.world = player.categoryXP.world || 0;
-            player.categoryXP.pop = player.categoryXP.pop || 0;
-            player.categoryXP.brain = player.categoryXP.brain || 0;
-            player.categoryXP.life = player.categoryXP.life || 0;
-            player.categoryXP.school = player.categoryXP.school || 0;
-            player.categoryXP.sports = player.categoryXP.sports || 0;
-
-            player.achievements = player.achievements || [];
+            if (isPlainObject(parsed)) {
+                Object.keys(parsed).forEach(key => {
+                    if (isPlainObject(parsed[key]) && parsed[key].name) {
+                        profiles[key] = normalizePlayer(parsed[key]);
+                    }
+                });
+            }
 
         } catch (error) {
-
-            console.error("Could not load profile:", error);
-
+            console.error("Could not load profiles:", error);
         }
-
     }
+
+    // Bring a V1/V2 save along so nobody loses their progress
+    let migratedKey = "";
+
+    if (Object.keys(profiles).length === 0) {
+
+        const legacy = storage.get(STORAGE_KEYS.legacyPlayer);
+
+        if (legacy) {
+
+            try {
+
+                const parsed = JSON.parse(legacy);
+
+                if (isPlainObject(parsed) && parsed.name) {
+                    migratedKey = profileKey(parsed.name);
+                    profiles[migratedKey] = normalizePlayer(parsed);
+                }
+
+            } catch (error) {
+                console.error("Could not read the old save:", error);
+            }
+        }
+    }
+
+    activeKey = storage.get(STORAGE_KEYS.activePlayer, "") || migratedKey;
+
+    if (!profiles[activeKey]) activeKey = "";
+
+    player = activeKey ? profiles[activeKey] : createDefaultPlayer();
+
+    if (migratedKey) persistProfiles();
 }
 
 
@@ -808,15 +1692,9 @@ function loadProfile() {
 
 function getLevel(xp) {
 
-    if (xp >= 10000) return 10;
-    if (xp >= 7500) return 9;
-    if (xp >= 5500) return 8;
-    if (xp >= 4000) return 7;
-    if (xp >= 3000) return 6;
-    if (xp >= 2000) return 5;
-    if (xp >= 1500) return 4;
-    if (xp >= 1000) return 3;
-    if (xp >= 500) return 2;
+    for (let i = LEVEL_XP.length - 1; i >= 0; i--) {
+        if (xp >= LEVEL_XP[i]) return i + 1;
+    }
 
     return 1;
 }
@@ -836,28 +1714,339 @@ function getRank(level) {
 
 function getLevelProgress(xp, level) {
 
-    const levels = [
-        0,
-        500,
-        1000,
-        1500,
-        2000,
-        3000,
-        4000,
-        5500,
-        7500,
-        10000
-    ];
+    if (level >= LEVEL_XP.length) return 100;
 
-    if (level >= 10) return 100;
+    const start = LEVEL_XP[level - 1];
+    const end = LEVEL_XP[level];
 
-    const start = levels[level - 1];
-    const end = levels[level];
+    return Math.max(0, Math.min(100, Math.round(((xp - start) / (end - start)) * 100)));
+}
 
-    return Math.min(
-        100,
-        Math.round(((xp - start) / (end - start)) * 100)
-    );
+
+function xpToNextLevel(xp, level) {
+
+    return level >= LEVEL_XP.length ? 0 : LEVEL_XP[level] - xp;
+}
+
+
+// ==========================================
+// SMALL HELPERS
+// ==========================================
+
+function shuffle(array) {
+
+    for (let i = array.length - 1; i > 0; i--) {
+
+        const j = Math.floor(Math.random() * (i + 1));
+
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+
+    return array;
+}
+
+
+function escapeHTML(text) {
+
+    return String(text)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+
+function splitLabel(label) {
+
+    const space = label.indexOf(" ");
+
+    return space === -1
+        ? { icon: "", text: label }
+        : { icon: label.slice(0, space), text: label.slice(space + 1) };
+}
+
+
+function categoryLabel(key) {
+
+    if (key === "practice") return PRACTICE_LABEL;
+
+    return categories[key] ? categories[key].name : String(key);
+}
+
+
+function percent(part, whole) {
+
+    return whole > 0 ? Math.round((part / whole) * 100) : 0;
+}
+
+
+function starString(count) {
+
+    return "⭐".repeat(count) + "☆".repeat(3 - count);
+}
+
+
+function getStats(key) {
+
+    const s = player.categoryStats[key];
+
+    return s ? s : { answered: 0, correct: 0 };
+}
+
+
+function ensureStats(key) {
+
+    if (!player.categoryStats[key]) {
+        player.categoryStats[key] = { answered: 0, correct: 0 };
+    }
+
+    return player.categoryStats[key];
+}
+
+
+// Answers that are only numbers ("$17", "0°C", "1,000") read best from smallest to largest
+function isNumericAnswer(text) {
+
+    return /^\s*[$€£]?\s*-?\d[\d,]*(\.\d+)?\s*(%|°[CF])?\s*$/.test(String(text));
+}
+
+
+function numericValue(text) {
+
+    return parseFloat(String(text).replace(/[^0-9.\-]/g, ""));
+}
+
+
+function buildAnswers(question) {
+
+    const items = question.answers.map((text, index) => ({
+        text: text,
+        correct: index === question.correct
+    }));
+
+    if (question.keepOrder) return items;
+
+    if (items.every(item => isNumericAnswer(item.text))) {
+        return items.sort((a, b) => numericValue(a.text) - numericValue(b.text));
+    }
+
+    return shuffle(items);
+}
+
+
+function pick(list) {
+
+    return list[Math.floor(Math.random() * list.length)];
+}
+
+
+// ==========================================
+// XP RULES
+// ==========================================
+
+function getQuestionXP(question, mode = currentQuestMode) {
+
+    const table = XP_TABLE[mode] || XP_TABLE.rookie;
+
+    return table[question.difficulty] || 100;
+}
+
+
+// ==========================================
+// SOUND (tiny, gentle, and OFF until the player turns it on)
+// ==========================================
+
+let audioContext = null;
+
+const SOUNDS = {
+    correct:     [[523.25, 0], [659.25, 0.12], [783.99, 0.24]],
+    retry:       [[392.0, 0]],
+    miss:        [[330.0, 0], [294.0, 0.16]],
+    levelup:     [[523.25, 0], [659.25, 0.1], [783.99, 0.2], [1046.5, 0.32]],
+    achievement: [[659.25, 0], [880.0, 0.14]],
+    complete:    [[523.25, 0], [659.25, 0.14], [783.99, 0.28], [1046.5, 0.42]]
+};
+
+function soundSupported() {
+
+    return typeof window.AudioContext === "function" ||
+        typeof window.webkitAudioContext === "function";
+}
+
+
+function playSound(name) {
+
+    if (!settings.sound || !SOUNDS[name] || !soundSupported()) return;
+
+    try {
+
+        const Context = window.AudioContext || window.webkitAudioContext;
+
+        audioContext = audioContext || new Context();
+
+        if (audioContext.state === "suspended") audioContext.resume();
+
+        SOUNDS[name].forEach(([frequency, delay]) => {
+
+            const start = audioContext.currentTime + delay;
+            const oscillator = audioContext.createOscillator();
+            const gain = audioContext.createGain();
+
+            oscillator.type = "sine";
+            oscillator.frequency.value = frequency;
+
+            gain.gain.setValueAtTime(0.0001, start);
+            gain.gain.exponentialRampToValueAtTime(0.06, start + 0.03);
+            gain.gain.exponentialRampToValueAtTime(0.0001, start + 0.28);
+
+            oscillator.connect(gain);
+            gain.connect(audioContext.destination);
+
+            oscillator.start(start);
+            oscillator.stop(start + 0.3);
+        });
+
+    } catch (error) {
+        // Sound is a bonus; never let it break the game
+    }
+}
+
+
+// ==========================================
+// READ ALOUD
+// ==========================================
+
+function speechSupported() {
+
+    return "speechSynthesis" in window && typeof window.SpeechSynthesisUtterance === "function";
+}
+
+
+function stopSpeaking() {
+
+    if (speechSupported()) window.speechSynthesis.cancel();
+}
+
+
+function speak(text) {
+
+    if (!speechSupported() || !text) return;
+
+    stopSpeaking();
+
+    const utterance = new window.SpeechSynthesisUtterance(text);
+
+    utterance.lang = "en-US";
+    utterance.rate = 0.9;
+
+    window.speechSynthesis.speak(utterance);
+}
+
+
+// ==========================================
+// SCREEN HELPERS, LIVE ANNOUNCEMENTS, TOASTS, CONFETTI
+// ==========================================
+
+function getCard() {
+
+    return document.getElementById("game-card");
+}
+
+
+function on(id, handler) {
+
+    const element = document.getElementById(id);
+
+    if (element) element.addEventListener("click", handler);
+}
+
+
+// Draws a screen, then moves keyboard / screen-reader focus to it
+function render(html) {
+
+    const card = getCard();
+
+    if (!card) return;
+
+    stopSpeaking();
+
+    card.innerHTML = html;
+
+    const target = card.querySelector("[data-autofocus]") || card;
+
+    target.focus({ preventScroll: true });
+}
+
+
+function announce(message) {
+
+    const live = document.getElementById("lq-live");
+
+    if (!live) return;
+
+    live.textContent = "";
+
+    setTimeout(() => { live.textContent = message; }, 40);
+}
+
+
+function showToast(eyebrow, title, body) {
+
+    const stack = document.getElementById("lq-toasts");
+
+    if (!stack) return;
+
+    const toast = document.createElement("div");
+
+    toast.className = "lq-toast";
+
+    toast.innerHTML =
+        '<div class="lq-toast-eyebrow">' + escapeHTML(eyebrow) + "</div>" +
+        '<div class="lq-toast-title">' + escapeHTML(title) + "</div>" +
+        (body ? '<div class="lq-toast-body">' + escapeHTML(body) + "</div>" : "");
+
+    stack.appendChild(toast);
+
+    while (stack.children.length > 3) stack.firstElementChild.remove();
+
+    setTimeout(() => toast.remove(), 4500);
+}
+
+
+function showAchievementUnlocked(achievement) {
+
+    showToast("🎉 ACHIEVEMENT UNLOCKED!", achievement.name, achievement.description);
+}
+
+
+function launchConfetti() {
+
+    if (settings.reduceMotion) return;
+
+    const layer = document.createElement("div");
+
+    layer.className = "lq-confetti";
+    layer.setAttribute("aria-hidden", "true");
+
+    const colors = ["#7c3aed", "#f59e0b", "#10b981", "#3b82f6", "#ec4899", "#ef4444"];
+
+    for (let i = 0; i < 70; i++) {
+
+        const piece = document.createElement("i");
+
+        piece.style.left = Math.random() * 100 + "%";
+        piece.style.background = pick(colors);
+        piece.style.animationDuration = 2.4 + Math.random() * 2 + "s";
+        piece.style.animationDelay = Math.random() * 0.6 + "s";
+        piece.style.setProperty("--lq-x", (Math.random() * 160 - 80) + "px");
+
+        layer.appendChild(piece);
+    }
+
+    document.body.appendChild(layer);
+
+    setTimeout(() => layer.remove(), 5500);
 }
 
 
@@ -871,20 +2060,137 @@ function createProfile() {
 
     if (!input) return;
 
-    const name = input.value.trim();
+    const name = input.value.trim().replace(/\s+/g, " ").slice(0, MAX_NAME_LENGTH);
 
     if (!name) {
 
         input.style.borderColor = "#ef4444";
+        input.setAttribute("aria-invalid", "true");
+        input.focus();
+
+        announce("Please type your name to start.");
 
         return;
     }
 
-    player.name = name;
+    const key = profileKey(name);
+
+    // Typing a name that already exists brings that player's progress back
+    if (profiles[key]) {
+        player = profiles[key];
+    } else {
+        player = createDefaultPlayer(name);
+        profiles[key] = player;
+    }
+
+    activeKey = key;
+
+    persistProfiles();
+
+    showProfile();
+}
+
+window.createProfile = createProfile;
+
+
+// ==========================================
+// WELCOME + PLAYER PICKER
+// ==========================================
+
+function showWelcome() {
+
+    screen = "welcome";
+
+    const card = getCard();
+
+    if (!card) return;
+
+    stopSpeaking();
+
+    card.innerHTML = welcomeHTML;
+}
+
+
+function showPlayerPicker() {
+
+    screen = "picker";
+
+    const keys = Object.keys(profiles).sort();
+
+    render(`
+
+        <h2 tabindex="-1" data-autofocus>👥 Who's playing?</h2>
+
+        <p>Pick your name to keep going, or start as a new player.</p>
+
+        <div class="lq-player-list">
+
+            ${keys.map(key => {
+
+                const p = profiles[key];
+                const level = getLevel(p.xp);
+
+                return `
+                    <button data-player="${escapeHTML(key)}">
+                        👋 ${escapeHTML(p.name)} • Level ${level} • ${p.xp} XP
+                    </button>
+                `;
+
+            }).join("")}
+
+        </div>
+
+        <h3>➕ New player</h3>
+
+        <p>
+            <label for="student-name">Type your name:</label>
+            <br>
+            <input
+                id="student-name"
+                class="lq-input"
+                type="text"
+                maxlength="${MAX_NAME_LENGTH}"
+                autocomplete="off"
+            >
+        </p>
+
+        <button id="create-player">🚀 START</button>
+
+        ${player.name ? '<button id="picker-back">↩️ BACK</button>' : ""}
+
+    `);
+
+    document.querySelectorAll("[data-player]").forEach(button => {
+
+        button.addEventListener("click", function () {
+
+            const key = this.dataset.player;
+
+            if (!profiles[key]) return;
+
+            player = profiles[key];
+            activeKey = key;
+
+            persistProfiles();
+            showProfile();
+        });
+    });
+
+    on("create-player", createProfile);
+    on("picker-back", showProfile);
+}
+
+
+function switchPlayer() {
 
     savePlayer();
 
-    showProfile();
+    activeKey = "";
+    persistProfiles();
+
+    player = createDefaultPlayer();
+
+    showPlayerPicker();
 }
 
 
@@ -894,17 +2200,17 @@ function createProfile() {
 
 function showProfile() {
 
-    const card = document.getElementById("game-card");
+    screen = "profile";
 
     const level = getLevel(player.xp);
 
     player.level = level;
 
     const rank = getRank(level);
-
     const progress = getLevelProgress(player.xp, level);
+    const toNext = xpToNextLevel(player.xp, level);
 
-    card.innerHTML = `
+    render(`
 
         <div class="profile-header">
 
@@ -926,6 +2232,13 @@ function showProfile() {
 
         </div>
 
+        ${storageOK ? "" : `
+            <p class="lq-warning" role="alert">
+                ⚠️ This browser is blocking saving, so your progress will be lost
+                when you close the page. Ask a teacher if you need help.
+            </p>
+        `}
+
         <div class="level-section">
 
             <div class="level-label">
@@ -936,7 +2249,14 @@ function showProfile() {
 
             </div>
 
-            <div class="progress-bar">
+            <div
+                class="progress-bar"
+                role="progressbar"
+                aria-label="Progress to the next level"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="${progress}"
+            >
 
                 <div
                     class="progress-fill"
@@ -944,6 +2264,12 @@ function showProfile() {
                 ></div>
 
             </div>
+
+            <p class="lq-note">
+                ${toNext > 0
+                    ? `${toNext} XP to reach Level ${level + 1}`
+                    : "You reached the top level!"}
+            </p>
 
         </div>
 
@@ -959,63 +2285,25 @@ function showProfile() {
 
         </div>
 
-        <h3>📊 Your Progress</h3>
+        <h3 tabindex="-1" data-autofocus>📊 Your Progress</h3>
 
         <div class="profile-categories">
 
-            <div class="profile-category">
-                <div class="profile-category-title">
-                    🌍 World Explorer
-                </div>
-                <div class="profile-category-xp">
-                    ${player.categoryXP.world} XP
-                </div>
-            </div>
+            ${Object.keys(categories).map(key => `
 
-            <div class="profile-category">
-                <div class="profile-category-title">
-                    🇺🇸 Pop Culture
-                </div>
-                <div class="profile-category-xp">
-                    ${player.categoryXP.pop} XP
-                </div>
-            </div>
+                <div class="profile-category">
 
-            <div class="profile-category">
-                <div class="profile-category-title">
-                    🧠 Brain Power
-                </div>
-                <div class="profile-category-xp">
-                    ${player.categoryXP.brain} XP
-                </div>
-            </div>
+                    <div class="profile-category-title">
+                        ${escapeHTML(categories[key].name)}
+                    </div>
 
-            <div class="profile-category">
-                <div class="profile-category-title">
-                    💰 Real Life
-                </div>
-                <div class="profile-category-xp">
-                    ${player.categoryXP.life} XP
-                </div>
-            </div>
+                    <div class="profile-category-xp">
+                        ${player.categoryXP[key] || 0} XP
+                    </div>
 
-            <div class="profile-category">
-                <div class="profile-category-title">
-                    🏫 School Challenge
                 </div>
-                <div class="profile-category-xp">
-                    ${player.categoryXP.school} XP
-                </div>
-            </div>
 
-            <div class="profile-category">
-                <div class="profile-category-title">
-                    ⚽ Sports Arena
-                </div>
-                <div class="profile-category-xp">
-                    ${player.categoryXP.sports} XP
-                </div>
-            </div>
+            `).join("")}
 
         </div>
 
@@ -1037,15 +2325,20 @@ function showProfile() {
             🏆 ACHIEVEMENTS
         </button>
 
-    `;
+        <button id="report-button">
+            📈 MY PROGRESS REPORT
+        </button>
 
-    document
-        .getElementById("play-quest")
-        .addEventListener("click", showCategories);
+        <button id="switch-player">
+            👥 SWITCH PLAYER
+        </button>
 
-    document
-        .getElementById("achievements-button")
-        .addEventListener("click", showAchievements);
+    `);
+
+    on("play-quest", showCategories);
+    on("achievements-button", showAchievements);
+    on("report-button", showReport);
+    on("switch-player", switchPlayer);
 }
 
 
@@ -1055,13 +2348,15 @@ function showProfile() {
 
 function showCategories() {
 
-    const card = document.getElementById("game-card");
+    screen = "categories";
 
     const level = getLevel(player.xp);
     const rank = getRank(level);
     const progress = getLevelProgress(player.xp, level);
 
-    card.innerHTML = `
+    const missedCount = player.missed.filter(id => questionById[id]).length;
+
+    render(`
 
         <div class="quest-map-header">
 
@@ -1078,7 +2373,14 @@ function showCategories() {
                 ⭐ ${player.xp} XP
             </div>
 
-            <div class="progress-bar map-progress">
+            <div
+                class="progress-bar map-progress"
+                role="progressbar"
+                aria-label="Progress to the next level"
+                aria-valuemin="0"
+                aria-valuemax="100"
+                aria-valuenow="${progress}"
+            >
 
                 <div
                     class="progress-fill"
@@ -1090,7 +2392,7 @@ function showCategories() {
         </div>
 
 
-        <p class="map-instruction">
+        <p class="map-instruction" tabindex="-1" data-autofocus>
             Choose a world and begin your adventure!
         </p>
 
@@ -1099,27 +2401,25 @@ function showCategories() {
 
             ${Object.keys(categories).map(key => {
 
-                const category = categories[key];
+                const label = splitLabel(categories[key].name);
 
                 return `
 
                     <button
-                        class="quest-world world-${key}"
-                        data-category="${key}"
+                        class="quest-world world-${escapeHTML(key)}"
+                        data-category="${escapeHTML(key)}"
                     >
 
                         <div class="world-icon">
-                            ${category.name.split(" ")[0]}
+                            ${label.icon}
                         </div>
 
                         <div class="world-name">
-                            ${category.name.substring(
-                                category.name.indexOf(" ") + 1
-                            )}
+                            ${escapeHTML(label.text)}
                         </div>
 
                         <div class="world-xp">
-                            ⭐ ${player.categoryXP[key]} XP
+                            ⭐ ${player.categoryXP[key] || 0} XP
                         </div>
 
                         <div class="world-action">
@@ -1132,6 +2432,29 @@ function showCategories() {
 
             }).join("")}
 
+            ${missedCount > 0 ? `
+
+                <button
+                    class="quest-world world-practice"
+                    id="practice-button"
+                >
+
+                    <div class="world-icon">🔁</div>
+
+                    <div class="world-name">Practice Mistakes</div>
+
+                    <div class="world-xp">
+                        ${missedCount} to review
+                    </div>
+
+                    <div class="world-action">
+                        START PRACTICE →
+                    </div>
+
+                </button>
+
+            ` : ""}
+
         </div>
 
 
@@ -1139,62 +2462,64 @@ function showCategories() {
             👤 BACK TO PROFILE
         </button>
 
-    `;
+    `);
 
 
-    document
-        .querySelectorAll("[data-category]")
-        .forEach(button => {
+    document.querySelectorAll("[data-category]").forEach(button => {
 
-            button.addEventListener("click", function () {
+        button.addEventListener("click", function () {
 
-                chooseCategory(
-                    this.dataset.category
-                );
-
-            });
-
+            chooseCategory(this.dataset.category);
         });
+    });
 
-
-    document
-        .getElementById("back-profile")
-        .addEventListener(
-            "click",
-            showProfile
-        );
+    on("practice-button", startPractice);
+    on("back-profile", showProfile);
 }
 
 
 // ==========================================
-// START QUEST
+// QUEST MODE SCREEN
 // ==========================================
 
 function chooseCategory(category) {
+
+    if (!categories[category]) return;
 
     currentCategory = category;
 
     showQuestModes();
 }
 
-    
+
+// The questions a quest mode can draw from in the current world
+function questPool(modeKey, categoryKey = currentCategory) {
+
+    const mode = questModes[modeKey];
+
+    return categories[categoryKey].questions.filter(
+        q => mode.difficulties.includes(q.difficulty)
+    );
+}
+
+
 function showQuestModes() {
 
-    const card = document.getElementById("game-card");
+    screen = "modes";
 
-    const categoryName =
-        categories[currentCategory].name;
+    const categoryName = categories[currentCategory].name;
+    const label = splitLabel(categoryName);
 
-    card.innerHTML = `
+    render(`
 
         <div class="quest-mode-header">
 
             <div class="quest-mode-icon">
-                ${categoryName.split(" ")[0]}
+                ${label.icon}
             </div>
 
-            <h2>
-                ${categoryName}
+            <h2 tabindex="-1" data-autofocus>
+                ${escapeHTML(categoryName)}
             </h2>
 
             <p>
@@ -1206,100 +2531,64 @@ function showQuestModes() {
 
         <div class="quest-modes">
 
-            <button
-                class="quest-mode rookie-mode"
-                data-mode="rookie"
-            >
+            ${Object.keys(questModes).map(modeKey => {
 
-                <div class="mode-icon">
-                    🟢
-                </div>
+                const mode = questModes[modeKey];
+                const pool = questPool(modeKey);
+                const count = Math.min(mode.questions, pool.length);
 
-                <div class="mode-content">
+                // The most XP this quest could possibly give
+                const maxXP = pool
+                    .map(q => getQuestionXP(q, modeKey))
+                    .sort((a, b) => b - a)
+                    .slice(0, count)
+                    .reduce((total, xp) => total + xp, 0);
 
-                    <strong>
-                        ROOKIE QUEST
-                    </strong>
+                const best = player.bestStars[currentCategory + ":" + modeKey] || 0;
 
-                    <span>
-                        5 easy questions
-                    </span>
+                return `
 
-                    <span>
-                        ⭐ Up to 500 XP
-                    </span>
+                    <button
+                        class="quest-mode ${mode.className}-mode"
+                        data-mode="${modeKey}"
+                        ${count === 0 ? "disabled" : ""}
+                    >
 
-                </div>
+                        <div class="mode-icon">
+                            ${mode.icon}
+                        </div>
 
-                <div class="mode-arrow">
-                    →
-                </div>
+                        <div class="mode-content">
 
-            </button>
+                            <strong>
+                                ${mode.title}
+                            </strong>
 
+                            <span>
+                                ${count} ${mode.label} questions
+                            </span>
 
-            <button
-                class="quest-mode challenge-mode"
-                data-mode="challenge"
-            >
+                            <span>
+                                ⭐ Up to ${maxXP.toLocaleString("en-US")} XP
+                            </span>
 
-                <div class="mode-icon">
-                    🟡
-                </div>
+                            ${best ? `
+                                <span aria-label="Your best: ${best} out of 3 stars">
+                                    Your best: ${starString(best)}
+                                </span>
+                            ` : ""}
 
-                <div class="mode-content">
+                        </div>
 
-                    <strong>
-                        CHALLENGE QUEST
-                    </strong>
+                        <div class="mode-arrow">
+                            →
+                        </div>
 
-                    <span>
-                        10 mixed questions
-                    </span>
+                    </button>
 
-                    <span>
-                        ⭐ Up to 1,500 XP
-                    </span>
+                `;
 
-                </div>
-
-                <div class="mode-arrow">
-                    →
-                </div>
-
-            </button>
-
-
-            <button
-                class="quest-mode championship-mode"
-                data-mode="championship"
-            >
-
-                <div class="mode-icon">
-                    🔴
-                </div>
-
-                <div class="mode-content">
-
-                    <strong>
-                        CHAMPIONSHIP
-                    </strong>
-
-                    <span>
-                        15 challenging questions
-                    </span>
-
-                    <span>
-                        ⭐ Up to 3,000 XP
-                    </span>
-
-                </div>
-
-                <div class="mode-arrow">
-                    →
-                </div>
-
-            </button>
+            }).join("")}
 
         </div>
 
@@ -1308,79 +2597,204 @@ function showQuestModes() {
             🗺️ BACK TO MAP
         </button>
 
-    `;
+    `);
 
 
-    document
-        .querySelectorAll("[data-mode]")
-        .forEach(button => {
+    document.querySelectorAll("[data-mode]").forEach(button => {
 
-            button.addEventListener(
-                "click",
-                function () {
+        button.addEventListener("click", function () {
 
-                    startQuestMode(
-                        this.dataset.mode
-                    );
-
-                }
-            );
-
+            startQuestMode(this.dataset.mode);
         });
+    });
 
-
-    document
-        .getElementById("back-to-map")
-        .addEventListener(
-            "click",
-            showCategories
-        );
+    on("back-to-map", showCategories);
 }
+
+
+// ==========================================
+// STARTING A QUEST
+// ==========================================
+
+function pickQuestions(pool, modeKey, count) {
+
+    const tier = difficulty => shuffle(pool.filter(q => q.difficulty === difficulty));
+
+    const easy = tier("easy");
+    const medium = tier("medium");
+    const hard = tier("hard");
+
+    let ordered;
+
+    if (modeKey === "rookie") {
+
+        ordered = easy;
+
+    } else if (modeKey === "challenge") {
+
+        // "Mixed": up to 40% medium questions, the rest easy
+        const someMedium = medium.splice(0, Math.ceil(count * 0.4));
+
+        ordered = [...someMedium, ...easy, ...medium];
+
+    } else {
+
+        // Championship: hardest questions first, then fill up
+        ordered = [...hard, ...medium, ...easy];
+    }
+
+    return shuffle(ordered.slice(0, count));
+}
+
+
+function beginQuest(questions) {
+
+    questScore = 0;
+    questCorrect = 0;
+    currentQuestionIndex = 0;
+    questMissedIds = [];
+    qState = null;
+    lastFeedback = null;
+    lastResult = null;
+    questQuestions = questions;
+
+    showQuestion();
+}
+
+
+function startQuestMode(mode) {
+
+    if (!questModes[mode] || !categories[currentCategory]) return;
+
+    currentQuestMode = mode;
+
+    const pool = questPool(mode);
+
+    beginQuest(pickQuestions(pool, mode, questModes[mode].questions));
+}
+
+
+function startPractice() {
+
+    const pool = player.missed
+        .map(id => questionById[id])
+        .filter(Boolean);
+
+    if (pool.length === 0) {
+
+        showCategories();
+
+        return;
+    }
+
+    currentCategory = "practice";
+    currentQuestMode = "practice";
+
+    beginQuest(shuffle([...pool]).slice(0, PRACTICE_SIZE));
+}
+
 
 // ==========================================
 // SHOW QUESTION
 // ==========================================
 
-function showQuestion() {
+function newQuestionState(question) {
 
-    const card = document.getElementById("game-card");
+    return {
+        question: question,
+        answers: buildAnswers(question),
+        eliminated: new Set(),   // removed by the hint
+        tried: new Set(),        // wrong answers already picked
+        hintUsed: false,
+        wrongCount: 0,
+        locked: false,
+        firstShow: true
+    };
+}
+
+
+function showQuestion() {
 
     if (currentQuestionIndex >= questQuestions.length) {
 
-        endGame();
+        finishQuest();
 
         return;
     }
 
-    currentQuestion =
-        questQuestions[currentQuestionIndex];
+    screen = "question";
 
-    card.innerHTML = `
+    currentQuestion = questQuestions[currentQuestionIndex];
+
+    if (!qState || qState.question !== currentQuestion) {
+        qState = newQuestionState(currentQuestion);
+    }
+
+    const total = questQuestions.length;
+
+    render(`
 
         <p class="category-name">
-            ${categories[currentCategory].name}
+            ${escapeHTML(categoryLabel(currentCategory))}
         </p>
+
+        <div
+            class="lq-quest-progress"
+            role="progressbar"
+            aria-label="Quest progress"
+            aria-valuemin="0"
+            aria-valuemax="${total}"
+            aria-valuenow="${currentQuestionIndex}"
+        >
+            <span style="width:${percent(currentQuestionIndex, total)}%"></span>
+        </div>
 
         <p>
             Question ${currentQuestionIndex + 1}
-            of ${questQuestions.length}
+            of ${total}
         </p>
 
-        <h2 class="question-text">
-            ${currentQuestion.question}
+        <h2
+            class="question-text"
+            id="lq-question-text"
+            tabindex="-1"
+            data-autofocus
+        >
+            ${escapeHTML(currentQuestion.question)}
         </h2>
 
-        <div class="answers">
+        <div
+            class="answers"
+            role="group"
+            aria-labelledby="lq-question-text"
+        >
 
-            ${currentQuestion.answers.map(
-                (answer, index) => `
+            ${qState.answers.map((answer, index) => `
 
-                <button data-answer="${index}">
-                    ${answer}
+                <button class="lq-answer" data-answer="${index}">
+                    <span class="lq-key" aria-hidden="true">${index + 1}</span>
+                    <span>${escapeHTML(answer.text)}</span>
                 </button>
 
-            `
-            ).join("")}
+            `).join("")}
+
+        </div>
+
+        <p class="lq-message" id="lq-message"></p>
+
+        <div class="lq-tools">
+
+            ${speechSupported() ? `
+                <button class="lq-tool" id="lq-read">🔊 Read aloud</button>
+            ` : ""}
+
+            <button
+                class="lq-tool"
+                id="lq-hint"
+                ${qState.answers.length < 3 ? "disabled" : ""}
+            >💡 Hint</button>
+
+            <button class="lq-tool" id="lq-break">🌿 Break</button>
 
         </div>
 
@@ -1388,222 +2802,310 @@ function showQuestion() {
             Quest XP: ${questScore}
         </p>
 
-    `;
+        <p class="lq-note">
+            Tip: press the number keys ${
+                qState.answers.length > 1 ? "1–" + qState.answers.length : "1"
+            } to answer.
+        </p>
 
-    document
-        .querySelectorAll("[data-answer]")
-        .forEach(button => {
+    `);
 
-            button.addEventListener("click", function () {
+    document.querySelectorAll("[data-answer]").forEach(button => {
 
-                checkAnswer(
-                    Number(this.dataset.answer)
-                );
+        button.addEventListener("click", function () {
 
-            });
-
+            handleAnswer(Number(this.dataset.answer));
         });
-}
-function startQuestMode(mode) {
-
-    currentQuestMode = mode;
-
-    const settings =
-        questModes[mode];
-
-    questScore = 0;
-    questCorrect = 0;
-    currentQuestionIndex = 0;
-
-
-    const allQuestions =
-        [...categories[currentCategory].questions];
-
-
-    let selectedQuestions = [];
-
-
-    if (mode === "rookie") {
-
-        selectedQuestions =
-            allQuestions
-                .filter(q => q.difficulty === "easy");
-
-    }
-
-
-    else if (mode === "challenge") {
-
-        selectedQuestions =
-            allQuestions
-                .filter(q =>
-                    q.difficulty === "easy" ||
-                    q.difficulty === "medium"
-                );
-
-    }
-
-
-    else {
-
-        selectedQuestions =
-            [...allQuestions];
-
-    }
-
-
-    selectedQuestions =
-        shuffle(selectedQuestions);
-
-
-    questQuestions =
-        selectedQuestions.slice(
-            0,
-            Math.min(
-                settings.questions,
-                selectedQuestions.length
-            )
-        );
-
-
-    showQuestion();
-}
-
-// ==========================================
-// CHECK ANSWER
-// ==========================================
-
-function checkAnswer(selected) {
-
-    const buttons =
-        document.querySelectorAll("[data-answer]");
-
-    buttons.forEach(button => {
-
-        button.disabled = true;
-
     });
 
-    const correct =
-        selected === currentQuestion.correct;
+    on("lq-read", readQuestionAloud);
+    on("lq-hint", useHint);
+    on("lq-break", showBreak);
+
+    refreshAnswerButtons();
+
+    if (qState.firstShow) {
+
+        qState.firstShow = false;
+
+        if (settings.autoRead) readQuestionAloud();
+    }
+}
+
+
+// Keeps the answer buttons in sync with what the player has already tried
+function refreshAnswerButtons() {
+
+    if (!qState) return;
+
+    document.querySelectorAll("[data-answer]").forEach(button => {
+
+        const index = Number(button.dataset.answer);
+        const eliminated = qState.eliminated.has(index);
+        const tried = qState.tried.has(index);
+
+        button.classList.toggle("lq-eliminated", eliminated);
+        button.classList.toggle("lq-tried", tried);
+        button.disabled = eliminated || tried || qState.locked;
+    });
+
+    const hint = document.getElementById("lq-hint");
+
+    if (hint) {
+        hint.disabled = qState.hintUsed || qState.locked || qState.answers.length < 3;
+    }
+}
+
+
+function readQuestionAloud() {
+
+    if (!qState) return;
+
+    const choices = qState.answers
+        .map((answer, index) => ({ answer, index }))
+        .filter(item => !qState.eliminated.has(item.index) && !qState.tried.has(item.index))
+        .map(item => "Choice " + (item.index + 1) + ": " + item.answer.text + ".")
+        .join(" ");
+
+    speak(currentQuestion.question + " " + choices);
+}
+
+
+// ==========================================
+// HINTS AND SECOND CHANCES
+// We never take XP away for asking for help.
+// ==========================================
+
+function useHint() {
+
+    if (!qState || qState.locked || qState.hintUsed || qState.answers.length < 3) return;
+
+    const wrongOnes = qState.answers
+        .map((answer, index) => ({ answer, index }))
+        .filter(item =>
+            !item.answer.correct &&
+            !qState.tried.has(item.index) &&
+            !qState.eliminated.has(item.index)
+        );
+
+    // Always leave one wrong answer so the hint narrows things down without giving it away
+    const toRemove = shuffle(wrongOnes).slice(0, Math.max(0, Math.min(2, wrongOnes.length - 1)));
+
+    toRemove.forEach(item => qState.eliminated.add(item.index));
+
+    qState.hintUsed = true;
+    player.hintsUsed++;
+
+    savePlayer();
+    refreshAnswerButtons();
+
+    const message = document.getElementById("lq-message");
+
+    if (message) message.textContent = "💡 Hint: some wrong answers were crossed out.";
+
+    announce("Hint used. Some wrong answers were crossed out.");
+
+    const firstOpen = document.querySelector("[data-answer]:not(:disabled)");
+
+    if (firstOpen) firstOpen.focus();
+}
+
+
+function handleAnswer(index) {
+
+    if (!qState || qState.locked) return;
+
+    const choice = qState.answers[index];
+
+    if (!choice || qState.eliminated.has(index) || qState.tried.has(index)) return;
+
+    stopSpeaking();
+
+    if (choice.correct) {
+
+        resolveQuestion(true);
+
+        return;
+    }
+
+    qState.wrongCount++;
+    qState.tried.add(index);
+
+    // First mistake: offer another try (unless a hint already helped)
+    if (settings.secondChances && qState.wrongCount === 1 && !qState.hintUsed) {
+
+        playSound("retry");
+        refreshAnswerButtons();
+
+        const message = document.getElementById("lq-message");
+
+        if (message) message.textContent = "Not this one. Try again, you can do it!";
+
+        announce("Not this one. Try again, you can do it!");
+
+        const firstOpen = document.querySelector("[data-answer]:not(:disabled)");
+
+        if (firstOpen) firstOpen.focus();
+
+        return;
+    }
+
+    resolveQuestion(false);
+}
+
+
+// ==========================================
+// SCORING AN ANSWER
+// ==========================================
+
+function resolveQuestion(correct) {
+
+    qState.locked = true;
+
+    const q = currentQuestion;
+    const categoryKey = q.category;
+    const levelBefore = getLevel(player.xp);
+    const stats = ensureStats(categoryKey);
+
+    let xp = 0;
+    let secondTry = false;
 
     player.questionsAnswered++;
+    stats.answered++;
 
     if (correct) {
 
+        secondTry = qState.wrongCount > 0;
+
+        xp = getQuestionXP(q);
+
+        if (secondTry) {
+            xp = Math.round(xp / 2);
+            player.secondChanceWins++;
+        }
+
         player.correctAnswers++;
+        stats.correct++;
 
         player.currentStreak++;
 
-        if (
-            player.currentStreak >
-            player.bestStreak
-        ) {
-
-            player.bestStreak =
-                player.currentStreak;
-
+        if (player.currentStreak > player.bestStreak) {
+            player.bestStreak = player.currentStreak;
         }
 
-        const xp =
-    getQuestionXP(currentQuestion);
-
         player.xp += xp;
-
-        player.categoryXP[currentCategory] += xp;
+        player.categoryXP[categoryKey] = (player.categoryXP[categoryKey] || 0) + xp;
 
         questScore += xp;
-
         questCorrect++;
+
+        // Answered it right, so it no longer needs practice
+        player.missed = player.missed.filter(id => id !== q.id);
 
     } else {
 
         player.currentStreak = 0;
 
+        if (!player.missed.includes(q.id)) player.missed.push(q.id);
+
+        questMissedIds.push(q.id);
     }
 
-    player.level = getLevel(player.xp);
+    const levelAfter = getLevel(player.xp);
+
+    player.level = levelAfter;
+
+    lastFeedback = {
+        correct: correct,
+        secondTry: secondTry,
+        xp: xp,
+        streak: player.currentStreak,
+        title: pick(correct ? CORRECT_TITLES : MISS_TITLES)
+    };
+
+    playSound(correct ? "correct" : "miss");
 
     savePlayer();
 
-    checkAchievements();
+    checkAchievements({});
 
-    showFeedback(correct);
-}
-function getQuestionXP(question) {
+    if (levelAfter > levelBefore) {
 
-    if (
-        currentQuestMode === "championship"
-    ) {
+        showToast("⬆️ LEVEL UP!", "Level " + levelAfter, getRank(levelAfter));
 
-        if (question.difficulty === "medium") {
-            return 200;
-        }
-
-        if (question.difficulty === "easy") {
-            return 150;
-        }
-
-        return 250;
+        playSound("levelup");
     }
 
-
-    if (
-        currentQuestMode === "challenge"
-    ) {
-
-        if (question.difficulty === "medium") {
-            return 150;
-        }
-
-        return 100;
-    }
-
-
-    return 100;
+    showFeedback();
 }
+
 
 // ==========================================
 // FEEDBACK
 // ==========================================
 
-function showFeedback(correct) {
+function showFeedback() {
 
-    const card = document.getElementById("game-card");
+    screen = "feedback";
 
-    if (correct) {
+    const f = lastFeedback;
+    const q = currentQuestion;
 
-        card.innerHTML = `
+    const correctText = qState
+        ? qState.answers.find(answer => answer.correct).text
+        : q.answers[q.correct];
+
+    const readButton = speechSupported()
+        ? '<div class="lq-tools"><button class="lq-tool" id="lq-read-feedback">🔊 Read aloud</button></div>'
+        : "";
+
+    if (f.correct) {
+
+        render(`
 
             <div class="feedback-correct">
 
                 <div class="feedback-icon">
-                    🎉
+                    ${f.secondTry ? "💪" : "🎉"}
                 </div>
 
                 <h2>
-                    CORRECT!
+                    ${escapeHTML(f.title)}
                 </h2>
 
                 <div class="xp-animation">
-    +${getQuestionXP(currentQuestion)} XP
-</div>
+                    +${f.xp} XP
+                </div>
+
+                ${f.secondTry ? `
+                    <p class="lq-note">
+                        Second try earns half XP. Great persistence!
+                    </p>
+                ` : ""}
+
+                ${f.streak >= 3 ? `
+                    <p class="lq-note">
+                        🔥 ${f.streak} in a row!
+                    </p>
+                ` : ""}
 
                 <p>
-                    ${currentQuestion.explanation}
+                    ${escapeHTML(q.explanation)}
                 </p>
 
-                <button id="continue-button">
+                ${readButton}
+
+                <button id="continue-button" data-autofocus>
                     ➡️ CONTINUE
                 </button>
 
             </div>
 
-        `;
+        `);
 
     } else {
 
-        card.innerHTML = `
+        render(`
 
             <div class="feedback-wrong">
 
@@ -1612,7 +3114,7 @@ function showFeedback(correct) {
                 </div>
 
                 <h2>
-                    NOT QUITE!
+                    ${escapeHTML(f.title)}
                 </h2>
 
                 <p>
@@ -1620,65 +3122,106 @@ function showFeedback(correct) {
                 </p>
 
                 <h3>
-                    ${currentQuestion.answers[currentQuestion.correct]}
+                    ${escapeHTML(correctText)}
                 </h3>
 
                 <p>
-                    ${currentQuestion.explanation}
+                    ${escapeHTML(q.explanation)}
                 </p>
 
-                <button id="continue-button">
+                <p class="lq-note">
+                    We saved this one so you can practice it later.
+                </p>
+
+                ${readButton}
+
+                <button id="continue-button" data-autofocus>
                     ➡️ CONTINUE
                 </button>
 
             </div>
 
-        `;
-
+        `);
     }
 
-    document
-        .getElementById("continue-button")
-        .addEventListener(
-            "click",
-            nextQuestion
-        );
+    const spoken = f.correct
+        ? f.title + " Plus " + f.xp + " X P. " + q.explanation
+        : "The correct answer was " + correctText + ". " + q.explanation;
+
+    on("continue-button", nextQuestion);
+
+    on("lq-read-feedback", () => speak(spoken));
+
+    announce(spoken);
+
+    if (settings.autoRead) speak(spoken);
 }
 
-
-// ==========================================
-// NEXT QUESTION
-// ==========================================
 
 function nextQuestion() {
 
     currentQuestionIndex++;
+
+    qState = null;
 
     showQuestion();
 }
 
 
 // ==========================================
-// END QUEST
+// END OF QUEST
 // ==========================================
 
-function endGame() {
+function getStars(percentage) {
+
+    if (percentage >= 90) return 3;
+    if (percentage >= 60) return 2;
+
+    return 1;    // finishing a quest always earns at least one star
+}
+
+
+function finishQuest() {
 
     player.questsCompleted++;
 
-    checkAchievements();
+    const total = questQuestions.length;
+    const percentage = percent(questCorrect, total);
+    const stars = getStars(percentage);
+    const starKey = currentCategory + ":" + currentQuestMode;
+    const previousBest = player.bestStars[starKey] || 0;
+
+    if (stars > previousBest) player.bestStars[starKey] = stars;
+
+    checkAchievements({
+        questCompleted: true,
+        category: currentCategory,
+        perfect: total > 0 && questCorrect === total
+    });
 
     savePlayer();
 
-    const card =
-        document.getElementById("game-card");
+    lastResult = {
+        total: total,
+        correct: questCorrect,
+        percentage: percentage,
+        stars: stars,
+        xp: questScore,
+        newBest: stars > previousBest && previousBest > 0,
+        missedCount: questMissedIds.length
+    };
 
-    const percentage =
-        Math.round(
-            (questCorrect / questQuestions.length) * 100
-        );
+    showQuestResult();
+}
 
-    card.innerHTML = `
+
+function showQuestResult() {
+
+    screen = "result";
+
+    const r = lastResult;
+
+    render(`
 
         <div class="final-result">
 
@@ -1686,7 +3229,7 @@ function endGame() {
                 🏆
             </div>
 
-            <h2>
+            <h2 tabindex="-1" data-autofocus>
                 QUEST COMPLETE!
             </h2>
 
@@ -1694,19 +3237,32 @@ function endGame() {
                 Great work, ${escapeHTML(player.name)}!
             </p>
 
+            <div
+                class="lq-stars"
+                role="img"
+                aria-label="${r.stars} out of 3 stars"
+            >
+                ${starString(r.stars)}
+            </div>
+
+            <p>
+                ${RESULT_MESSAGES[r.stars]}
+                ${r.newBest ? "That's a new personal best!" : ""}
+            </p>
+
             <div class="final-xp">
-                +${questScore} XP
+                +${r.xp} XP
             </div>
 
             <h3>
-                ${questCorrect}
+                ${r.correct}
                 /
-                ${questQuestions.length}
+                ${r.total}
                 Correct
             </h3>
 
             <p>
-                Accuracy: ${percentage}%
+                Accuracy: ${r.percentage}%
             </p>
 
             <p>
@@ -1718,27 +3274,71 @@ function endGame() {
                 🎮 ANOTHER QUEST
             </button>
 
+            ${r.missedCount > 0 ? `
+                <button id="practice-missed">
+                    🔁 PRACTICE THE ONES I MISSED
+                </button>
+            ` : ""}
+
             <button id="view-profile">
                 👤 VIEW PROFILE
             </button>
 
         </div>
 
-    `;
+    `);
 
-    document
-        .getElementById("another-quest")
-        .addEventListener(
-            "click",
-            showCategories
-        );
+    on("another-quest", showCategories);
+    on("practice-missed", startPractice);
+    on("view-profile", showProfile);
 
-    document
-        .getElementById("view-profile")
-        .addEventListener(
-            "click",
-            showProfile
-        );
+    playSound("complete");
+
+    if (r.stars >= 2) launchConfetti();
+
+    announce(
+        "Quest complete. " + r.correct + " out of " + r.total +
+        " correct. " + r.stars + " out of 3 stars."
+    );
+}
+
+
+// ==========================================
+// BREATHING BREAK
+// ==========================================
+
+function showBreak() {
+
+    screen = "break";
+
+    render(`
+
+        <div class="lq-break">
+
+            <h2 tabindex="-1" data-autofocus>🌿 Take a break</h2>
+
+            <p>Your quest is paused. Your XP is saved. Take all the time you need.</p>
+
+            <div class="lq-breathe" aria-hidden="true">Breathe</div>
+
+            <p>Breathe in for 4 seconds, then out for 6 seconds.</p>
+
+            <button id="resume-quest">▶️ I'M READY</button>
+
+            <button id="leave-quest">🗺️ LEAVE THIS QUEST</button>
+
+        </div>
+
+    `);
+
+    on("resume-quest", showQuestion);
+
+    on("leave-quest", () => {
+
+        qState = null;
+
+        showCategories();
+    });
 }
 
 
@@ -1746,67 +3346,37 @@ function endGame() {
 // ACHIEVEMENT SYSTEM
 // ==========================================
 
-function checkAchievements() {
+function checkAchievements(context = {}) {
 
-    unlockAchievement(
-        "first_steps",
-        player.questionsAnswered >= 1
-    );
+    let unlockedSomething = false;
 
-    unlockAchievement(
-        "sharp_shooter",
-        player.bestStreak >= 5
-    );
+    Object.keys(achievements).forEach(id => {
 
-    unlockAchievement(
-        "on_fire",
-        player.bestStreak >= 10
-    );
+        if (player.achievements.includes(id)) return;
 
-    unlockAchievement(
-        "world_traveler",
-        currentCategory === "world" &&
-        currentQuestionIndex >= questQuestions.length
-    );
+        let earned = false;
 
-    unlockAchievement(
-        "life_ready",
-        currentCategory === "life" &&
-        currentQuestionIndex >= questQuestions.length
-    );
+        try {
+            earned = achievements[id].test(player, context);
+        } catch (error) {
+            console.error("Achievement check failed for", id, error);
+        }
 
-    unlockAchievement(
-        "brainiac",
-        player.categoryXP.brain >= 1000
-    );
+        if (earned) {
 
-    unlockAchievement(
-        "quest_master",
-        player.questsCompleted >= 10
-    );
+            player.achievements.push(id);
 
-    unlockAchievement(
-        "legend",
-        getLevel(player.xp) >= 10
-    );
+            showAchievementUnlocked(achievements[id]);
 
-    savePlayer();
-}
+            unlockedSomething = true;
+        }
+    });
 
+    if (unlockedSomething) {
 
-function unlockAchievement(id, condition) {
+        playSound("achievement");
 
-    if (
-        condition &&
-        !player.achievements.includes(id)
-    ) {
-
-        player.achievements.push(id);
-
-        showAchievementUnlocked(
-            achievements[id]
-        );
-
+        savePlayer();
     }
 }
 
@@ -1817,52 +3387,43 @@ function unlockAchievement(id, condition) {
 
 function showAchievements() {
 
-    const card =
-        document.getElementById("game-card");
+    screen = "achievements";
 
-    card.innerHTML = `
+    const ids = Object.keys(achievements);
+    const unlockedCount = ids.filter(id => player.achievements.includes(id)).length;
 
-        <h2>🏆 Achievements</h2>
+    render(`
+
+        <h2 tabindex="-1" data-autofocus>🏆 Achievements</h2>
 
         <p>
-            Keep playing to unlock them all!
+            ${unlockedCount} of ${ids.length} unlocked. Keep playing to unlock them all!
         </p>
 
         <div class="profile-categories">
 
-            ${Object.keys(achievements).map(id => {
+            ${ids.map(id => {
 
-                const achievement =
-                    achievements[id];
-
-                const unlocked =
-                    player.achievements.includes(id);
+                const achievement = achievements[id];
+                const unlocked = player.achievements.includes(id);
 
                 return `
 
                     <div
                         class="profile-category"
-                        style="
-                            opacity:${unlocked ? "1" : "0.45"};
-                        "
+                        style="opacity:${unlocked ? "1" : "0.6"};"
                     >
 
-                        <div
-                            class="profile-category-title"
-                        >
-                            ${achievement.name}
+                        <div class="profile-category-title">
+                            ${escapeHTML(achievement.name)}
                         </div>
 
-                        <div
-                            class="profile-category-xp"
-                        >
-                            ${unlocked
-                                ? "✅ UNLOCKED"
-                                : "🔒 LOCKED"}
+                        <div class="profile-category-xp">
+                            ${unlocked ? "✅ UNLOCKED" : "🔒 LOCKED"}
                         </div>
 
                         <small>
-                            ${achievement.description}
+                            ${escapeHTML(achievement.description)}
                         </small>
 
                     </div>
@@ -1877,120 +3438,479 @@ function showAchievements() {
             👤 BACK TO PROFILE
         </button>
 
-    `;
+    `);
 
-    document
-        .getElementById(
-            "back-profile-achievements"
-        )
-        .addEventListener(
-            "click",
-            showProfile
-        );
+    on("back-profile-achievements", showProfile);
 }
 
 
 // ==========================================
-// ACHIEVEMENT POPUP
+// PROGRESS REPORT (for students, teachers, and families)
 // ==========================================
 
-function showAchievementUnlocked(achievement) {
+function showReport() {
 
-    const popup =
-        document.createElement("div");
+    screen = "report";
 
-    popup.style.position = "fixed";
-    popup.style.left = "50%";
-    popup.style.top = "30px";
-    popup.style.transform = "translateX(-50%)";
-    popup.style.zIndex = "9999";
-    popup.style.background = "#ffffff";
-    popup.style.color = "#172033";
-    popup.style.padding = "25px 35px";
-    popup.style.borderRadius = "20px";
-    popup.style.boxShadow =
-        "0 20px 60px rgba(0,0,0,0.35)";
-    popup.style.textAlign = "center";
-    popup.style.maxWidth = "90%";
-    popup.style.animation =
-        "cardAppear 0.4s ease";
+    const totalAnswered = player.questionsAnswered;
+    const accuracy = percent(player.correctAnswers, totalAnswered);
+    const level = getLevel(player.xp);
 
-    popup.innerHTML = `
+    const keys = Object.keys(categories);
 
-        <div style="
-            font-size:18px;
-            font-weight:800;
-            color:#7c3aed;
-        ">
-            🎉 ACHIEVEMENT UNLOCKED!
+    // Suggest one world to revisit: the lowest accuracy with a fair number of answers
+    const needsPractice = keys
+        .map(key => ({ key, stats: getStats(key) }))
+        .filter(item => item.stats.answered >= 3 && percent(item.stats.correct, item.stats.answered) < 70)
+        .sort((a, b) =>
+            percent(a.stats.correct, a.stats.answered) - percent(b.stats.correct, b.stats.answered)
+        )[0];
+
+    const trackedAnswers = keys.reduce((sum, key) => sum + getStats(key).answered, 0);
+
+    render(`
+
+        <h2 tabindex="-1" data-autofocus>📈 ${escapeHTML(player.name)}'s Progress</h2>
+
+        <div class="lq-stat-grid">
+
+            <div class="lq-stat"><b>${level}</b>Level</div>
+            <div class="lq-stat"><b>${player.xp}</b>Total XP</div>
+            <div class="lq-stat"><b>${totalAnswered}</b>Questions</div>
+            <div class="lq-stat"><b>${accuracy}%</b>Accuracy</div>
+            <div class="lq-stat"><b>${player.bestStreak}</b>Best streak</div>
+            <div class="lq-stat"><b>${player.questsCompleted}</b>Quests done</div>
+
         </div>
 
-        <div style="
-            font-size:28px;
-            font-weight:900;
-            margin-top:8px;
-        ">
-            ${achievement.name}
+        <h3>By world</h3>
+
+        <div>
+
+            ${keys.map(key => {
+
+                const stats = getStats(key);
+                const pct = percent(stats.correct, stats.answered);
+
+                return `
+
+                    <div class="lq-report-row">
+
+                        <div>${escapeHTML(categories[key].name)}</div>
+
+                        <div
+                            class="lq-report-bar"
+                            role="img"
+                            aria-label="${escapeHTML(splitLabel(categories[key].name).text)}: ${pct}% correct"
+                        >
+                            <span style="width:${pct}%"></span>
+                        </div>
+
+                        <div>
+                            ${stats.answered > 0
+                                ? stats.correct + "/" + stats.answered + " • " + pct + "%"
+                                : "Not played yet"}
+                        </div>
+
+                    </div>
+
+                `;
+
+            }).join("")}
+
         </div>
 
-        <div style="
-            margin-top:8px;
-            color:#64748b;
-        ">
-            ${achievement.description}
-        </div>
+        ${needsPractice ? `
+            <p class="lq-note">
+                💡 A great next step: play more of
+                <strong>${escapeHTML(splitLabel(categories[needsPractice.key].name).text)}</strong>
+                to build confidence.
+            </p>
+        ` : ""}
 
-    `;
+        ${trackedAnswers < totalAnswered ? `
+            <p class="lq-note">
+                Detailed world-by-world results start counting from this update.
+            </p>
+        ` : ""}
 
-    document.body.appendChild(popup);
+        <button id="download-report">⬇️ DOWNLOAD REPORT (CSV)</button>
 
-    setTimeout(() => {
+        <button id="print-report">🖨️ PRINT</button>
 
-        popup.remove();
+        <button id="back-profile-report">👤 BACK TO PROFILE</button>
 
-    }, 3500);
+    `);
+
+    on("download-report", downloadReport);
+    on("print-report", () => window.print());
+    on("back-profile-report", showProfile);
+}
+
+
+function csvCell(value) {
+
+    if (typeof value === "number") return String(value);
+
+    let text = String(value);
+
+    // Stops spreadsheet programs from running a name like "=SUM(...)" as a formula
+    if (/^[=+\-@\t\r]/.test(text)) text = "'" + text;
+
+    if (/[",\r\n]/.test(text)) text = '"' + text.replace(/"/g, '""') + '"';
+
+    return text;
+}
+
+
+function downloadFile(filename, content, type) {
+
+    const blob = new Blob([content], { type: type });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    link.href = url;
+    link.download = filename;
+
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+
+function downloadReport() {
+
+    const date = new Date().toISOString().slice(0, 10);
+
+    const rows = [[
+        "Report date", "Player", "World", "Questions answered", "Correct", "Accuracy (%)", "XP earned"
+    ]];
+
+    Object.keys(categories).forEach(key => {
+
+        const stats = getStats(key);
+
+        rows.push([
+            date,
+            player.name,
+            splitLabel(categories[key].name).text,
+            stats.answered,
+            stats.correct,
+            stats.answered > 0 ? percent(stats.correct, stats.answered) : "",
+            player.categoryXP[key] || 0
+        ]);
+    });
+
+    rows.push([
+        date,
+        player.name,
+        "All worlds",
+        player.questionsAnswered,
+        player.correctAnswers,
+        player.questionsAnswered > 0 ? percent(player.correctAnswers, player.questionsAnswered) : "",
+        player.xp
+    ]);
+
+    const csv = "\uFEFF" + rows.map(row => row.map(csvCell).join(",")).join("\r\n");
+
+    const safeName = player.name.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "") || "player";
+
+    downloadFile(safeName + "-life-quest-report.csv", csv, "text/csv;charset=utf-8");
 }
 
 
 // ==========================================
-// UTILITY FUNCTIONS
+// SETTINGS SCREEN
 // ==========================================
 
-function shuffle(array) {
+function openSettings() {
 
-    for (
-        let i = array.length - 1;
-        i > 0;
-        i--
-    ) {
+    if (screen === "settings") {
 
-        const j =
-            Math.floor(
-                Math.random() * (i + 1)
-            );
+        closeSettings();
 
-        [
-            array[i],
-            array[j]
-        ] = [
-            array[j],
-            array[i]
-        ];
-
+        return;
     }
 
-    return array;
+    settingsReturnScreen = screen;
+
+    showSettings();
 }
 
 
-function escapeHTML(text) {
+function closeSettings() {
 
-    return String(text)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+    restoreScreen(settingsReturnScreen);
+}
+
+
+function switchRow(key, label, help, disabled) {
+
+    const isOn = settings[key];
+
+    return `
+
+        <div class="lq-setting">
+
+            <div>
+                <div class="lq-setting-label" id="lq-label-${key}">${label}</div>
+                <div class="lq-setting-help">${help}</div>
+            </div>
+
+            <button
+                type="button"
+                class="lq-switch"
+                role="switch"
+                aria-checked="${isOn ? "true" : "false"}"
+                aria-labelledby="lq-label-${key}"
+                data-setting="${key}"
+                ${disabled ? "disabled" : ""}
+            >${isOn ? "ON" : "OFF"}</button>
+
+        </div>
+    `;
+}
+
+
+function showSettings() {
+
+    screen = "settings";
+
+    const sizes = [
+        ["normal", "Normal"],
+        ["large", "Large"],
+        ["xlarge", "Extra large"]
+    ];
+
+    render(`
+
+        <h2 tabindex="-1" data-autofocus>⚙️ Settings</h2>
+
+        <p>Make the game work best for you. Changes save automatically.</p>
+
+        <div class="lq-setting">
+
+            <div>
+                <div class="lq-setting-label" id="lq-label-size">Text size</div>
+            </div>
+
+            <div class="lq-segment" role="group" aria-labelledby="lq-label-size">
+                ${sizes.map(([value, label]) => `
+                    <button
+                        type="button"
+                        class="lq-seg"
+                        data-size="${value}"
+                        aria-pressed="${settings.textSize === value ? "true" : "false"}"
+                    >${label}</button>
+                `).join("")}
+            </div>
+
+        </div>
+
+        ${switchRow("highContrast", "High contrast", "Black background with bright text")}
+
+        ${switchRow("readableFont", "Easy-to-read font", "Clearer letters with extra spacing")}
+
+        ${switchRow("reduceMotion", "Less movement", "Turns off animations and confetti")}
+
+        ${switchRow(
+            "autoRead",
+            "Read questions aloud",
+            speechSupported()
+                ? "Reads each question and answer automatically"
+                : "Not available in this browser",
+            !speechSupported()
+        )}
+
+        ${switchRow(
+            "sound",
+            "Sound effects",
+            soundSupported() ? "Soft, gentle sounds" : "Not available in this browser",
+            !soundSupported()
+        )}
+
+        ${switchRow("secondChances", "Second chances", "Get one more try on a question for half XP")}
+
+        <div class="lq-tools">
+
+            ${speechSupported() ? `
+                <button class="lq-tool" id="test-voice">🔊 Test the voice</button>
+            ` : ""}
+
+            ${player.name ? `
+                <button class="lq-tool" id="reset-progress">🗑️ Reset my progress</button>
+            ` : ""}
+
+        </div>
+
+        <button id="close-settings">✅ DONE</button>
+
+    `);
+
+    document.querySelectorAll("[data-setting]").forEach(button => {
+
+        button.addEventListener("click", function () {
+
+            const key = this.dataset.setting;
+
+            settings[key] = !settings[key];
+
+            saveSettings();
+            applySettings();
+
+            this.setAttribute("aria-checked", settings[key] ? "true" : "false");
+            this.textContent = settings[key] ? "ON" : "OFF";
+
+            // Give instant feedback for the two settings you can hear
+            if (key === "sound" && settings.sound) playSound("correct");
+            if (key === "autoRead" && settings.autoRead) speak("Read aloud is on.");
+        });
+    });
+
+    document.querySelectorAll("[data-size]").forEach(button => {
+
+        button.addEventListener("click", function () {
+
+            settings.textSize = this.dataset.size;
+
+            saveSettings();
+            applySettings();
+
+            document.querySelectorAll("[data-size]").forEach(other => {
+                other.setAttribute("aria-pressed", other === this ? "true" : "false");
+            });
+        });
+    });
+
+    on("test-voice", () => speak("Hi! This is how read aloud sounds."));
+
+    on("reset-progress", () => {
+
+        const sure = window.confirm(
+            "Reset all of " + player.name + "'s progress? This cannot be undone."
+        );
+
+        if (!sure) return;
+
+        player = createDefaultPlayer(player.name);
+        profiles[activeKey] = player;
+
+        savePlayer();
+
+        showProfile();
+    });
+
+    on("close-settings", closeSettings);
+}
+
+
+// Goes back to whatever the player was looking at before opening Settings
+function restoreScreen(name) {
+
+    const hasPlayer = Boolean(player.name);
+
+    switch (name) {
+
+        case "welcome":
+            showWelcome();
+            break;
+
+        case "picker":
+            showPlayerPicker();
+            break;
+
+        case "categories":
+            hasPlayer ? showCategories() : showWelcome();
+            break;
+
+        case "modes":
+            categories[currentCategory] ? showQuestModes() : showCategories();
+            break;
+
+        case "question":
+            questQuestions.length ? showQuestion() : showCategories();
+            break;
+
+        case "feedback":
+            lastFeedback && currentQuestion ? showFeedback() : showProfile();
+            break;
+
+        case "result":
+            lastResult ? showQuestResult() : showProfile();
+            break;
+
+        case "achievements":
+            showAchievements();
+            break;
+
+        case "report":
+            showReport();
+            break;
+
+        case "break":
+            showBreak();
+            break;
+
+        default:
+            hasPlayer ? showProfile() : showWelcome();
+    }
+}
+
+
+// ==========================================
+// KEYBOARD SUPPORT
+// 1-4 answer, H = hint, R = read aloud, Esc closes Settings
+// ==========================================
+
+function handleKeydown(event) {
+
+    if (event.altKey || event.ctrlKey || event.metaKey) return;
+
+    const target = event.target;
+    const tag = target && target.tagName ? target.tagName.toLowerCase() : "";
+
+    if (tag === "input" || tag === "textarea" || tag === "select") {
+
+        if (event.key === "Enter" && target.id === "student-name") {
+
+            event.preventDefault();
+
+            createProfile();
+        }
+
+        return;
+    }
+
+    if (event.key === "Escape" && screen === "settings") {
+
+        closeSettings();
+
+        return;
+    }
+
+    if (screen !== "question" || !qState || qState.locked) return;
+
+    if (/^[1-9]$/.test(event.key)) {
+
+        const index = Number(event.key) - 1;
+
+        if (qState.answers[index]) {
+
+            event.preventDefault();
+
+            handleAnswer(index);
+        }
+
+    } else if (event.key === "h" || event.key === "H") {
+
+        useHint();
+
+    } else if (event.key === "r" || event.key === "R") {
+
+        readQuestionAloud();
+    }
 }
 
 
@@ -1998,10 +3918,77 @@ function escapeHTML(text) {
 // START GAME
 // ==========================================
 
-loadProfile();
+function startGame() {
 
-if (player.name) {
+    if (!document.documentElement.lang) document.documentElement.lang = "en";
 
-    showProfile();
+    injectStyles();
 
+    settings = loadSettings();
+
+    applySettings();
+
+    const card = getCard();
+
+    if (card) {
+
+        // Keep the sign-in form from index.html so Settings can return to it
+        welcomeHTML = card.innerHTML;
+
+        card.setAttribute("tabindex", "-1");
+        card.setAttribute("role", "region");
+        card.setAttribute("aria-label", "Life Quest game");
+    }
+
+    // Settings button, message area for screen readers, and a spot for pop-up messages
+    const fab = document.createElement("button");
+
+    fab.type = "button";
+    fab.className = "lq-fab";
+    fab.id = "lq-settings-button";
+    fab.title = "Settings";
+    fab.setAttribute("aria-label", "Settings and accessibility");
+    fab.textContent = "⚙️";
+    fab.addEventListener("click", openSettings);
+
+    const live = document.createElement("div");
+
+    live.id = "lq-live";
+    live.className = "lq-sr-only";
+    live.setAttribute("aria-live", "polite");
+    live.setAttribute("aria-atomic", "true");
+
+    const toasts = document.createElement("div");
+
+    toasts.id = "lq-toasts";
+    toasts.setAttribute("role", "status");
+    toasts.setAttribute("aria-live", "polite");
+
+    document.body.append(fab, live, toasts);
+
+    document.addEventListener("keydown", handleKeydown);
+
+    window.addEventListener("pagehide", stopSpeaking);
+
+    loadProfiles();
+
+    if (player.name) {
+
+        showProfile();
+
+    } else if (Object.keys(profiles).length > 0) {
+
+        // Someone used "Switch player" last, so ask who is playing now
+        showPlayerPicker();
+    }
+}
+
+
+if (document.readyState === "loading") {
+
+    document.addEventListener("DOMContentLoaded", startGame);
+
+} else {
+
+    startGame();
 }
