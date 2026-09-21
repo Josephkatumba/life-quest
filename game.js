@@ -678,6 +678,36 @@ let questScore = 0;
 let questCorrect = 0;
 let questQuestions = [];
 
+let currentQuestMode = "rookie";
+
+const questModes = {
+
+    rookie: {
+        name: "🟢 ROOKIE QUEST",
+        description: "5 easy questions",
+        questions: 5,
+        xp: 100,
+        className: "rookie"
+    },
+
+    challenge: {
+        name: "🟡 CHALLENGE QUEST",
+        description: "10 mixed-difficulty questions",
+        questions: 10,
+        xp: 150,
+        className: "challenge"
+    },
+
+    championship: {
+        name: "🔴 CHAMPIONSHIP",
+        description: "15 tough mixed questions",
+        questions: 15,
+        xp: 200,
+        className: "championship"
+    }
+
+};
+
 
 // ==========================================
 // ACHIEVEMENTS
