@@ -783,46 +783,43 @@ function showCategories() {
         document.querySelector(".card");
 
     gameContainer.innerHTML = `
-
         <h2>🎯 Choose Your Quest</h2>
 
         <p>
-            What adventure are you taking today?
+            Pick an adventure and start earning XP!
         </p>
-
 
         <div class="category-buttons">
 
-            <button onclick="chooseCategory('world')">
+            <button type="button" onclick="chooseCategory('world')">
                 🌍 World Explorer
             </button>
 
-            <button onclick="chooseCategory('pop')">
+            <button type="button" onclick="chooseCategory('pop')">
                 🇺🇸 Pop Culture
             </button>
 
-            <button onclick="chooseCategory('brain')">
+            <button type="button" onclick="chooseCategory('brain')">
                 🧠 Brain Power
             </button>
 
-            <button onclick="chooseCategory('life')">
+            <button type="button" onclick="chooseCategory('life')">
                 💰 Real Life
             </button>
 
-            <button onclick="chooseCategory('school')">
+            <button type="button" onclick="chooseCategory('school')">
                 🏫 School Challenge
             </button>
 
         </div>
 
-
         <button
+            type="button"
             onclick="showProfile()"
             style="margin-top:25px"
         >
             👤 MY PROFILE
         </button>
-
     `;
 }
 
