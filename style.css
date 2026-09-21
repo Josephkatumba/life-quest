@@ -603,3 +603,248 @@ small {
     color: #64748b;
     line-height: 1.4;
 }
+/* ==========================================
+   QUEST MAP
+========================================== */
+
+.quest-map-header {
+    padding: 22px;
+    border-radius: 24px;
+    background:
+        linear-gradient(
+            135deg,
+            #eef2ff,
+            #f5f3ff,
+            #fdf2f8
+        );
+    margin-bottom: 20px;
+}
+
+.map-title {
+    font-size: 30px;
+    font-weight: 900;
+    color: #312e81;
+}
+
+.map-player {
+    margin-top: 8px;
+}
+
+.map-player strong {
+    font-size: 20px;
+    color: #1e293b;
+}
+
+.map-player span {
+    display: block;
+    margin-top: 4px;
+    color: #64748b;
+    font-weight: 600;
+}
+
+.map-xp {
+    margin-top: 15px;
+    font-size: 22px;
+    font-weight: 900;
+    color: #7c3aed;
+}
+
+.map-progress {
+    margin-top: 15px;
+}
+
+.map-instruction {
+    font-weight: 700;
+    color: #475569 !important;
+    margin-bottom: 25px !important;
+}
+
+
+/* WORLD GRID */
+
+.quest-map {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+
+/* WORLD BUTTON */
+
+.quest-world {
+    position: relative;
+
+    width: 100%;
+    min-height: 180px;
+
+    margin: 0;
+    padding: 25px 18px;
+
+    border: none;
+    border-radius: 24px;
+
+    color: white;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 12px 25px rgba(15, 23, 42, 0.18);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.quest-world:hover {
+    transform: translateY(-7px) scale(1.02);
+
+    box-shadow:
+        0 20px 35px rgba(15, 23, 42, 0.25);
+}
+
+
+.quest-world::after {
+    content: "";
+
+    position: absolute;
+
+    width: 150px;
+    height: 150px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,0.12);
+
+    top: -60px;
+    right: -50px;
+
+    pointer-events: none;
+}
+
+
+.world-icon {
+    font-size: 52px;
+
+    margin-bottom: 8px;
+
+    animation:
+        iconBounce 0.7s ease;
+}
+
+
+.world-name {
+    font-size: 22px;
+    font-weight: 900;
+
+    text-align: center;
+}
+
+
+.world-xp {
+    margin-top: 7px;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    opacity: 0.9;
+}
+
+
+.world-action {
+    margin-top: 14px;
+
+    padding: 7px 13px;
+
+    border-radius: 999px;
+
+    background: rgba(255,255,255,0.18);
+
+    font-size: 12px;
+
+    font-weight: 800;
+
+    letter-spacing: 0.5px;
+}
+
+
+/* WORLD COLORS */
+
+.world-world {
+    background:
+        linear-gradient(
+            135deg,
+            #0891b2,
+            #2563eb
+        );
+}
+
+.world-pop {
+    background:
+        linear-gradient(
+            135deg,
+            #db2777,
+            #9333ea
+        );
+}
+
+.world-brain {
+    background:
+        linear-gradient(
+            135deg,
+            #059669,
+            #0d9488
+        );
+}
+
+.world-life {
+    background:
+        linear-gradient(
+            135deg,
+            #ea580c,
+            #eab308
+        );
+}
+
+.world-school {
+    background:
+        linear-gradient(
+            135deg,
+            #7c3aed,
+            #4f46e5
+        );
+}
+
+.world-sports {
+    background:
+        linear-gradient(
+            135deg,
+            #16a34a,
+            #15803d
+        );
+}
+
+
+/* MOBILE */
+
+@media (max-width: 650px) {
+
+    .quest-map {
+        grid-template-columns: 1fr;
+    }
+
+    .quest-world {
+        min-height: 160px;
+    }
+
+    .map-title {
+        font-size: 25px;
+    }
+
+}
