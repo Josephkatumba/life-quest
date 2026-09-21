@@ -1174,6 +1174,11 @@ function chooseCategory(category) {
 
     currentCategory = category;
 
+    showQuestModes();
+}
+
+    currentCategory = category;
+
     questScore = 0;
     questCorrect = 0;
     currentQuestionIndex = 0;
@@ -1184,7 +1189,164 @@ function chooseCategory(category) {
 
     showQuestion();
 }
+function showQuestModes() {
 
+    const card = document.getElementById("game-card");
+
+    const categoryName =
+        categories[currentCategory].name;
+
+    card.innerHTML = `
+
+        <div class="quest-mode-header">
+
+            <div class="quest-mode-icon">
+                ${categoryName.split(" ")[0]}
+            </div>
+
+            <h2>
+                ${categoryName}
+            </h2>
+
+            <p>
+                Choose your quest!
+            </p>
+
+        </div>
+
+
+        <div class="quest-modes">
+
+            <button
+                class="quest-mode rookie-mode"
+                data-mode="rookie"
+            >
+
+                <div class="mode-icon">
+                    🟢
+                </div>
+
+                <div class="mode-content">
+
+                    <strong>
+                        ROOKIE QUEST
+                    </strong>
+
+                    <span>
+                        5 easy questions
+                    </span>
+
+                    <span>
+                        ⭐ Up to 500 XP
+                    </span>
+
+                </div>
+
+                <div class="mode-arrow">
+                    →
+                </div>
+
+            </button>
+
+
+            <button
+                class="quest-mode challenge-mode"
+                data-mode="challenge"
+            >
+
+                <div class="mode-icon">
+                    🟡
+                </div>
+
+                <div class="mode-content">
+
+                    <strong>
+                        CHALLENGE QUEST
+                    </strong>
+
+                    <span>
+                        10 mixed questions
+                    </span>
+
+                    <span>
+                        ⭐ Up to 1,500 XP
+                    </span>
+
+                </div>
+
+                <div class="mode-arrow">
+                    →
+                </div>
+
+            </button>
+
+
+            <button
+                class="quest-mode championship-mode"
+                data-mode="championship"
+            >
+
+                <div class="mode-icon">
+                    🔴
+                </div>
+
+                <div class="mode-content">
+
+                    <strong>
+                        CHAMPIONSHIP
+                    </strong>
+
+                    <span>
+                        15 challenging questions
+                    </span>
+
+                    <span>
+                        ⭐ Up to 3,000 XP
+                    </span>
+
+                </div>
+
+                <div class="mode-arrow">
+                    →
+                </div>
+
+            </button>
+
+        </div>
+
+
+        <button id="back-to-map">
+            🗺️ BACK TO MAP
+        </button>
+
+    `;
+
+
+    document
+        .querySelectorAll("[data-mode]")
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    startQuestMode(
+                        this.dataset.mode
+                    );
+
+                }
+            );
+
+        });
+
+
+    document
+        .getElementById("back-to-map")
+        .addEventListener(
+            "click",
+            showCategories
+        );
+}
 
 // ==========================================
 // SHOW QUESTION
@@ -1253,7 +1415,70 @@ function showQuestion() {
 
         });
 }
+function startQuestMode(mode) {
 
+    currentQuestMode = mode;
+
+    const settings =
+        questModes[mode];
+
+    questScore = 0;
+    questCorrect = 0;
+    currentQuestionIndex = 0;
+
+
+    const allQuestions =
+        [...categories[currentCategory].questions];
+
+
+    let selectedQuestions = [];
+
+
+    if (mode === "rookie") {
+
+        selectedQuestions =
+            allQuestions
+                .filter(q => q.difficulty === "easy");
+
+    }
+
+
+    else if (mode === "challenge") {
+
+        selectedQuestions =
+            allQuestions
+                .filter(q =>
+                    q.difficulty === "easy" ||
+                    q.difficulty === "medium"
+                );
+
+    }
+
+
+    else {
+
+        selectedQuestions =
+            [...allQuestions];
+
+    }
+
+
+    selectedQuestions =
+        shuffle(selectedQuestions);
+
+
+    questQuestions =
+        selectedQuestions.slice(
+            0,
+            Math.min(
+                settings.questions,
+                selectedQuestions.length
+            )
+        );
+
+
+    showQuestion();
+}
 
 // ==========================================
 // CHECK ANSWER
@@ -1291,7 +1516,8 @@ function checkAnswer(selected) {
 
         }
 
-        const xp = 100;
+        const xp =
+    getQuestionXP(currentQuestion);
 
         player.xp += xp;
 
@@ -1315,7 +1541,38 @@ function checkAnswer(selected) {
 
     showFeedback(correct);
 }
+function getQuestionXP(question) {
 
+    if (
+        currentQuestMode === "championship"
+    ) {
+
+        if (question.difficulty === "medium") {
+            return 200;
+        }
+
+        if (question.difficulty === "easy") {
+            return 150;
+        }
+
+        return 250;
+    }
+
+
+    if (
+        currentQuestMode === "challenge"
+    ) {
+
+        if (question.difficulty === "medium") {
+            return 150;
+        }
+
+        return 100;
+    }
+
+
+    return 100;
+}
 
 // ==========================================
 // FEEDBACK
@@ -1340,8 +1597,8 @@ function showFeedback(correct) {
                 </h2>
 
                 <div class="xp-animation">
-                    +100 XP
-                </div>
+    +${getQuestionXP(currentQuestion)} XP
+</div>
 
                 <p>
                     ${currentQuestion.explanation}
