@@ -1,7 +1,6 @@
 const categories = {
     world: {
         name: "🌍 World Explorer",
-        description: "Countries, capitals, flags and geography!",
         questions: [
             {
                 question: "What is the capital of France?",
@@ -49,11 +48,6 @@ const categories = {
                 correct: 2
             },
             {
-                question: "What is the capital of Brazil?",
-                answers: ["Rio de Janeiro", "São Paulo", "Brasília", "Salvador"],
-                correct: 2
-            },
-            {
                 question: "Which country has a maple leaf on its flag?",
                 answers: ["Australia", "Canada", "Switzerland", "New Zealand"],
                 correct: 1
@@ -64,18 +58,8 @@ const categories = {
                 correct: 0
             },
             {
-                question: "Which country is shaped roughly like a boot?",
-                answers: ["Italy", "Spain", "Portugal", "Greece"],
-                correct: 0
-            },
-            {
                 question: "Which is the largest continent?",
                 answers: ["Africa", "Europe", "Asia", "Australia"],
-                correct: 2
-            },
-            {
-                question: "Which ocean is the largest?",
-                answers: ["Atlantic Ocean", "Indian Ocean", "Pacific Ocean", "Arctic Ocean"],
                 correct: 2
             }
         ]
@@ -83,7 +67,6 @@ const categories = {
 
     pop: {
         name: "🇺🇸 Pop Culture",
-        description: "Movies, music, celebrities, sports and games!",
         questions: [
             {
                 question: "Who played Iron Man in the Marvel movies?",
@@ -96,7 +79,7 @@ const categories = {
                 correct: 0
             },
             {
-                question: "Who is known as the 'King of Pop'?",
+                question: "Who is known as the King of Pop?",
                 answers: [
                     "Elvis Presley",
                     "Michael Jackson",
@@ -126,7 +109,7 @@ const categories = {
                 correct: 2
             },
             {
-                question: "Which basketball legend is strongly associated with number 23 and the Chicago Bulls?",
+                question: "Which basketball legend is associated with number 23 and the Chicago Bulls?",
                 answers: [
                     "LeBron James",
                     "Stephen Curry",
@@ -146,7 +129,7 @@ const categories = {
                 correct: 1
             },
             {
-                question: "Who released the song 'Flowers'?",
+                question: "Which singer released Flowers?",
                 answers: [
                     "Miley Cyrus",
                     "Taylor Swift",
@@ -164,86 +147,15 @@ const categories = {
                     "Magic School"
                 ],
                 correct: 0
-            },
-            {
-                question: "Which singer is known for the song 'Shake It Off'?",
-                answers: [
-                    "Taylor Swift",
-                    "Rihanna",
-                    "Adele",
-                    "Lady Gaga"
-                ],
-                correct: 0
-            },
-            {
-                question: "Which movie features the character Elsa?",
-                answers: [
-                    "Moana",
-                    "Frozen",
-                    "Encanto",
-                    "Tangled"
-                ],
-                correct: 1
-            },
-            {
-                question: "Which superhero uses a shield with a star?",
-                answers: [
-                    "Thor",
-                    "Captain America",
-                    "Hulk",
-                    "Flash"
-                ],
-                correct: 1
-            },
-            {
-                question: "Which artist is famous for the song 'Single Ladies'?",
-                answers: [
-                    "Beyoncé",
-                    "Ariana Grande",
-                    "Katy Perry",
-                    "Nicki Minaj"
-                ],
-                correct: 0
-            },
-            {
-                question: "Which sport does LeBron James play professionally?",
-                answers: [
-                    "Football",
-                    "Baseball",
-                    "Basketball",
-                    "Hockey"
-                ],
-                correct: 2
-            },
-            {
-                question: "Which game is known for building with blocks and exploring a pixelated world?",
-                answers: [
-                    "Minecraft",
-                    "FIFA",
-                    "Fortnite",
-                    "NBA 2K"
-                ],
-                correct: 0
-            },
-            {
-                question: "Which character is Mickey Mouse's girlfriend?",
-                answers: [
-                    "Daisy Duck",
-                    "Minnie Mouse",
-                    "Elsa",
-                    "Hello Kitty"
-                ],
-                correct: 1
             }
         ]
     },
 
     brain: {
         name: "🧠 Brain Power",
-        description: "Logic, science, numbers and general knowledge!",
         questions: [
             {
-                question: "What number comes next: 2, 4, 6, 8, ?",
+                question: "What number comes next: 2, 4, 6, 8?",
                 answers: ["9", "10", "11", "12"],
                 correct: 1
             },
@@ -278,43 +190,8 @@ const categories = {
                 correct: 2
             },
             {
-                question: "Which gas do humans need to breathe?",
-                answers: ["Oxygen", "Helium", "Hydrogen", "Neon"],
-                correct: 0
-            },
-            {
                 question: "What is the largest planet in our solar system?",
                 answers: ["Earth", "Mars", "Jupiter", "Saturn"],
-                correct: 2
-            },
-            {
-                question: "What is 12 + 8?",
-                answers: ["18", "20", "22", "24"],
-                correct: 1
-            },
-            {
-                question: "What is half of 100?",
-                answers: ["25", "40", "50", "75"],
-                correct: 2
-            },
-            {
-                question: "Which animal is known as the largest land animal?",
-                answers: ["Elephant", "Giraffe", "Hippo", "Rhino"],
-                correct: 0
-            },
-            {
-                question: "How many colors are traditionally in a rainbow?",
-                answers: ["5", "6", "7", "8"],
-                correct: 2
-            },
-            {
-                question: "What do bees make?",
-                answers: ["Milk", "Honey", "Bread", "Juice"],
-                correct: 1
-            },
-            {
-                question: "Which organ pumps blood around the human body?",
-                answers: ["Brain", "Lungs", "Heart", "Stomach"],
                 correct: 2
             }
         ]
@@ -322,7 +199,6 @@ const categories = {
 
     life: {
         name: "💰 Real Life",
-        description: "Everyday decisions and practical skills!",
         questions: [
             {
                 question: "You have $20 and need $4 for the bus home. What is the smartest choice?",
@@ -355,17 +231,7 @@ const categories = {
                 correct: 1
             },
             {
-                question: "You receive a message from someone you don't know asking where you live. What should you do?",
-                answers: [
-                    "Tell them your address",
-                    "Send them a photo of your house",
-                    "Do not share personal information",
-                    "Invite them over"
-                ],
-                correct: 2
-            },
-            {
-                question: "You have $50 and want something that costs $45. How much will you have left?",
+                question: "You have $50 and buy something for $45. How much do you have left?",
                 answers: ["$3", "$5", "$10", "$15"],
                 correct: 1
             },
@@ -378,33 +244,12 @@ const categories = {
                     "Close your eyes"
                 ],
                 correct: 1
-            },
-            {
-                question: "If you don't understand an assignment, what is a good choice?",
-                answers: [
-                    "Give up immediately",
-                    "Ask the teacher for help",
-                    "Ignore it forever",
-                    "Blame someone else"
-                ],
-                correct: 1
-            },
-            {
-                question: "Which is generally safer online?",
-                answers: [
-                    "Sharing your password",
-                    "Using strong unique passwords",
-                    "Posting your home address",
-                    "Meeting strangers alone"
-                ],
-                correct: 1
             }
         ]
     },
 
     school: {
         name: "🏫 School Challenge",
-        description: "Science, history, English and school knowledge!",
         questions: [
             {
                 question: "Which subject studies living things?",
@@ -437,33 +282,18 @@ const categories = {
                 correct: 1
             },
             {
-                question: "Which planet do humans live on?",
-                answers: ["Mars", "Venus", "Earth", "Jupiter"],
-                correct: 2
-            },
-            {
-                question: "Which subject focuses on events from the past?",
-                answers: ["History", "Chemistry", "Biology", "Algebra"],
-                correct: 0
-            },
-            {
                 question: "What is 5 × 5?",
                 answers: ["10", "20", "25", "30"],
-                correct: 2
-            },
-            {
-                question: "Which instrument is commonly used to measure temperature?",
-                answers: ["Ruler", "Thermometer", "Compass", "Scale"],
-                correct: 1
-            },
-            {
-                question: "What is the opposite of 'ancient'?",
-                answers: ["Old", "Historic", "Modern", "Past"],
                 correct: 2
             }
         ]
     }
 };
+
+
+/* =========================
+   GAME STATE
+========================= */
 
 let currentCategory = null;
 let currentQuestion = 0;
@@ -474,6 +304,7 @@ let player = {
     totalXP: 0,
     questionsAnswered: 0,
     correctAnswers: 0,
+
     categoryXP: {
         world: 0,
         pop: 0,
@@ -485,15 +316,19 @@ let player = {
 
 
 /* =========================
-   PROFILE
+   SAVE / LOAD
 ========================= */
 
 function loadProfile() {
 
-    const savedProfile = localStorage.getItem("lifeQuestProfile");
+    const saved = localStorage.getItem("lifeQuestProfile");
 
-    if (savedProfile) {
-        player = JSON.parse(savedProfile);
+    if (saved) {
+        try {
+            player = JSON.parse(saved);
+        } catch (error) {
+            console.log("Could not load profile.");
+        }
     }
 }
 
@@ -507,17 +342,21 @@ function saveProfile() {
 }
 
 
+/* =========================
+   CREATE PROFILE
+========================= */
+
 function createProfile() {
 
-    const input = document.getElementById("student-name");
+    const input =
+        document.getElementById("student-name");
 
-    const name = input.value.trim();
+    const name =
+        input.value.trim();
 
     if (!name) {
 
         input.focus();
-
-        alert("Please enter your name!");
 
         return;
     }
@@ -527,12 +366,11 @@ function createProfile() {
     saveProfile();
 
     showProfile();
-
 }
 
 
 /* =========================
-   XP & LEVELS
+   LEVEL SYSTEM
 ========================= */
 
 function getLevel(xp) {
@@ -565,7 +403,7 @@ function getRank(level) {
 
 function getLevelProgress(xp) {
 
-    const thresholds = [
+    const levels = [
         0,
         500,
         1000,
@@ -584,35 +422,40 @@ function getLevelProgress(xp) {
         return 100;
     }
 
-    const currentLevelXP = thresholds[level - 1];
+    const current = levels[level - 1];
+    const next = levels[level];
 
-    const nextLevelXP = thresholds[level];
-
-    const progress =
-        ((xp - currentLevelXP) /
-        (nextLevelXP - currentLevelXP)) * 100;
-
-    return Math.max(0, Math.min(100, progress));
+    return Math.max(
+        0,
+        Math.min(
+            100,
+            ((xp - current) /
+                (next - current)) * 100
+        )
+    );
 }
 
 
 /* =========================
-   PROFILE SCREEN
+   PROFILE
 ========================= */
 
 function showProfile() {
 
-    const gameContainer =
+    const card =
         document.querySelector(".card");
 
-    const level = getLevel(player.totalXP);
+    const level =
+        getLevel(player.totalXP);
 
-    const rank = getRank(level);
+    const rank =
+        getRank(level);
 
     const progress =
         getLevelProgress(player.totalXP);
 
-    gameContainer.innerHTML = `
+
+    card.innerHTML = `
 
         <div class="profile-header">
 
@@ -674,98 +517,85 @@ function showProfile() {
         </div>
 
 
-        <h3>📊 Your Quest Progress</h3>
+        <h3>
+            📊 Your Quest Progress
+        </h3>
 
 
         <div class="profile-categories">
 
             <div class="profile-category">
-
                 <div class="profile-category-title">
                     🌍 World Explorer
                 </div>
-
                 <div class="profile-category-xp">
                     ${player.categoryXP.world} XP
                 </div>
-
             </div>
 
 
             <div class="profile-category">
-
                 <div class="profile-category-title">
                     🇺🇸 Pop Culture
                 </div>
-
                 <div class="profile-category-xp">
                     ${player.categoryXP.pop} XP
                 </div>
-
             </div>
 
 
             <div class="profile-category">
-
                 <div class="profile-category-title">
                     🧠 Brain Power
                 </div>
-
                 <div class="profile-category-xp">
                     ${player.categoryXP.brain} XP
                 </div>
-
             </div>
 
 
             <div class="profile-category">
-
                 <div class="profile-category-title">
                     💰 Real Life
                 </div>
-
                 <div class="profile-category-xp">
                     ${player.categoryXP.life} XP
                 </div>
-
             </div>
 
 
             <div class="profile-category">
-
                 <div class="profile-category-title">
                     🏫 School Challenge
                 </div>
-
                 <div class="profile-category-xp">
                     ${player.categoryXP.school} XP
                 </div>
-
             </div>
 
         </div>
 
 
-        <div style="margin-top:25px">
-
-            <p>
-                Questions answered:
-                <strong>
-                    ${player.questionsAnswered}
-                </strong>
-            </p>
-
-            <p>
-                Correct answers:
-                <strong>
-                    ${player.correctAnswers}
-                </strong>
-            </p>
-
-        </div>
+        <p style="margin-top:25px;">
+            Questions answered:
+            <strong>
+                ${player.questionsAnswered}
+            </strong>
+        </p>
 
 
-        <button onclick="showCategories()">
+        <p>
+            Correct answers:
+            <strong>
+                ${player.correctAnswers}
+            </strong>
+        </p>
+
+
+        <button
+            type="button"
+            onclick="showCategories()"
+        >
             🎮 PLAY A QUEST
         </button>
 
@@ -779,48 +609,103 @@ function showProfile() {
 
 function showCategories() {
 
-    const gameContainer =
+    const card =
         document.querySelector(".card");
 
-    gameContainer.innerHTML = `
-        <h2>🎯 Choose Your Quest</h2>
+
+    card.innerHTML = `
+
+        <h2>
+            🎯 Choose Your Quest
+        </h2>
 
         <p>
             Pick an adventure and start earning XP!
         </p>
 
+
         <div class="category-buttons">
 
-            <button type="button" onclick="chooseCategory('world')">
+            <button
+                type="button"
+                data-category="world"
+            >
                 🌍 World Explorer
             </button>
 
-            <button type="button" onclick="chooseCategory('pop')">
+
+            <button
+                type="button"
+                data-category="pop"
+            >
                 🇺🇸 Pop Culture
             </button>
 
-            <button type="button" onclick="chooseCategory('brain')">
+
+            <button
+                type="button"
+                data-category="brain"
+            >
                 🧠 Brain Power
             </button>
 
-            <button type="button" onclick="chooseCategory('life')">
+
+            <button
+                type="button"
+                data-category="life"
+            >
                 💰 Real Life
             </button>
 
-            <button type="button" onclick="chooseCategory('school')">
+
+            <button
+                type="button"
+                data-category="school"
+            >
                 🏫 School Challenge
             </button>
 
         </div>
 
+
         <button
             type="button"
-            onclick="showProfile()"
-            style="margin-top:25px"
+            id="profile-button"
         >
             👤 MY PROFILE
         </button>
+
     `;
+
+
+    document
+        .querySelectorAll(
+            "[data-category]"
+        )
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    chooseCategory(
+                        this.dataset.category
+                    );
+
+                }
+            );
+
+        });
+
+
+    document
+        .getElementById(
+            "profile-button"
+        )
+        .addEventListener(
+            "click",
+            showProfile
+        );
 }
 
 
@@ -831,13 +716,21 @@ function showCategories() {
 function chooseCategory(category) {
 
     if (!categories[category]) {
-        console.error("Category not found:", category);
+
+        console.error(
+            "Category does not exist:",
+            category
+        );
+
         return;
     }
 
-    currentCategory = categories[category];
 
-    currentCategory.key = category;
+    currentCategory =
+        categories[category];
+
+    currentCategory.key =
+        category;
 
     currentQuestion = 0;
 
@@ -848,19 +741,21 @@ function chooseCategory(category) {
 
 
 /* =========================
-   QUESTIONS
+   SHOW QUESTION
 ========================= */
 
 function showQuestion() {
 
-    const gameContainer =
+    const card =
         document.querySelector(".card");
 
     const question =
-        currentCategory.questions[currentQuestion];
+        currentCategory.questions[
+            currentQuestion
+        ];
 
 
-    gameContainer.innerHTML = `
+    card.innerHTML = `
 
         <p class="category-name">
             ${currentCategory.name}
@@ -882,17 +777,20 @@ function showQuestion() {
 
         <div class="answers">
 
-            ${question.answers.map(
-                (answer, index) => `
+            ${question.answers
+                .map(
+                    (answer, index) => `
 
-                <button
-                    onclick="checkAnswer(${index})"
-                >
-                    ${answer}
-                </button>
+                    <button
+                        type="button"
+                        data-answer="${index}"
+                    >
+                        ${answer}
+                    </button>
 
-            `
-            ).join("")}
+                `
+                )
+                .join("")}
 
         </div>
 
@@ -902,30 +800,50 @@ function showQuestion() {
         </p>
 
     `;
+
+
+    document
+        .querySelectorAll(
+            "[data-answer]"
+        )
+        .forEach(button => {
+
+            button.addEventListener(
+                "click",
+                function () {
+
+                    checkAnswer(
+                        Number(
+                            this.dataset.answer
+                        )
+                    );
+
+                }
+            );
+
+        });
 }
 
 
 /* =========================
-   ANSWERS
+   CHECK ANSWER
 ========================= */
 
 function checkAnswer(answerIndex) {
 
     const question =
-        currentCategory.questions[currentQuestion];
+        currentCategory.questions[
+            currentQuestion
+        ];
 
 
-    const buttons =
-        document.querySelectorAll(
-            ".answers button"
-        );
+    document
+        .querySelectorAll(".answers button")
+        .forEach(button => {
 
+            button.disabled = true;
 
-    buttons.forEach(button => {
-
-        button.disabled = true;
-
-    });
+        });
 
 
     player.questionsAnswered++;
@@ -956,11 +874,10 @@ function checkAnswer(answerIndex) {
             true,
             "🎉 CORRECT!",
             "+100 XP",
-            "Fantastic work, " +
+            "Great job, " +
             player.name +
             "!"
         );
-
 
     } else {
 
@@ -991,19 +908,13 @@ function showFeedback(
     message
 ) {
 
-    const gameContainer =
+    const card =
         document.querySelector(".card");
 
 
-    const feedbackClass =
-        correct
-            ? "feedback-correct"
-            : "feedback-wrong";
+    card.innerHTML = `
 
-
-    gameContainer.innerHTML = `
-
-        <div class="feedback ${feedbackClass}">
+        <div class="feedback">
 
             <div class="feedback-icon">
                 ${correct ? "🎉" : "💡"}
@@ -1026,7 +937,8 @@ function showFeedback(
 
 
             <button
-                onclick="nextQuestion()"
+                type="button"
+                id="continue-button"
             >
                 CONTINUE →
             </button>
@@ -1034,6 +946,16 @@ function showFeedback(
         </div>
 
     `;
+
+
+    document
+        .getElementById(
+            "continue-button"
+        )
+        .addEventListener(
+            "click",
+            nextQuestion
+        );
 }
 
 
@@ -1062,16 +984,16 @@ function nextQuestion() {
 
 
 /* =========================
-   FINISH QUEST
+   END GAME
 ========================= */
 
 function endGame() {
 
-    const gameContainer =
+    const card =
         document.querySelector(".card");
 
 
-    const totalQuestions =
+    const total =
         currentCategory.questions.length;
 
 
@@ -1081,12 +1003,12 @@ function endGame() {
 
     const percentage =
         Math.round(
-            (correct /
-            totalQuestions) * 100
+            (correct / total) * 100
         );
 
 
-    let message;
+    let message =
+        "🌟 KEEP PRACTICING!";
 
 
     if (percentage === 100) {
@@ -1104,11 +1026,6 @@ function endGame() {
         message =
             "⭐ GREAT WORK!";
 
-    } else {
-
-        message =
-            "🌟 KEEP PRACTICING!";
-
     }
 
 
@@ -1120,7 +1037,7 @@ function endGame() {
         getRank(level);
 
 
-    gameContainer.innerHTML = `
+    card.innerHTML = `
 
         <div class="final-result">
 
@@ -1154,7 +1071,7 @@ function endGame() {
                 </strong>
                 out of
                 <strong>
-                    ${totalQuestions}
+                    ${total}
                 </strong>
                 correctly.
             </p>
@@ -1178,14 +1095,16 @@ function endGame() {
 
 
             <button
-                onclick="showCategories()"
+                type="button"
+                id="another-quest"
             >
                 🎮 PLAY ANOTHER QUEST
             </button>
 
 
             <button
-                onclick="showProfile()"
+                type="button"
+                id="view-profile"
             >
                 👤 VIEW MY PROFILE
             </button>
@@ -1193,11 +1112,31 @@ function endGame() {
         </div>
 
     `;
+
+
+    document
+        .getElementById(
+            "another-quest"
+        )
+        .addEventListener(
+            "click",
+            showCategories
+        );
+
+
+    document
+        .getElementById(
+            "view-profile"
+        )
+        .addEventListener(
+            "click",
+            showProfile
+        );
 }
 
 
 /* =========================
-   INITIALIZE
+   START
 ========================= */
 
 loadProfile();
@@ -1207,206 +1146,4 @@ if (player.name) {
 
     showProfile();
 
-}
-
-function startGame() {
-    score = 0;
-    showCategories();
-}
-
-function showCategories() {
-    const gameContainer = document.querySelector(".card");
-
-    gameContainer.innerHTML = `
-        <h2>🎯 Choose Your Quest</h2>
-
-        <p>Pick a category and test your skills!</p>
-
-        <div class="category-buttons">
-
-            <button onclick="chooseCategory('world')">
-                🌍 World Explorer
-            </button>
-
-            <button onclick="chooseCategory('pop')">
-                🇺🇸 Pop Culture
-            </button>
-
-            <button onclick="chooseCategory('brain')">
-                🧠 Brain Power
-            </button>
-
-            <button onclick="chooseCategory('life')">
-                💰 Real Life
-            </button>
-
-            <button onclick="chooseCategory('school')">
-                🏫 School Challenge
-            </button>
-
-        </div>
-
-        <p class="score">⭐ XP: ${score}</p>
-    `;
-}
-
-function chooseCategory(category) {
-    currentCategory = categories[category];
-    currentQuestion = 0;
-    score = 0;
-
-    showQuestion();
-}
-
-function showQuestion() {
-    const gameContainer = document.querySelector(".card");
-    const question = currentCategory.questions[currentQuestion];
-
-    gameContainer.innerHTML = `
-        <p class="category-name">${currentCategory.name}</p>
-
-        <h2>Question ${currentQuestion + 1} of ${currentCategory.questions.length}</h2>
-
-        <p class="question-text">${question.question}</p>
-
-        <div class="answers">
-
-            ${question.answers.map((answer, index) => `
-                <button onclick="checkAnswer(${index})">
-                    ${answer}
-                </button>
-            `).join("")}
-
-        </div>
-
-        <p class="score">⭐ XP: ${score}</p>
-    `;
-}
-
-function checkAnswer(answerIndex) {
-
-    const question = currentCategory.questions[currentQuestion];
-
-    const buttons = document.querySelectorAll(".answers button");
-
-    buttons.forEach(button => {
-        button.disabled = true;
-    });
-
-    if (answerIndex === question.correct) {
-
-        score += 100;
-
-        showFeedback(
-            true,
-            "🎉 CORRECT!",
-            "+100 XP",
-            "Great job! Keep going!"
-        );
-
-    } else {
-
-        showFeedback(
-            false,
-            "💡 NOT QUITE!",
-            "Keep learning!",
-            "The correct answer was: " +
-            question.answers[question.correct]
-        );
-    }
-}
-
-function showFeedback(correct, title, points, message) {
-
-    const gameContainer = document.querySelector(".card");
-
-    const feedbackClass = correct ? "feedback-correct" : "feedback-wrong";
-
-    gameContainer.innerHTML = `
-        <div class="feedback ${feedbackClass}">
-
-            <div class="feedback-icon">
-                ${correct ? "🎉" : "💡"}
-            </div>
-
-            <h2>${title}</h2>
-
-            <div class="xp-animation">
-                ${points}
-            </div>
-
-            <p>${message}</p>
-
-            <button onclick="nextQuestion()">
-                CONTINUE →
-            </button>
-
-        </div>
-    `;
-}
-
-function nextQuestion() {
-
-    currentQuestion++;
-
-    if (currentQuestion < currentCategory.questions.length) {
-
-        showQuestion();
-
-    } else {
-
-        endGame();
-    }
-}
-
-function endGame() {
-
-    const gameContainer = document.querySelector(".card");
-
-    const totalQuestions = currentCategory.questions.length;
-
-    const percentage = Math.round(
-        (score / (totalQuestions * 100)) * 100
-    );
-
-    let message;
-
-    if (percentage === 100) {
-        message = "🏆 PERFECT SCORE!";
-    } else if (percentage >= 80) {
-        message = "🔥 AMAZING JOB!";
-    } else if (percentage >= 60) {
-        message = "⭐ GREAT WORK!";
-    } else {
-        message = "🌟 KEEP PRACTICING!";
-    }
-
-    gameContainer.innerHTML = `
-        <div class="final-result">
-
-            <h2>${message}</h2>
-
-            <p>You completed:</p>
-
-            <h3>${currentCategory.name}</h3>
-
-            <div class="final-xp">
-                ⭐ ${score} XP
-            </div>
-
-            <p>
-                You answered ${score / 100}
-                out of ${totalQuestions} correctly.
-            </p>
-
-            <button onclick="showCategories()">
-                🎮 PLAY ANOTHER QUEST
-            </button>
-
-            <button onclick="startGame()">
-                🏠 MAIN MENU
-            </button>
-
-        </div>
-    `;
 }
