@@ -1177,18 +1177,7 @@ function chooseCategory(category) {
     showQuestModes();
 }
 
-    currentCategory = category;
-
-    questScore = 0;
-    questCorrect = 0;
-    currentQuestionIndex = 0;
-
-    questQuestions = shuffle(
-        [...categories[category].questions]
-    );
-
-    showQuestion();
-}
+    
 function showQuestModes() {
 
     const card = document.getElementById("game-card");
