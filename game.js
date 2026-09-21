@@ -1027,31 +1027,90 @@ function showCategories() {
 
     const card = document.getElementById("game-card");
 
+    const level = getLevel(player.xp);
+    const rank = getRank(level);
+    const progress = getLevelProgress(player.xp, level);
+
     card.innerHTML = `
 
-        <h2>🗺️ Choose Your Quest</h2>
+        <div class="quest-map-header">
 
-        <p>
-            Pick a world and test your knowledge!
-        </p>
+            <div class="map-title">
+                🗺️ YOUR QUEST WORLD
+            </div>
 
-        <div class="category-buttons">
+            <div class="map-player">
+                <strong>${escapeHTML(player.name)}</strong>
+                <span>Level ${level} • ${rank}</span>
+            </div>
 
-            ${Object.keys(categories).map(key => `
+            <div class="map-xp">
+                ⭐ ${player.xp} XP
+            </div>
 
-                <button data-category="${key}">
-                    ${categories[key].name}
-                </button>
+            <div class="progress-bar map-progress">
 
-            `).join("")}
+                <div
+                    class="progress-fill"
+                    style="width:${progress}%"
+                ></div>
+
+            </div>
 
         </div>
+
+
+        <p class="map-instruction">
+            Choose a world and begin your adventure!
+        </p>
+
+
+        <div class="quest-map">
+
+            ${Object.keys(categories).map(key => {
+
+                const category = categories[key];
+
+                return `
+
+                    <button
+                        class="quest-world world-${key}"
+                        data-category="${key}"
+                    >
+
+                        <div class="world-icon">
+                            ${category.name.split(" ")[0]}
+                        </div>
+
+                        <div class="world-name">
+                            ${category.name.substring(
+                                category.name.indexOf(" ") + 1
+                            )}
+                        </div>
+
+                        <div class="world-xp">
+                            ⭐ ${player.categoryXP[key]} XP
+                        </div>
+
+                        <div class="world-action">
+                            ENTER QUEST →
+                        </div>
+
+                    </button>
+
+                `;
+
+            }).join("")}
+
+        </div>
+
 
         <button id="back-profile">
             👤 BACK TO PROFILE
         </button>
 
     `;
+
 
     document
         .querySelectorAll("[data-category]")
@@ -1067,9 +1126,13 @@ function showCategories() {
 
         });
 
+
     document
         .getElementById("back-profile")
-        .addEventListener("click", showProfile);
+        .addEventListener(
+            "click",
+            showProfile
+        );
 }
 
 
