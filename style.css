@@ -1,93 +1,95 @@
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #4f46e5, #7c3aed);
-    color: white;
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.question-text {
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.5;
 }
 
-.game-container {
-    width: 90%;
-    max-width: 700px;
-    text-align: center;
+.feedback {
+    animation: feedbackAppear 0.45s ease-out;
 }
 
-h1 {
-    font-size: 48px;
-    margin-bottom: 10px;
+.feedback-icon {
+    font-size: 70px;
+    animation: iconBounce 0.7s ease;
 }
 
-.subtitle {
-    font-size: 20px;
-    margin-bottom: 35px;
+.feedback-correct h2 {
+    font-size: 38px;
 }
 
-.card {
-    background: white;
-    color: #222;
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+.feedback-wrong h2 {
+    font-size: 34px;
 }
 
-.card h2 {
+.xp-animation {
     font-size: 32px;
-    margin-bottom: 15px;
-}
-
-.card p {
-    font-size: 18px;
-    line-height: 1.6;
-}
-
-button {
-    background: #4f46e5;
-    color: white;
-    border: none;
-    padding: 16px 35px;
-    font-size: 18px;
-    border-radius: 12px;
-    cursor: pointer;
-    margin-top: 20px;
-}
-
-button:hover {
-    background: #3730a3;
-    transform: scale(1.05);
-}
-.category-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 25px;
-}
-
-.category-buttons button {
-    width: 100%;
-    margin-top: 0;
-}
-
-.category-name {
-    font-size: 18px;
     font-weight: bold;
+    margin: 20px 0;
+    animation: xpFloat 1s ease-out;
 }
 
-.answers {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-top: 25px;
+.feedback-correct {
+    padding: 20px;
 }
 
-.answers button {
-    width: 100%;
-    margin-top: 0;
+.feedback-wrong {
+    padding: 20px;
 }
 
-.score {
+.final-result {
+    animation: feedbackAppear 0.5s ease-out;
+}
+
+.final-xp {
+    font-size: 42px;
     font-weight: bold;
-    margin-top: 25px;
+    margin: 25px 0;
+}
+
+@keyframes feedbackAppear {
+    from {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes iconBounce {
+    0% {
+        transform: scale(0.5);
+    }
+
+    60% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@keyframes xpFloat {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    50% {
+        opacity: 1;
+        transform: translateY(-5px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }
