@@ -1,95 +1,412 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background:
+        radial-gradient(circle at 20% 20%, #4f46e5 0%, transparent 30%),
+        radial-gradient(circle at 80% 80%, #9333ea 0%, transparent 30%),
+        linear-gradient(135deg, #0f172a, #1e1b4b);
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 15px;
+    overflow-x: hidden;
+}
+
+/* Decorative background circles */
+
+body::before,
+body::after {
+    content: "";
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(2px);
+    opacity: 0.25;
+    pointer-events: none;
+}
+
+body::before {
+    width: 220px;
+    height: 220px;
+    background: #38bdf8;
+    top: -80px;
+    left: -80px;
+}
+
+body::after {
+    width: 280px;
+    height: 280px;
+    background: #a855f7;
+    bottom: -120px;
+    right: -100px;
+}
+
+/* Main game area */
+
+.game-container {
+    width: 100%;
+    max-width: 850px;
+    text-align: center;
+    position: relative;
+    z-index: 1;
+}
+
+/* Logo */
+
+h1 {
+    font-size: clamp(42px, 8vw, 70px);
+    font-weight: 900;
+    letter-spacing: -2px;
+    margin: 0;
+    background: linear-gradient(90deg, #60a5fa, #c084fc, #f472b6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+}
+
+.subtitle {
+    color: #cbd5e1;
+    font-size: 18px;
+    margin-top: 8px;
+    margin-bottom: 30px;
+}
+
+/* Main card */
+
+.card {
+    background: rgba(255, 255, 255, 0.97);
+    color: #172033;
+    width: 100%;
+    padding: 45px;
+    border-radius: 30px;
+    box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.35),
+        0 0 0 1px rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(15px);
+    animation: cardAppear 0.5s ease-out;
+}
+
+/* Headings */
+
+.card h2 {
+    font-size: clamp(28px, 5vw, 40px);
+    margin: 0 0 15px;
+    color: #172033;
+}
+
+.card h3 {
+    font-size: 24px;
+    margin: 15px 0;
+}
+
+.card p {
+    font-size: 18px;
+    line-height: 1.6;
+    color: #475569;
+}
+
+/* Main buttons */
+
+button {
+    border: none;
+    border-radius: 16px;
+    padding: 17px 28px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    color: white;
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    box-shadow: 0 8px 18px rgba(79, 70, 229, 0.3);
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        filter 0.2s ease;
+    margin-top: 15px;
+    min-height: 55px;
+}
+
+button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 25px rgba(79, 70, 229, 0.35);
+    filter: brightness(1.08);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+button:focus-visible {
+    outline: 4px solid #93c5fd;
+    outline-offset: 3px;
+}
+
+/* Start button */
+
+.card > button {
+    min-width: 220px;
+}
+
+/* Category selection */
+
+.category-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+    margin-top: 30px;
+}
+
+.category-buttons button {
+    width: 100%;
+    min-height: 85px;
+    margin: 0;
+    font-size: 19px;
+}
+
+/* Give categories slightly different identities */
+
+.category-buttons button:nth-child(1) {
+    background: linear-gradient(135deg, #0891b2, #2563eb);
+}
+
+.category-buttons button:nth-child(2) {
+    background: linear-gradient(135deg, #db2777, #9333ea);
+}
+
+.category-buttons button:nth-child(3) {
+    background: linear-gradient(135deg, #059669, #0d9488);
+}
+
+.category-buttons button:nth-child(4) {
+    background: linear-gradient(135deg, #ea580c, #eab308);
+}
+
+.category-buttons button:nth-child(5) {
+    background: linear-gradient(135deg, #7c3aed, #4f46e5);
+}
+
+/* Category title */
+
+.category-name {
+    display: inline-block;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: #4f46e5 !important;
+    font-weight: 800;
+    font-size: 16px !important;
+    margin-bottom: 10px;
+}
+
+/* Question */
+
 .question-text {
-    font-size: 22px;
-    font-weight: 600;
-    line-height: 1.5;
+    font-size: clamp(21px, 4vw, 28px) !important;
+    font-weight: 700;
+    line-height: 1.5 !important;
+    color: #1e293b !important;
+    margin: 25px auto;
+    max-width: 700px;
 }
 
-.feedback {
-    animation: feedbackAppear 0.45s ease-out;
+/* Answer buttons */
+
+.answers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 30px;
 }
 
-.feedback-icon {
-    font-size: 70px;
-    animation: iconBounce 0.7s ease;
+.answers button {
+    width: 100%;
+    margin: 0;
+    min-height: 75px;
+    background: #f8fafc;
+    color: #1e293b;
+    border: 3px solid #e2e8f0;
+    box-shadow: 0 5px 12px rgba(15, 23, 42, 0.08);
 }
 
-.feedback-correct h2 {
-    font-size: 38px;
+.answers button:hover {
+    background: #eef2ff;
+    border-color: #6366f1;
+    color: #3730a3;
 }
 
-.feedback-wrong h2 {
-    font-size: 34px;
+/* XP */
+
+.score {
+    display: inline-block;
+    margin-top: 30px !important;
+    padding: 10px 20px;
+    border-radius: 999px;
+    background: #fef3c7;
+    color: #92400e !important;
+    font-weight: 800;
+    font-size: 17px !important;
 }
 
-.xp-animation {
-    font-size: 32px;
-    font-weight: bold;
-    margin: 20px 0;
-    animation: xpFloat 1s ease-out;
-}
+/* Correct answer */
 
 .feedback-correct {
     padding: 20px;
 }
 
+.feedback-correct h2 {
+    color: #059669;
+    font-size: 40px;
+}
+
+/* Wrong answer */
+
 .feedback-wrong {
     padding: 20px;
 }
 
+.feedback-wrong h2 {
+    color: #d97706;
+    font-size: 36px;
+}
+
+/* Feedback icon */
+
+.feedback-icon {
+    font-size: 80px;
+    margin-bottom: 10px;
+    animation: iconBounce 0.7s ease;
+}
+
+/* XP animation */
+
+.xp-animation {
+    display: inline-block;
+    font-size: 38px;
+    font-weight: 900;
+    color: #7c3aed;
+    margin: 20px 0;
+    animation: xpFloat 0.9s ease-out;
+}
+
+/* Final results */
+
 .final-result {
-    animation: feedbackAppear 0.5s ease-out;
+    animation: cardAppear 0.5s ease-out;
+}
+
+.final-result h2 {
+    color: #4f46e5;
 }
 
 .final-xp {
+    display: inline-block;
+    padding: 18px 30px;
+    margin: 20px 0;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #eef2ff, #f5f3ff);
+    color: #5b21b6;
     font-size: 42px;
-    font-weight: bold;
-    margin: 25px 0;
+    font-weight: 900;
+    box-shadow: 0 10px 25px rgba(79, 70, 229, 0.15);
 }
 
-@keyframes feedbackAppear {
+/* Disabled buttons */
+
+button:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* Animations */
+
+@keyframes cardAppear {
     from {
         opacity: 0;
-        transform: scale(0.85);
+        transform: translateY(25px) scale(0.97);
     }
 
     to {
         opacity: 1;
-        transform: scale(1);
+        transform: translateY(0) scale(1);
     }
 }
 
 @keyframes iconBounce {
     0% {
-        transform: scale(0.5);
+        transform: scale(0.3) rotate(-10deg);
+        opacity: 0;
     }
 
     60% {
-        transform: scale(1.2);
+        transform: scale(1.2) rotate(5deg);
+        opacity: 1;
     }
 
     100% {
-        transform: scale(1);
+        transform: scale(1) rotate(0);
     }
 }
 
 @keyframes xpFloat {
     0% {
         opacity: 0;
-        transform: translateY(20px);
+        transform: translateY(25px) scale(0.8);
     }
 
     50% {
         opacity: 1;
-        transform: translateY(-5px);
+        transform: translateY(-8px) scale(1.1);
     }
 
     100% {
         opacity: 1;
-        transform: translateY(0);
+        transform: translateY(0) scale(1);
     }
 }
 
-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
+/* Mobile */
+
+@media (max-width: 650px) {
+
+    body {
+        padding: 20px 10px;
+    }
+
+    .card {
+        padding: 28px 20px;
+        border-radius: 24px;
+    }
+
+    .category-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .answers {
+        grid-template-columns: 1fr;
+    }
+
+    .answers button {
+        min-height: 65px;
+    }
+
+    .subtitle {
+        font-size: 16px;
+    }
+}
+
+/* Accessibility */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
 }
