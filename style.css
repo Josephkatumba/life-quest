@@ -58,3 +58,36 @@ button:hover {
     background: #3730a3;
     transform: scale(1.05);
 }
+.category-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.category-buttons button {
+    width: 100%;
+    margin-top: 0;
+}
+
+.category-name {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.answers {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 25px;
+}
+
+.answers button {
+    width: 100%;
+    margin-top: 0;
+}
+
+.score {
+    font-weight: bold;
+    margin-top: 25px;
+}
