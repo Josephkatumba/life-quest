@@ -833,11 +833,14 @@ function showCategories() {
 
 function chooseCategory(category) {
 
-    currentCategory =
-        categories[category];
+    if (!categories[category]) {
+        console.error("Category not found:", category);
+        return;
+    }
 
-    currentCategory.key =
-        category;
+    currentCategory = categories[category];
+
+    currentCategory.key = category;
 
     currentQuestion = 0;
 
