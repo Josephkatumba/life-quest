@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>Life Quest</title>
+
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -17,17 +20,29 @@
             Your choices. Your journey. Your level.
         </p>
 
-        <div class="card">
+        <div class="card" id="game-card">
 
-            <h2>Welcome to Life Quest!</h2>
+            <div id="welcome-screen">
 
-            <p>
-                Make choices, solve challenges and earn XP.
-            </p>
+                <h2>Welcome, Quest Player! 👋</h2>
 
-            <button onclick="startGame()">
-                START GAME
-            </button>
+                <p>
+                    Enter your name to begin your adventure.
+                </p>
+
+                <input
+                    type="text"
+                    id="student-name"
+                    placeholder="Enter your name"
+                    maxlength="30"
+                    autocomplete="off"
+                >
+
+                <button onclick="createProfile()">
+                    🚀 START MY QUEST
+                </button>
+
+            </div>
 
         </div>
 
@@ -36,4 +51,5 @@
     <script src="game.js"></script>
 
 </body>
+
 </html>
