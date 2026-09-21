@@ -848,3 +848,133 @@ small {
     }
 
 }
+/* ==========================================
+   QUEST MODES
+========================================== */
+
+.quest-mode-header {
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.quest-mode-icon {
+    font-size: 60px;
+    margin-bottom: 5px;
+}
+
+.quest-mode-header h2 {
+    margin: 5px 0;
+}
+
+.quest-mode-header p {
+    margin-top: 5px;
+}
+
+
+.quest-modes {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+
+.quest-mode {
+    width: 100%;
+
+    display: flex;
+    align-items: center;
+
+    text-align: left;
+
+    padding: 20px;
+
+    border-radius: 20px;
+
+    margin: 0;
+
+    color: white;
+
+    box-shadow:
+        0 10px 20px rgba(15, 23, 42, 0.15);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+.quest-mode:hover {
+    transform: translateX(6px);
+
+    box-shadow:
+        0 15px 30px rgba(15, 23, 42, 0.22);
+}
+
+
+.rookie-mode {
+    background:
+        linear-gradient(
+            135deg,
+            #16a34a,
+            #22c55e
+        );
+}
+
+
+.challenge-mode {
+    background:
+        linear-gradient(
+            135deg,
+            #ca8a04,
+            #f59e0b
+        );
+}
+
+
+.championship-mode {
+    background:
+        linear-gradient(
+            135deg,
+            #dc2626,
+            #f97316
+        );
+}
+
+
+.mode-icon {
+    font-size: 35px;
+    margin-right: 15px;
+}
+
+
+.mode-content {
+    display: flex;
+    flex-direction: column;
+
+    flex: 1;
+
+    gap: 4px;
+}
+
+
+.mode-content strong {
+    font-size: 19px;
+}
+
+
+.mode-content span {
+    font-size: 14px;
+    opacity: 0.9;
+}
+
+
+.mode-arrow {
+    font-size: 30px;
+    font-weight: 900;
+}
+
+
+#back-to-map {
+    background: #64748b;
+    margin-top: 25px;
+}
