@@ -467,7 +467,747 @@ const categories = {
 
 let currentCategory = null;
 let currentQuestion = 0;
-let score = 0;
+let sessionXP = 0;
+
+let player = {
+    name: "",
+    totalXP: 0,
+    questionsAnswered: 0,
+    correctAnswers: 0,
+    categoryXP: {
+        world: 0,
+        pop: 0,
+        brain: 0,
+        life: 0,
+        school: 0
+    }
+};
+
+
+/* =========================
+   PROFILE
+========================= */
+
+function loadProfile() {
+
+    const savedProfile = localStorage.getItem("lifeQuestProfile");
+
+    if (savedProfile) {
+        player = JSON.parse(savedProfile);
+    }
+}
+
+
+function saveProfile() {
+
+    localStorage.setItem(
+        "lifeQuestProfile",
+        JSON.stringify(player)
+    );
+}
+
+
+function createProfile() {
+
+    const input = document.getElementById("student-name");
+
+    const name = input.value.trim();
+
+    if (!name) {
+
+        input.focus();
+
+        alert("Please enter your name!");
+
+        return;
+    }
+
+    player.name = name;
+
+    saveProfile();
+
+    showProfile();
+
+}
+
+
+/* =========================
+   XP & LEVELS
+========================= */
+
+function getLevel(xp) {
+
+    if (xp >= 10000) return 10;
+    if (xp >= 7500) return 9;
+    if (xp >= 5500) return 8;
+    if (xp >= 4000) return 7;
+    if (xp >= 3000) return 6;
+    if (xp >= 2000) return 5;
+    if (xp >= 1500) return 4;
+    if (xp >= 1000) return 3;
+    if (xp >= 500) return 2;
+
+    return 1;
+}
+
+
+function getRank(level) {
+
+    if (level >= 10) return "👑 LEGEND";
+    if (level >= 8) return "💎 CHAMPION";
+    if (level >= 6) return "🏆 ACHIEVER";
+    if (level >= 4) return "🚀 CHALLENGER";
+    if (level >= 2) return "⭐ ROOKIE";
+
+    return "🌱 EXPLORER";
+}
+
+
+function getLevelProgress(xp) {
+
+    const thresholds = [
+        0,
+        500,
+        1000,
+        1500,
+        2000,
+        3000,
+        4000,
+        5500,
+        7500,
+        10000
+    ];
+
+    const level = getLevel(xp);
+
+    if (level >= 10) {
+        return 100;
+    }
+
+    const currentLevelXP = thresholds[level - 1];
+
+    const nextLevelXP = thresholds[level];
+
+    const progress =
+        ((xp - currentLevelXP) /
+        (nextLevelXP - currentLevelXP)) * 100;
+
+    return Math.max(0, Math.min(100, progress));
+}
+
+
+/* =========================
+   PROFILE SCREEN
+========================= */
+
+function showProfile() {
+
+    const gameContainer =
+        document.querySelector(".card");
+
+    const level = getLevel(player.totalXP);
+
+    const rank = getRank(level);
+
+    const progress =
+        getLevelProgress(player.totalXP);
+
+    gameContainer.innerHTML = `
+
+        <div class="profile-header">
+
+            <div class="profile-info">
+
+                <div class="profile-name">
+                    👋 ${player.name}
+                </div>
+
+                <div class="profile-level">
+                    Level ${level}
+                </div>
+
+            </div>
+
+            <div class="profile-xp">
+                ⭐ ${player.totalXP} XP
+            </div>
+
+        </div>
+
+
+        <div class="rank-card">
+
+            <div class="rank-title">
+                CURRENT RANK
+            </div>
+
+            <div class="rank-name">
+                ${rank}
+            </div>
+
+        </div>
+
+
+        <div class="level-section">
+
+            <div class="level-label">
+
+                <span>
+                    Level ${level}
+                </span>
+
+                <span>
+                    ${Math.round(progress)}%
+                </span>
+
+            </div>
+
+            <div class="progress-bar">
+
+                <div
+                    class="progress-fill"
+                    style="width:${progress}%"
+                ></div>
+
+            </div>
+
+        </div>
+
+
+        <h3>📊 Your Quest Progress</h3>
+
+
+        <div class="profile-categories">
+
+            <div class="profile-category">
+
+                <div class="profile-category-title">
+                    🌍 World Explorer
+                </div>
+
+                <div class="profile-category-xp">
+                    ${player.categoryXP.world} XP
+                </div>
+
+            </div>
+
+
+            <div class="profile-category">
+
+                <div class="profile-category-title">
+                    🇺🇸 Pop Culture
+                </div>
+
+                <div class="profile-category-xp">
+                    ${player.categoryXP.pop} XP
+                </div>
+
+            </div>
+
+
+            <div class="profile-category">
+
+                <div class="profile-category-title">
+                    🧠 Brain Power
+                </div>
+
+                <div class="profile-category-xp">
+                    ${player.categoryXP.brain} XP
+                </div>
+
+            </div>
+
+
+            <div class="profile-category">
+
+                <div class="profile-category-title">
+                    💰 Real Life
+                </div>
+
+                <div class="profile-category-xp">
+                    ${player.categoryXP.life} XP
+                </div>
+
+            </div>
+
+
+            <div class="profile-category">
+
+                <div class="profile-category-title">
+                    🏫 School Challenge
+                </div>
+
+                <div class="profile-category-xp">
+                    ${player.categoryXP.school} XP
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div style="margin-top:25px">
+
+            <p>
+                Questions answered:
+                <strong>
+                    ${player.questionsAnswered}
+                </strong>
+            </p>
+
+            <p>
+                Correct answers:
+                <strong>
+                    ${player.correctAnswers}
+                </strong>
+            </p>
+
+        </div>
+
+
+        <button onclick="showCategories()">
+            🎮 PLAY A QUEST
+        </button>
+
+    `;
+}
+
+
+/* =========================
+   CATEGORY MENU
+========================= */
+
+function showCategories() {
+
+    const gameContainer =
+        document.querySelector(".card");
+
+    gameContainer.innerHTML = `
+
+        <h2>🎯 Choose Your Quest</h2>
+
+        <p>
+            What adventure are you taking today?
+        </p>
+
+
+        <div class="category-buttons">
+
+            <button onclick="chooseCategory('world')">
+                🌍 World Explorer
+            </button>
+
+            <button onclick="chooseCategory('pop')">
+                🇺🇸 Pop Culture
+            </button>
+
+            <button onclick="chooseCategory('brain')">
+                🧠 Brain Power
+            </button>
+
+            <button onclick="chooseCategory('life')">
+                💰 Real Life
+            </button>
+
+            <button onclick="chooseCategory('school')">
+                🏫 School Challenge
+            </button>
+
+        </div>
+
+
+        <button
+            onclick="showProfile()"
+            style="margin-top:25px"
+        >
+            👤 MY PROFILE
+        </button>
+
+    `;
+}
+
+
+/* =========================
+   START CATEGORY
+========================= */
+
+function chooseCategory(category) {
+
+    currentCategory =
+        categories[category];
+
+    currentCategory.key =
+        category;
+
+    currentQuestion = 0;
+
+    sessionXP = 0;
+
+    showQuestion();
+}
+
+
+/* =========================
+   QUESTIONS
+========================= */
+
+function showQuestion() {
+
+    const gameContainer =
+        document.querySelector(".card");
+
+    const question =
+        currentCategory.questions[currentQuestion];
+
+
+    gameContainer.innerHTML = `
+
+        <p class="category-name">
+            ${currentCategory.name}
+        </p>
+
+
+        <h2>
+            Question
+            ${currentQuestion + 1}
+            of
+            ${currentCategory.questions.length}
+        </h2>
+
+
+        <p class="question-text">
+            ${question.question}
+        </p>
+
+
+        <div class="answers">
+
+            ${question.answers.map(
+                (answer, index) => `
+
+                <button
+                    onclick="checkAnswer(${index})"
+                >
+                    ${answer}
+                </button>
+
+            `
+            ).join("")}
+
+        </div>
+
+
+        <p class="score">
+            ⭐ Session XP: ${sessionXP}
+        </p>
+
+    `;
+}
+
+
+/* =========================
+   ANSWERS
+========================= */
+
+function checkAnswer(answerIndex) {
+
+    const question =
+        currentCategory.questions[currentQuestion];
+
+
+    const buttons =
+        document.querySelectorAll(
+            ".answers button"
+        );
+
+
+    buttons.forEach(button => {
+
+        button.disabled = true;
+
+    });
+
+
+    player.questionsAnswered++;
+
+
+    if (
+        answerIndex ===
+        question.correct
+    ) {
+
+        const earnedXP = 100;
+
+        sessionXP += earnedXP;
+
+        player.totalXP += earnedXP;
+
+        player.correctAnswers++;
+
+        player.categoryXP[
+            currentCategory.key
+        ] += earnedXP;
+
+
+        saveProfile();
+
+
+        showFeedback(
+            true,
+            "🎉 CORRECT!",
+            "+100 XP",
+            "Fantastic work, " +
+            player.name +
+            "!"
+        );
+
+
+    } else {
+
+        saveProfile();
+
+
+        showFeedback(
+            false,
+            "💡 NOT QUITE!",
+            "+0 XP",
+            "The correct answer was: " +
+            question.answers[
+                question.correct
+            ]
+        );
+    }
+}
+
+
+/* =========================
+   FEEDBACK
+========================= */
+
+function showFeedback(
+    correct,
+    title,
+    points,
+    message
+) {
+
+    const gameContainer =
+        document.querySelector(".card");
+
+
+    const feedbackClass =
+        correct
+            ? "feedback-correct"
+            : "feedback-wrong";
+
+
+    gameContainer.innerHTML = `
+
+        <div class="feedback ${feedbackClass}">
+
+            <div class="feedback-icon">
+                ${correct ? "🎉" : "💡"}
+            </div>
+
+
+            <h2>
+                ${title}
+            </h2>
+
+
+            <div class="xp-animation">
+                ${points}
+            </div>
+
+
+            <p>
+                ${message}
+            </p>
+
+
+            <button
+                onclick="nextQuestion()"
+            >
+                CONTINUE →
+            </button>
+
+        </div>
+
+    `;
+}
+
+
+/* =========================
+   NEXT QUESTION
+========================= */
+
+function nextQuestion() {
+
+    currentQuestion++;
+
+
+    if (
+        currentQuestion <
+        currentCategory.questions.length
+    ) {
+
+        showQuestion();
+
+    } else {
+
+        endGame();
+
+    }
+}
+
+
+/* =========================
+   FINISH QUEST
+========================= */
+
+function endGame() {
+
+    const gameContainer =
+        document.querySelector(".card");
+
+
+    const totalQuestions =
+        currentCategory.questions.length;
+
+
+    const correct =
+        sessionXP / 100;
+
+
+    const percentage =
+        Math.round(
+            (correct /
+            totalQuestions) * 100
+        );
+
+
+    let message;
+
+
+    if (percentage === 100) {
+
+        message =
+            "🏆 PERFECT SCORE!";
+
+    } else if (percentage >= 80) {
+
+        message =
+            "🔥 AMAZING JOB!";
+
+    } else if (percentage >= 60) {
+
+        message =
+            "⭐ GREAT WORK!";
+
+    } else {
+
+        message =
+            "🌟 KEEP PRACTICING!";
+
+    }
+
+
+    const level =
+        getLevel(player.totalXP);
+
+
+    const rank =
+        getRank(level);
+
+
+    gameContainer.innerHTML = `
+
+        <div class="final-result">
+
+            <h2>
+                ${message}
+            </h2>
+
+
+            <p>
+                Quest complete,
+                <strong>
+                    ${player.name}
+                </strong>!
+            </p>
+
+
+            <h3>
+                ${currentCategory.name}
+            </h3>
+
+
+            <div class="final-xp">
+                ⭐ +${sessionXP} XP
+            </div>
+
+
+            <p>
+                You answered
+                <strong>
+                    ${correct}
+                </strong>
+                out of
+                <strong>
+                    ${totalQuestions}
+                </strong>
+                correctly.
+            </p>
+
+
+            <div class="rank-card">
+
+                <div class="rank-title">
+                    YOUR CURRENT RANK
+                </div>
+
+                <div class="rank-name">
+                    ${rank}
+                </div>
+
+                <p>
+                    Level ${level}
+                </p>
+
+            </div>
+
+
+            <button
+                onclick="showCategories()"
+            >
+                🎮 PLAY ANOTHER QUEST
+            </button>
+
+
+            <button
+                onclick="showProfile()"
+            >
+                👤 VIEW MY PROFILE
+            </button>
+
+        </div>
+
+    `;
+}
+
+
+/* =========================
+   INITIALIZE
+========================= */
+
+loadProfile();
+
+
+if (player.name) {
+
+    showProfile();
+
+}
 
 function startGame() {
     score = 0;
