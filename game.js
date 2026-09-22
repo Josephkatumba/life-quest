@@ -1193,8 +1193,7 @@ function defaultSettings() {
         readableFont: false,
         reduceMotion: prefersReducedMotion(),
         sound: false,          // off by default: sudden sounds can be stressful
-        autoRead: false,
-        secondChances: true
+                secondChances: true
     };
 }
 
@@ -1213,7 +1212,7 @@ function loadSettings() {
 
         if (isPlainObject(saved)) {
             if (TEXT_SIZES.includes(saved.textSize)) merged.textSize = saved.textSize;
-            ["highContrast", "readableFont", "reduceMotion", "sound", "autoRead", "secondChances"]
+            ["highContrast", "readableFont", "reduceMotion", "sound", "secondChances"]
                 .forEach(key => {
                     if (typeof saved[key] === "boolean") merged[key] = saved[key];
                 });
@@ -2346,6 +2345,214 @@ function showProfile() {
 // CATEGORY SCREEN
 // ==========================================
 
+
+let jeopardyBoard = null;
+
+function startJeopardyGame() {
+    screen = "jeopardy-board";
+    const sourceCategories = Object.keys(categories).filter(
+        key => categories[key] && Array.isArray(categories[key].questions)
+    );
+
+    const chosen = shuffle([...sourceCategories]).slice(0, 6);
+
+    jeopardyBoard = {
+        categories: chosen,
+        values: [100, 200, 300, 400, 500],
+        cells: Object.create(null),
+        score: 0
+    };
+
+    chosen.forEach(key => {
+        const pool = shuffle([...categories[key].questions]);
+
+        jeopardyBoard.values.forEach((value, row) => {
+            let candidates;
+
+            if (value <= 200) {
+                candidates = pool.filter(q => q.difficulty === "easy");
+            } else if (value === 300) {
+                candidates = pool.filter(q => q.difficulty === "easy" || q.difficulty === "medium");
+            } else if (value === 400) {
+                candidates = pool.filter(q => q.difficulty === "medium" || q.difficulty === "hard");
+            } else {
+                candidates = pool.filter(q => q.difficulty === "hard");
+            }
+
+            if (!candidates.length) candidates = pool;
+
+            jeopardyBoard.cells[key + ":" + value] = {
+                question: candidates[row % candidates.length],
+                used: false,
+                earned: 0
+            };
+        });
+    });
+
+    renderJeopardyBoard();
+}
+
+function renderJeopardyBoard() {
+    if (!jeopardyBoard) {
+        startJeopardyGame();
+        return;
+    }
+
+    const keys = jeopardyBoard.categories;
+    const total = keys.length * jeopardyBoard.values.length;
+    const used = Object.values(jeopardyBoard.cells).filter(cell => cell.used).length;
+
+    render(`
+        <div class="lq-jeopardy-head">
+            <div>
+                <div class="lq-jeopardy-title">⚡ LIFE QUEST JEOPARDY</div>
+                <div class="lq-board-caption">
+                    Pick a category. Pick a value. Answer the clue. Clear the board.
+                </div>
+            </div>
+
+            <div class="lq-jeopardy-meta">
+                <span class="lq-pill">👤 ${escapeHTML(player.name)}</span>
+                <span class="lq-pill">⭐ ${player.xp} XP</span>
+                <span class="lq-pill">🏆 Board score: ${jeopardyBoard.score}</span>
+            </div>
+        </div>
+
+        <div class="lq-board">
+            ${keys.map(key => `
+                <div class="lq-category">
+                    ${escapeHTML(splitLabel(categories[key].name).text)}
+                </div>
+            `).join("")}
+
+            ${jeopardyBoard.values.map(value =>
+                keys.map(key => {
+                    const id = key + ":" + value;
+                    const cell = jeopardyBoard.cells[id];
+
+                    return `
+                        <button
+                            class="lq-clue ${cell.used ? "is-used" : ""}"
+                            data-clue="${escapeHTML(id)}"
+                            ${cell.used ? "disabled" : ""}
+                        >
+                            ${cell.used ? "✓" : "$" + value}
+                        </button>
+                    `;
+                }).join("")
+            ).join("")}
+        </div>
+
+        <p class="lq-board-caption">Cleared: ${used} / ${total}</p>
+
+        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px">
+            <button id="lq-board-reset">🔄 NEW BOARD</button>
+            <button id="lq-board-exit">🗺️ BACK TO WORLDS</button>
+        </div>
+    `);
+
+    document.querySelectorAll("[data-clue]").forEach(button => {
+        button.addEventListener("click", () => openJeopardyClue(button.dataset.clue));
+    });
+
+    on("lq-board-reset", startJeopardyGame);
+    on("lq-board-exit", showCategories);
+}
+
+function openJeopardyClue(id) {
+    const cell = jeopardyBoard && jeopardyBoard.cells[id];
+
+    if (!cell || cell.used) return;
+
+    const value = Number(id.split(":").pop());
+    const q = cell.question;
+    const categoryKey = id.split(":")[0];
+
+    const modal = document.createElement("div");
+    modal.className = "lq-clue-modal";
+    modal.id = "lq-clue-modal";
+
+    modal.innerHTML = `
+        <div class="lq-clue-panel">
+            <div class="lq-clue-value">LIFE QUEST • ${value}</div>
+            <div class="lq-clue-question">${escapeHTML(q.question)}</div>
+
+            <div class="lq-clue-controls">
+                ${q.answers.map((answer, i) => `
+                    <button class="lq-answer-modal" data-choice="${i}">
+                        ${i + 1}. ${escapeHTML(answer)}
+                    </button>
+                `).join("")}
+            </div>
+
+            <div id="lq-clue-feedback" style="min-height:2em;margin:16px 0;font-weight:900"></div>
+            <div id="lq-clue-correct" class="lq-clue-answer" style="display:none"></div>
+
+            <button id="lq-clue-close" style="display:none">
+                BACK TO BOARD
+            </button>
+        </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    modal.querySelectorAll("[data-choice]").forEach(button => {
+        button.addEventListener("click", () => {
+            const picked = Number(button.dataset.choice);
+            const isCorrect = picked === q.correct;
+
+            modal.querySelectorAll("[data-choice]").forEach(item => item.disabled = true);
+
+            cell.used = true;
+            cell.earned = isCorrect ? value : 0;
+            jeopardyBoard.score += cell.earned;
+
+            player.questionsAnswered++;
+
+            const stats = ensureStats(categoryKey);
+            stats.answered++;
+
+            if (isCorrect) {
+                player.correctAnswers++;
+                stats.correct++;
+
+                player.currentStreak++;
+
+                if (player.currentStreak > player.bestStreak) {
+                    player.bestStreak = player.currentStreak;
+                }
+
+                player.xp += value;
+                player.categoryXP[categoryKey] = (player.categoryXP[categoryKey] || 0) + value;
+
+                modal.querySelector("#lq-clue-feedback").textContent =
+                    "✅ Correct! +" + value + " points";
+                modal.querySelector("#lq-clue-feedback").style.color = "#86efac";
+            } else {
+                player.currentStreak = 0;
+
+                modal.querySelector("#lq-clue-feedback").textContent =
+                    "💡 The correct answer is " + q.answers[q.correct];
+                modal.querySelector("#lq-clue-feedback").style.color = "#fde68a";
+            }
+
+            player.level = getLevel(player.xp);
+            savePlayer();
+
+            const reveal = modal.querySelector("#lq-clue-correct");
+            reveal.textContent = "Correct answer: " + q.answers[q.correct];
+            reveal.style.display = "block";
+
+            modal.querySelector("#lq-clue-close").style.display = "inline-block";
+        });
+    });
+
+    modal.querySelector("#lq-clue-close").addEventListener("click", () => {
+        modal.remove();
+        renderJeopardyBoard();
+    });
+}
+
 function showCategories() {
 
     screen = "categories";
@@ -2391,6 +2598,8 @@ function showCategories() {
 
         </div>
 
+
+        <button id="play-jeopardy" style="width:100%;margin-bottom:16px;background:linear-gradient(135deg,#2563eb,#7c3aed);font-size:22px;">🎯 PLAY LIFE QUEST JEOPARDY</button>
 
         <p class="map-instruction" tabindex="-1" data-autofocus>
             Choose a world and begin your adventure!
@@ -2473,6 +2682,7 @@ function showCategories() {
         });
     });
 
+    on("play-jeopardy", startJeopardyGame);
     on("practice-button", startPractice);
     on("back-profile", showProfile);
 }
@@ -2483,12 +2693,9 @@ function showCategories() {
 // ==========================================
 
 function chooseCategory(category) {
-
     if (!categories[category]) return;
-
     currentCategory = category;
-
-    showQuestModes();
+    startJeopardyGame();
 }
 
 
@@ -2784,9 +2991,6 @@ function showQuestion() {
 
         <div class="lq-tools">
 
-            ${speechSupported() ? `
-                <button class="lq-tool" id="lq-read">🔊 Read aloud</button>
-            ` : ""}
 
             <button
                 class="lq-tool"
@@ -2818,18 +3022,11 @@ function showQuestion() {
         });
     });
 
-    on("lq-read", readQuestionAloud);
     on("lq-hint", useHint);
     on("lq-break", showBreak);
 
     refreshAnswerButtons();
 
-    if (qState.firstShow) {
-
-        qState.firstShow = false;
-
-        if (settings.autoRead) readQuestionAloud();
-    }
 }
 
 
@@ -3055,9 +3252,6 @@ function showFeedback() {
         ? qState.answers.find(answer => answer.correct).text
         : q.answers[q.correct];
 
-    const readButton = speechSupported()
-        ? '<div class="lq-tools"><button class="lq-tool" id="lq-read-feedback">🔊 Read aloud</button></div>'
-        : "";
 
     if (f.correct) {
 
@@ -3093,7 +3287,6 @@ function showFeedback() {
                     ${escapeHTML(q.explanation)}
                 </p>
 
-                ${readButton}
 
                 <button id="continue-button" data-autofocus>
                     ➡️ CONTINUE
@@ -3144,17 +3337,11 @@ function showFeedback() {
         `);
     }
 
-    const spoken = f.correct
-        ? f.title + " Plus " + f.xp + " X P. " + q.explanation
-        : "The correct answer was " + correctText + ". " + q.explanation;
 
     on("continue-button", nextQuestion);
 
-    on("lq-read-feedback", () => speak(spoken));
 
-    announce(spoken);
 
-    if (settings.autoRead) speak(spoken);
 }
 
 
@@ -3715,14 +3902,6 @@ function showSettings() {
 
         ${switchRow("reduceMotion", "Less movement", "Turns off animations and confetti")}
 
-        ${switchRow(
-            "autoRead",
-            "Read questions aloud",
-            speechSupported()
-                ? "Reads each question and answer automatically"
-                : "Not available in this browser",
-            !speechSupported()
-        )}
 
         ${switchRow(
             "sound",
@@ -3735,9 +3914,6 @@ function showSettings() {
 
         <div class="lq-tools">
 
-            ${speechSupported() ? `
-                <button class="lq-tool" id="test-voice">🔊 Test the voice</button>
-            ` : ""}
 
             ${player.name ? `
                 <button class="lq-tool" id="reset-progress">🗑️ Reset my progress</button>
@@ -3784,7 +3960,6 @@ function showSettings() {
         });
     });
 
-    on("test-voice", () => speak("Hi! This is how read aloud sounds."));
 
     on("reset-progress", () => {
 
@@ -3823,6 +3998,10 @@ function restoreScreen(name) {
 
         case "categories":
             hasPlayer ? showCategories() : showWelcome();
+            break;
+
+        case "jeopardy-board":
+            hasPlayer ? renderJeopardyBoard() : showWelcome();
             break;
 
         case "modes":
@@ -3907,9 +4086,6 @@ function handleKeydown(event) {
 
         useHint();
 
-    } else if (event.key === "r" || event.key === "R") {
-
-        readQuestionAloud();
     }
 }
 
