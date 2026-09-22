@@ -4262,7 +4262,9 @@ function renderJeopardyBoard() {
         <p class="lq-board-caption">Cleared: ${used} / ${total}</p>
 
         <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px">
-            <button id="lq-board-reset">🔄 NEW BOARD</button>        </div>
+            <button id="lq-board-reset">🔄 NEW BOARD</button>
+            <button id="lq-board-menu">🏠 BACK TO MENU</button>
+        </div>
     `);
 
     document.querySelectorAll("[data-clue]").forEach(button => {
@@ -4270,6 +4272,7 @@ function renderJeopardyBoard() {
     });
 
     on("lq-board-reset", startJeopardyGame);
+    on("lq-board-menu", showProfile);
 }
 
 function openJeopardyClue(id) {
