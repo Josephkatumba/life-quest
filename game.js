@@ -4136,6 +4136,10 @@ function showProfile() {
             🚀 PLAY A QUEST
         </button>
 
+        <button id="classroom-jeopardy">
+            🎓 CLASSROOM JEOPARDY
+        </button>
+
         <button id="achievements-button">
             🏆 ACHIEVEMENTS
         </button>
@@ -4151,6 +4155,7 @@ function showProfile() {
     `);
 
     on("play-quest", showCategories);
+    on("classroom-jeopardy", startClassroomJeopardy);
     on("achievements-button", showAchievements);
     on("report-button", showReport);
     on("switch-player", switchPlayer);
@@ -4164,7 +4169,76 @@ function showProfile() {
 
 let jeopardyBoard = null;
 
-function startJeopardyGame() {
+function startClassroomJeopardy() {
+    screen = "jeopardy-setup";
+
+    render(`
+        <div class="lq-classroom-setup">
+            <div class="lq-result-kicker">🎓 CLASSROOM MODE</div>
+            <h2 tabindex="-1" data-autofocus>SET UP YOUR JEOPARDY GAME</h2>
+            <p class="lq-result-subtitle">
+                The class plays in teams. Pick a category, pick a value, then beat the clock.
+            </p>
+
+            <div class="lq-team-setup-grid">
+                <label>Team 1 <input class="lq-team-name" value="Team 1" maxlength="24"></label>
+                <label>Team 2 <input class="lq-team-name" value="Team 2" maxlength="24"></label>
+                <label>Team 3 <input class="lq-team-name" placeholder="Optional" maxlength="24"></label>
+                <label>Team 4 <input class="lq-team-name" placeholder="Optional" maxlength="24"></label>
+                <label>Team 5 <input class="lq-team-name" placeholder="Optional" maxlength="24"></label>
+                <label>Team 6 <input class="lq-team-name" placeholder="Optional" maxlength="24"></label>
+            </div>
+
+            <div class="lq-time-options">
+                <strong>Answer time</strong>
+                <button class="lq-time-choice is-selected" data-time="10">10 seconds</button>
+                <button class="lq-time-choice" data-time="15">15 seconds</button>
+                <button class="lq-time-choice" data-time="20">20 seconds</button>
+            </div>
+
+            <p class="lq-board-caption">
+                Correct answers add the clue value to the team's score. Wrong or timed-out answers score 0.
+                The turn then moves to the next team.
+            </p>
+
+            <div class="lq-result-actions">
+                <button id="launch-classroom-jeopardy">🎮 START GAME</button>
+                <button id="classroom-back">🏠 BACK TO MENU</button>
+            </div>
+        </div>
+    `);
+
+    let selectedTime = 10;
+
+    document.querySelectorAll(".lq-time-choice").forEach(button => {
+        button.addEventListener("click", () => {
+            selectedTime = Number(button.dataset.time);
+            document.querySelectorAll(".lq-time-choice").forEach(item => item.classList.remove("is-selected"));
+            button.classList.add("is-selected");
+        });
+    });
+
+    on("launch-classroom-jeopardy", () => {
+        const names = [...document.querySelectorAll(".lq-team-name")]
+            .map(input => input.value.trim().replace(/\s+/g, " ").slice(0, 24))
+            .filter(Boolean);
+
+        if (names.length < 2) {
+            announce("Enter at least two team names.");
+            return;
+        }
+
+        startJeopardyGame({
+            mode: "teams",
+            teams: names,
+            timeLimit: selectedTime
+        });
+    });
+
+    on("classroom-back", showProfile);
+}
+
+function startJeopardyGame(options = {}) {
     screen = "jeopardy-board";
 
     const sourceCategories = Object.keys(categories).filter(
@@ -4172,6 +4246,10 @@ function startJeopardyGame() {
     );
 
     const chosen = shuffle([...sourceCategories]).slice(0, 6);
+    const teamMode = options.mode === "teams";
+    const teams = teamMode
+        ? options.teams.map(name => ({ name, score: 0 }))
+        : [];
 
     jeopardyBoard = {
         categories: chosen,
@@ -4181,11 +4259,13 @@ function startJeopardyGame() {
         correct: 0,
         answered: 0,
         streak: 0,
-        bestBoardStreak: 0
+        bestBoardStreak: 0,
+        mode: teamMode ? "teams" : "solo",
+        teams,
+        currentTeam: 0,
+        timeLimit: teamMode ? Number(options.timeLimit || 10) : 0
     };
 
-    // Build each column from distinct questions. Higher-value rows demand
-    // higher difficulty instead of merely preferring it.
     chosen.forEach(key => {
         const pool = shuffle([...categories[key].questions]);
         const usedQuestions = new Set();
@@ -4205,8 +4285,6 @@ function startJeopardyGame() {
                 q.difficulty === wanted && !usedQuestions.has(q)
             );
 
-            // If a category does not have enough questions at the exact tier,
-            // use the nearest unused tier rather than repeating a clue.
             if (!candidates.length) {
                 const fallbackOrder = wanted === "easy"
                     ? ["medium", "hard"]
@@ -4249,20 +4327,32 @@ function renderJeopardyBoard() {
     const keys = jeopardyBoard.categories;
     const total = keys.length * jeopardyBoard.values.length;
     const used = Object.values(jeopardyBoard.cells).filter(cell => cell.used).length;
+    const teamMode = jeopardyBoard.mode === "teams";
+    const currentTeam = teamMode ? jeopardyBoard.teams[jeopardyBoard.currentTeam] : null;
 
     render(`
         <div class="lq-jeopardy-head">
             <div>
                 <div class="lq-jeopardy-title">⚡ LIFE QUEST JEOPARDY</div>
                 <div class="lq-board-caption">
-                    Pick a category. Pick a value. Answer the clue. Clear the board.
+                    ${teamMode
+                        ? "Pick a category and value. Answer before the clock hits zero."
+                        : "Pick a category. Pick a value. Answer the clue. Clear the board."}
                 </div>
             </div>
 
             <div class="lq-jeopardy-meta">
-                <span class="lq-pill">👤 ${escapeHTML(player.name)}</span>
-                <span class="lq-pill">⭐ ${player.xp} XP</span>
-                <span class="lq-pill">🏆 Board score: ${jeopardyBoard.score}</span>
+                ${teamMode ? `
+                    <span class="lq-pill lq-turn-pill">🎤 ${escapeHTML(currentTeam.name)}'s turn</span>
+                    <span class="lq-pill">⏱️ ${jeopardyBoard.timeLimit}s</span>
+                    ${jeopardyBoard.teams.map(team => `
+                        <span class="lq-pill">🏆 ${escapeHTML(team.name)}: ${team.score}</span>
+                    `).join("")}
+                ` : `
+                    <span class="lq-pill">👤 ${escapeHTML(player.name)}</span>
+                    <span class="lq-pill">⭐ ${player.xp} XP</span>
+                    <span class="lq-pill">🏆 Board score: ${jeopardyBoard.score}</span>
+                `}
             </div>
         </div>
 
@@ -4291,10 +4381,14 @@ function renderJeopardyBoard() {
             ).join("")}
         </div>
 
-        <p class="lq-board-caption">Cleared: ${used} / ${total}</p>
+        <p class="lq-board-caption">
+            Cleared: ${used} / ${total}
+            ${teamMode ? " • Next team takes the next clue." : ""}
+        </p>
 
         <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px">
             <button id="lq-board-reset">🔄 NEW BOARD</button>
+            ${teamMode ? '<button id="lq-board-fullscreen">⛶ FULL SCREEN</button>' : ""}
             <button id="lq-board-menu">🏠 BACK TO MENU</button>
         </div>
     `);
@@ -4303,8 +4397,31 @@ function renderJeopardyBoard() {
         button.addEventListener("click", () => openJeopardyClue(button.dataset.clue));
     });
 
-    on("lq-board-reset", startJeopardyGame);
+    on("lq-board-reset", () => {
+        if (teamMode) {
+            startJeopardyGame({
+                mode: "teams",
+                teams: jeopardyBoard.teams.map(team => team.name),
+                timeLimit: jeopardyBoard.timeLimit
+            });
+        } else {
+            startJeopardyGame();
+        }
+    });
+
     on("lq-board-menu", showProfile);
+
+    on("lq-board-fullscreen", async () => {
+        try {
+            if (!document.fullscreenElement) {
+                await document.documentElement.requestFullscreen();
+            } else {
+                await document.exitFullscreen();
+            }
+        } catch (error) {
+            announce("Full screen is not available in this browser.");
+        }
+    });
 }
 
 function openJeopardyClue(id) {
@@ -4315,6 +4432,8 @@ function openJeopardyClue(id) {
     const value = Number(id.split(":").pop());
     const q = cell.question;
     const categoryKey = id.split(":")[0];
+    const teamMode = jeopardyBoard.mode === "teams";
+    const activeTeam = teamMode ? jeopardyBoard.teams[jeopardyBoard.currentTeam] : null;
 
     const shuffledAnswers = shuffle(
         q.answers.map((answer, originalIndex) => ({
@@ -4329,7 +4448,18 @@ function openJeopardyClue(id) {
 
     modal.innerHTML = `
         <div class="lq-clue-panel">
-            <div class="lq-clue-value">${escapeHTML(splitLabel(categories[categoryKey].name).text)} • ${value}</div>
+            <div class="lq-clue-value">
+                ${escapeHTML(splitLabel(categories[categoryKey].name).text)} • ${value}
+            </div>
+
+            ${teamMode ? `
+                <div class="lq-active-team">
+                    🎤 ${escapeHTML(activeTeam.name)}
+                    <span>• ${activeTeam.score} points</span>
+                </div>
+                <div id="lq-clue-timer" class="lq-clue-timer">${jeopardyBoard.timeLimit}</div>
+            ` : ""}
+
             <div class="lq-clue-question">${escapeHTML(q.question)}</div>
 
             <div class="lq-clue-controls">
@@ -4352,93 +4482,140 @@ function openJeopardyClue(id) {
 
     document.body.appendChild(modal);
 
+    let timerId = null;
+    let answered = false;
+
+    const finishClue = (picked, timedOut = false) => {
+        if (answered) return;
+        answered = true;
+
+        if (timerId) {
+            clearInterval(timerId);
+            timerId = null;
+        }
+
+        const isCorrect = !timedOut && picked === q.correct;
+
+        modal.querySelectorAll("[data-choice]").forEach(item => {
+            item.disabled = true;
+            if (Number(item.dataset.choice) === q.correct) {
+                item.classList.add("is-correct");
+            }
+        });
+
+        if (!isCorrect && !timedOut) {
+            const selected = modal.querySelector(`[data-choice="${picked}"]`);
+            if (selected) selected.classList.add("is-wrong");
+        }
+
+        cell.used = true;
+        cell.earned = isCorrect ? value : 0;
+
+        player.questionsAnswered++;
+
+        const stats = ensureStats(categoryKey);
+        stats.answered++;
+
+        let streakBonus = 0;
+
+        if (isCorrect) {
+            player.correctAnswers++;
+            stats.correct++;
+            jeopardyBoard.correct++;
+            jeopardyBoard.streak++;
+            jeopardyBoard.bestBoardStreak = Math.max(
+                jeopardyBoard.bestBoardStreak,
+                jeopardyBoard.streak
+            );
+
+            player.currentStreak++;
+            player.bestStreak = Math.max(player.bestStreak, player.currentStreak);
+
+            streakBonus = jeopardyBoard.streak >= 3
+                ? Math.min(100, (jeopardyBoard.streak - 2) * 25)
+                : 0;
+
+            cell.earned = value + streakBonus;
+
+            if (teamMode) {
+                activeTeam.score += value;
+            } else {
+                jeopardyBoard.score += cell.earned;
+            }
+
+            player.xp += value;
+            player.categoryXP[categoryKey] = (player.categoryXP[categoryKey] || 0) + value;
+
+            modal.querySelector("#lq-clue-feedback").textContent =
+                teamMode
+                    ? "✅ Correct! " + activeTeam.name + " +" + value + " points"
+                    : "✅ Correct! +" + value + (streakBonus ? " + " + streakBonus + " streak bonus" : "");
+
+            modal.querySelector("#lq-clue-feedback").className =
+                "lq-clue-feedback is-success";
+        } else {
+            player.currentStreak = 0;
+            jeopardyBoard.streak = 0;
+
+            modal.querySelector("#lq-clue-feedback").textContent =
+                timedOut
+                    ? "⏰ Time's up! No points."
+                    : "❌ Not quite. No points.";
+
+            modal.querySelector("#lq-clue-feedback").className =
+                "lq-clue-feedback is-wrong";
+        }
+
+        jeopardyBoard.answered++;
+
+        player.level = getLevel(player.xp);
+        savePlayer();
+
+        const reveal = modal.querySelector("#lq-clue-correct");
+        reveal.textContent = "Correct answer: " + q.answers[q.correct];
+        reveal.style.display = "block";
+
+        const explanation = modal.querySelector("#lq-clue-explanation");
+        if (q.explanation) {
+            explanation.innerHTML =
+                "<strong>Why:</strong> " + escapeHTML(q.explanation);
+            explanation.style.display = "block";
+        }
+
+        modal.querySelector("#lq-clue-close").style.display = "inline-block";
+    };
+
     modal.querySelectorAll("[data-choice]").forEach(button => {
         button.addEventListener("click", () => {
-            const picked = Number(button.dataset.choice);
-            const isCorrect = picked === q.correct;
-
-            modal.querySelectorAll("[data-choice]").forEach(item => {
-                item.disabled = true;
-                if (Number(item.dataset.choice) === q.correct) {
-                    item.classList.add("is-correct");
-                }
-            });
-
-            if (!isCorrect) button.classList.add("is-wrong");
-
-            cell.used = true;
-            cell.earned = isCorrect ? value : 0;
-
-            player.questionsAnswered++;
-
-            const stats = ensureStats(categoryKey);
-            stats.answered++;
-
-            let streakBonus = 0;
-
-            if (isCorrect) {
-                player.correctAnswers++;
-                stats.correct++;
-                jeopardyBoard.correct++;
-                jeopardyBoard.streak++;
-                jeopardyBoard.bestBoardStreak = Math.max(
-                    jeopardyBoard.bestBoardStreak,
-                    jeopardyBoard.streak
-                );
-
-                player.currentStreak++;
-                player.bestStreak = Math.max(player.bestStreak, player.currentStreak);
-
-                // Consecutive correct answers add a small board-score bonus.
-                streakBonus = jeopardyBoard.streak >= 3
-                    ? Math.min(100, (jeopardyBoard.streak - 2) * 25)
-                    : 0;
-
-                cell.earned = value + streakBonus;
-                jeopardyBoard.score += cell.earned;
-
-                player.xp += value;
-                player.categoryXP[categoryKey] = (player.categoryXP[categoryKey] || 0) + value;
-
-                modal.querySelector("#lq-clue-feedback").textContent =
-                    "✅ Correct! +" + value +
-                    (streakBonus ? " + " + streakBonus + " streak bonus" : "");
-
-                modal.querySelector("#lq-clue-feedback").className =
-                    "lq-clue-feedback is-success";
-            } else {
-                player.currentStreak = 0;
-                jeopardyBoard.streak = 0;
-
-                modal.querySelector("#lq-clue-feedback").textContent =
-                    "❌ Not quite. The correct answer is " + q.answers[q.correct];
-
-                modal.querySelector("#lq-clue-feedback").className =
-                    "lq-clue-feedback is-wrong";
-            }
-
-            jeopardyBoard.answered++;
-
-            player.level = getLevel(player.xp);
-            savePlayer();
-
-            const reveal = modal.querySelector("#lq-clue-correct");
-            reveal.textContent = "Correct answer: " + q.answers[q.correct];
-            reveal.style.display = "block";
-
-            const explanation = modal.querySelector("#lq-clue-explanation");
-            if (q.explanation) {
-                explanation.innerHTML =
-                    "<strong>Why:</strong> " + escapeHTML(q.explanation);
-                explanation.style.display = "block";
-            }
-
-            modal.querySelector("#lq-clue-close").style.display = "inline-block";
+            finishClue(Number(button.dataset.choice));
         });
     });
 
+    if (teamMode) {
+        let remaining = jeopardyBoard.timeLimit;
+        const timer = modal.querySelector("#lq-clue-timer");
+
+        timerId = setInterval(() => {
+            remaining -= 1;
+            timer.textContent = remaining;
+
+            if (remaining <= 3) {
+                timer.classList.add("is-danger");
+            }
+
+            if (remaining <= 0) {
+                finishClue(-1, true);
+            }
+        }, 1000);
+    }
+
     modal.querySelector("#lq-clue-close").addEventListener("click", () => {
         modal.remove();
+
+        if (teamMode) {
+            jeopardyBoard.currentTeam =
+                (jeopardyBoard.currentTeam + 1) % jeopardyBoard.teams.length;
+        }
 
         const total = jeopardyBoard.categories.length * jeopardyBoard.values.length;
 
@@ -5806,6 +5983,10 @@ function restoreScreen(name) {
 
         case "jeopardy-board":
             hasPlayer ? renderJeopardyBoard() : showWelcome();
+            break;
+
+        case "jeopardy-setup":
+            hasPlayer ? startClassroomJeopardy() : showWelcome();
             break;
 
         case "jeopardy-result":
