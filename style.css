@@ -1185,3 +1185,98 @@ body {
 @media(max-width:600px) {
     .lq-result-grid { grid-template-columns:repeat(2,1fr); }
 }
+
+
+/* ==========================================
+   CLASSROOM JEOPARDY MODE
+========================================== */
+.lq-classroom-setup { text-align:center; padding:10px 0 4px; }
+.lq-team-setup-grid {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:12px;
+    max-width:760px;
+    margin:24px auto;
+}
+.lq-team-setup-grid label {
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+    text-align:left;
+    color:#cbd5e1;
+    font-weight:900;
+    font-size:14px;
+}
+.lq-team-name {
+    width:100%;
+    box-sizing:border-box;
+    padding:14px 15px;
+    border-radius:13px;
+    border:1px solid rgba(255,255,255,.14);
+    background:rgba(255,255,255,.07);
+    color:#fff;
+    font:inherit;
+    outline:none;
+}
+.lq-team-name:focus { border-color:#ffd84d; box-shadow:0 0 0 3px rgba(255,216,77,.12); }
+.lq-time-options {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    flex-wrap:wrap;
+    margin:18px auto;
+}
+.lq-time-options strong { color:#fff; margin-right:5px; }
+.lq-time-choice {
+    margin:0;
+    padding:9px 13px;
+    border-radius:999px;
+    background:rgba(255,255,255,.07);
+    color:#dbeafe;
+    border:1px solid rgba(255,255,255,.12);
+}
+.lq-time-choice.is-selected {
+    background:#ffd84d;
+    color:#101827;
+    border-color:#ffd84d;
+}
+.lq-turn-pill {
+    background:rgba(255,216,77,.16);
+    border-color:rgba(255,216,77,.35);
+    color:#ffe78a;
+}
+.lq-active-team {
+    margin:14px auto 2px;
+    color:#ffe78a;
+    font-weight:1000;
+    font-size:18px;
+}
+.lq-active-team span { color:#94a3b8; font-size:14px; }
+.lq-clue-timer {
+    width:82px;
+    height:82px;
+    display:grid;
+    place-items:center;
+    margin:12px auto 8px;
+    border-radius:50%;
+    background:rgba(255,216,77,.12);
+    border:4px solid #ffd84d;
+    color:#ffd84d;
+    font-size:32px;
+    font-weight:1000;
+    box-shadow:0 0 30px rgba(255,216,77,.12);
+}
+.lq-clue-timer.is-danger {
+    border-color:#fb7185;
+    color:#fb7185;
+    animation:timerPulse .45s ease-in-out infinite alternate;
+}
+@keyframes timerPulse {
+    from { transform:scale(1); }
+    to { transform:scale(1.08); }
+}
+@media(max-width:650px) {
+    .lq-team-setup-grid { grid-template-columns:1fr; }
+    .lq-clue-timer { width:68px;height:68px;font-size:27px; }
+}
