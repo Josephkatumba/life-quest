@@ -2988,6 +2988,15 @@ function openJeopardyClue(id) {
     const q = cell.question;
     const categoryKey = id.split(":")[0];
 
+    // Shuffle choices for every clue, while keeping the original
+    // answer index so the correct answer remains correct.
+    const shuffledAnswers = shuffle(
+        q.answers.map((answer, originalIndex) => ({
+            answer,
+            originalIndex
+        }))
+    );
+
     const modal = document.createElement("div");
     modal.className = "lq-clue-modal";
     modal.id = "lq-clue-modal";
@@ -2998,9 +3007,9 @@ function openJeopardyClue(id) {
             <div class="lq-clue-question">${escapeHTML(q.question)}</div>
 
             <div class="lq-clue-controls">
-                ${q.answers.map((answer, i) => `
-                    <button class="lq-answer-modal" data-choice="${i}">
-                        ${escapeHTML(answer)}
+                ${shuffledAnswers.map(option => `
+                    <button class="lq-answer-modal" data-choice="${option.originalIndex}">
+                        ${escapeHTML(option.answer)}
                     </button>
                 `).join("")}
             </div>
