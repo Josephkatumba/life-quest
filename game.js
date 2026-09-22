@@ -4189,6 +4189,20 @@ function startClassroomJeopardy() {
                 <label>Team 6 <input class="lq-team-name" placeholder="Optional" maxlength="24"></label>
             </div>
 
+            <div class="lq-board-options">
+                <div class="lq-option-group">
+                    <strong>Board size</strong>
+                    <button class="lq-board-size is-selected" data-count="6">6 topics</button>
+                    <button class="lq-board-size" data-count="5">5 topics</button>
+                </div>
+
+                <div class="lq-option-group">
+                    <strong>Point scale</strong>
+                    <button class="lq-value-scale is-selected" data-scale="100">100–500</button>
+                    <button class="lq-value-scale" data-scale="200">200–1,000</button>
+                </div>
+            </div>
+
             <div class="lq-time-options">
                 <strong>Answer time</strong>
                 <button class="lq-time-choice is-selected" data-time="10">10 seconds</button>
@@ -4209,6 +4223,24 @@ function startClassroomJeopardy() {
     `);
 
     let selectedTime = 10;
+    let selectedCategoryCount = 6;
+    let selectedValueScale = 100;
+
+    document.querySelectorAll(".lq-board-size").forEach(button => {
+        button.addEventListener("click", () => {
+            selectedCategoryCount = Number(button.dataset.count);
+            document.querySelectorAll(".lq-board-size").forEach(item => item.classList.remove("is-selected"));
+            button.classList.add("is-selected");
+        });
+    });
+
+    document.querySelectorAll(".lq-value-scale").forEach(button => {
+        button.addEventListener("click", () => {
+            selectedValueScale = Number(button.dataset.scale);
+            document.querySelectorAll(".lq-value-scale").forEach(item => item.classList.remove("is-selected"));
+            button.classList.add("is-selected");
+        });
+    });
 
     document.querySelectorAll(".lq-time-choice").forEach(button => {
         button.addEventListener("click", () => {
@@ -4231,7 +4263,9 @@ function startClassroomJeopardy() {
         startJeopardyGame({
             mode: "teams",
             teams: names,
-            timeLimit: selectedTime
+            timeLimit: selectedTime,
+            categoryCount: selectedCategoryCount,
+            valueScale: selectedValueScale
         });
     });
 
@@ -4245,15 +4279,26 @@ function startJeopardyGame(options = {}) {
         key => categories[key] && Array.isArray(categories[key].questions)
     );
 
-    const chosen = shuffle([...sourceCategories]).slice(0, 6);
     const teamMode = options.mode === "teams";
+    const categoryCount = Math.min(
+        Number(options.categoryCount || (teamMode ? 6 : 6)),
+        sourceCategories.length
+    );
+    const valueScale = Number(options.valueScale || 100);
+    const values = valueScale === 200
+        ? [200, 400, 600, 800, 1000]
+        : [100, 200, 300, 400, 500];
+
+    const chosen = shuffle([...sourceCategories]).slice(0, categoryCount);
     const teams = teamMode
         ? options.teams.map(name => ({ name, score: 0 }))
         : [];
 
     jeopardyBoard = {
         categories: chosen,
-        values: [100, 200, 300, 400, 500],
+        values,
+        categoryCount,
+        valueScale,
         cells: Object.create(null),
         score: 0,
         correct: 0,
@@ -4402,7 +4447,9 @@ function renderJeopardyBoard() {
             startJeopardyGame({
                 mode: "teams",
                 teams: jeopardyBoard.teams.map(team => team.name),
-                timeLimit: jeopardyBoard.timeLimit
+                timeLimit: jeopardyBoard.timeLimit,
+                categoryCount: jeopardyBoard.categoryCount,
+                valueScale: jeopardyBoard.valueScale
             });
         } else {
             startJeopardyGame();
@@ -4632,19 +4679,39 @@ function showJeopardyResult() {
 
     const total = jeopardyBoard.categories.length * jeopardyBoard.values.length;
     const accuracy = total ? Math.round((jeopardyBoard.correct / total) * 100) : 0;
+    const teamMode = jeopardyBoard.mode === "teams";
+
+    const teamRows = teamMode
+        ? [...jeopardyBoard.teams]
+            .sort((a, b) => b.score - a.score)
+            .map((team, index) => `
+                <div class="lq-team-result-row">
+                    <span>${index + 1}. ${escapeHTML(team.name)}</span>
+                    <strong>${team.score.toLocaleString("en-US")}</strong>
+                </div>
+            `).join("")
+        : "";
 
     render(`
         <div class="lq-jeopardy-result">
-            <div class="lq-result-kicker">⚡ BOARD COMPLETE</div>
-            <h2 tabindex="-1" data-autofocus>YOU CLEARED THE BOARD!</h2>
+            <div class="lq-result-kicker">${teamMode ? "🎓 CLASSROOM COMPLETE" : "⚡ BOARD COMPLETE"}</div>
+            <h2 tabindex="-1" data-autofocus>${teamMode ? "THE BOARD IS CLEARED!" : "YOU CLEARED THE BOARD!"}</h2>
             <p class="lq-result-subtitle">
-                Nice run, ${escapeHTML(player.name)}. Here's how you played.
+                ${teamMode
+                    ? "Final classroom scores are below."
+                    : `Nice run, ${escapeHTML(player.name)}. Here's how you played.`}
             </p>
 
-            <div class="lq-result-score">
-                <span>BOARD SCORE</span>
-                <strong>${jeopardyBoard.score.toLocaleString("en-US")}</strong>
-            </div>
+            ${teamMode ? `
+                <div class="lq-team-results">
+                    ${teamRows}
+                </div>
+            ` : `
+                <div class="lq-result-score">
+                    <span>BOARD SCORE</span>
+                    <strong>${jeopardyBoard.score.toLocaleString("en-US")}</strong>
+                </div>
+            `}
 
             <div class="lq-result-grid">
                 <div><strong>${jeopardyBoard.correct}/${total}</strong><span>Correct</span></div>
@@ -4660,7 +4727,20 @@ function showJeopardyResult() {
         </div>
     `);
 
-    on("jeopardy-play-again", startJeopardyGame);
+    on("jeopardy-play-again", () => {
+        if (teamMode) {
+            startJeopardyGame({
+                mode: "teams",
+                teams: jeopardyBoard.teams.map(team => team.name),
+                timeLimit: jeopardyBoard.timeLimit,
+                categoryCount: jeopardyBoard.categoryCount,
+                valueScale: jeopardyBoard.valueScale
+            });
+        } else {
+            startJeopardyGame();
+        }
+    });
+
     on("jeopardy-menu", showProfile);
 }
 
