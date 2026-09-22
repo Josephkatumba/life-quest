@@ -4166,6 +4166,7 @@ let jeopardyBoard = null;
 
 function startJeopardyGame() {
     screen = "jeopardy-board";
+
     const sourceCategories = Object.keys(categories).filter(
         key => categories[key] && Array.isArray(categories[key].questions)
     );
@@ -4176,29 +4177,60 @@ function startJeopardyGame() {
         categories: chosen,
         values: [100, 200, 300, 400, 500],
         cells: Object.create(null),
-        score: 0
+        score: 0,
+        correct: 0,
+        answered: 0,
+        streak: 0,
+        bestBoardStreak: 0
     };
 
+    // Build each column from distinct questions. Higher-value rows demand
+    // higher difficulty instead of merely preferring it.
     chosen.forEach(key => {
         const pool = shuffle([...categories[key].questions]);
+        const usedQuestions = new Set();
 
-        jeopardyBoard.values.forEach((value, row) => {
-            let candidates;
+        const difficultyForValue = {
+            100: "easy",
+            200: "easy",
+            300: "medium",
+            400: "hard",
+            500: "hard"
+        };
 
-            if (value <= 200) {
-                candidates = pool.filter(q => q.difficulty === "easy");
-            } else if (value === 300) {
-                candidates = pool.filter(q => q.difficulty === "easy" || q.difficulty === "medium");
-            } else if (value === 400) {
-                candidates = pool.filter(q => q.difficulty === "medium" || q.difficulty === "hard");
-            } else {
-                candidates = pool.filter(q => q.difficulty === "hard");
+        jeopardyBoard.values.forEach(value => {
+            const wanted = difficultyForValue[value];
+
+            let candidates = pool.filter(q =>
+                q.difficulty === wanted && !usedQuestions.has(q)
+            );
+
+            // If a category does not have enough questions at the exact tier,
+            // use the nearest unused tier rather than repeating a clue.
+            if (!candidates.length) {
+                const fallbackOrder = wanted === "easy"
+                    ? ["medium", "hard"]
+                    : wanted === "medium"
+                        ? ["easy", "hard"]
+                        : ["medium", "easy"];
+
+                for (const tier of fallbackOrder) {
+                    candidates = pool.filter(q =>
+                        q.difficulty === tier && !usedQuestions.has(q)
+                    );
+                    if (candidates.length) break;
+                }
             }
 
-            if (!candidates.length) candidates = pool;
+            if (!candidates.length) {
+                candidates = pool.filter(q => !usedQuestions.has(q));
+            }
+
+            const question = shuffle(candidates)[0] || pool[0];
+            if (question) usedQuestions.add(question);
 
             jeopardyBoard.cells[key + ":" + value] = {
-                question: candidates[row % candidates.length],
+                question,
                 used: false,
                 earned: 0
             };
@@ -4284,8 +4316,6 @@ function openJeopardyClue(id) {
     const q = cell.question;
     const categoryKey = id.split(":")[0];
 
-    // Shuffle choices for every clue, while keeping the original
-    // answer index so the correct answer remains correct.
     const shuffledAnswers = shuffle(
         q.answers.map((answer, originalIndex) => ({
             answer,
@@ -4299,7 +4329,7 @@ function openJeopardyClue(id) {
 
     modal.innerHTML = `
         <div class="lq-clue-panel">
-            <div class="lq-clue-value">LIFE QUEST • ${value}</div>
+            <div class="lq-clue-value">${escapeHTML(splitLabel(categories[categoryKey].name).text)} • ${value}</div>
             <div class="lq-clue-question">${escapeHTML(q.question)}</div>
 
             <div class="lq-clue-controls">
@@ -4310,8 +4340,9 @@ function openJeopardyClue(id) {
                 `).join("")}
             </div>
 
-            <div id="lq-clue-feedback" style="min-height:2em;margin:16px 0;font-weight:900"></div>
+            <div id="lq-clue-feedback" class="lq-clue-feedback"></div>
             <div id="lq-clue-correct" class="lq-clue-answer" style="display:none"></div>
+            <div id="lq-clue-explanation" class="lq-clue-explanation" style="display:none"></div>
 
             <button id="lq-clue-close" style="display:none">
                 BACK TO BOARD
@@ -4326,40 +4357,67 @@ function openJeopardyClue(id) {
             const picked = Number(button.dataset.choice);
             const isCorrect = picked === q.correct;
 
-            modal.querySelectorAll("[data-choice]").forEach(item => item.disabled = true);
+            modal.querySelectorAll("[data-choice]").forEach(item => {
+                item.disabled = true;
+                if (Number(item.dataset.choice) === q.correct) {
+                    item.classList.add("is-correct");
+                }
+            });
+
+            if (!isCorrect) button.classList.add("is-wrong");
 
             cell.used = true;
             cell.earned = isCorrect ? value : 0;
-            jeopardyBoard.score += cell.earned;
 
             player.questionsAnswered++;
 
             const stats = ensureStats(categoryKey);
             stats.answered++;
 
+            let streakBonus = 0;
+
             if (isCorrect) {
                 player.correctAnswers++;
                 stats.correct++;
+                jeopardyBoard.correct++;
+                jeopardyBoard.streak++;
+                jeopardyBoard.bestBoardStreak = Math.max(
+                    jeopardyBoard.bestBoardStreak,
+                    jeopardyBoard.streak
+                );
 
                 player.currentStreak++;
+                player.bestStreak = Math.max(player.bestStreak, player.currentStreak);
 
-                if (player.currentStreak > player.bestStreak) {
-                    player.bestStreak = player.currentStreak;
-                }
+                // Consecutive correct answers add a small board-score bonus.
+                streakBonus = jeopardyBoard.streak >= 3
+                    ? Math.min(100, (jeopardyBoard.streak - 2) * 25)
+                    : 0;
+
+                cell.earned = value + streakBonus;
+                jeopardyBoard.score += cell.earned;
 
                 player.xp += value;
                 player.categoryXP[categoryKey] = (player.categoryXP[categoryKey] || 0) + value;
 
                 modal.querySelector("#lq-clue-feedback").textContent =
-                    "✅ Correct! +" + value + " points";
-                modal.querySelector("#lq-clue-feedback").style.color = "#86efac";
+                    "✅ Correct! +" + value +
+                    (streakBonus ? " + " + streakBonus + " streak bonus" : "");
+
+                modal.querySelector("#lq-clue-feedback").className =
+                    "lq-clue-feedback is-success";
             } else {
                 player.currentStreak = 0;
+                jeopardyBoard.streak = 0;
 
                 modal.querySelector("#lq-clue-feedback").textContent =
-                    "💡 The correct answer is " + q.answers[q.correct];
-                modal.querySelector("#lq-clue-feedback").style.color = "#fde68a";
+                    "❌ Not quite. The correct answer is " + q.answers[q.correct];
+
+                modal.querySelector("#lq-clue-feedback").className =
+                    "lq-clue-feedback is-wrong";
             }
+
+            jeopardyBoard.answered++;
 
             player.level = getLevel(player.xp);
             savePlayer();
@@ -4368,14 +4426,65 @@ function openJeopardyClue(id) {
             reveal.textContent = "Correct answer: " + q.answers[q.correct];
             reveal.style.display = "block";
 
+            const explanation = modal.querySelector("#lq-clue-explanation");
+            if (q.explanation) {
+                explanation.innerHTML =
+                    "<strong>Why:</strong> " + escapeHTML(q.explanation);
+                explanation.style.display = "block";
+            }
+
             modal.querySelector("#lq-clue-close").style.display = "inline-block";
         });
     });
 
     modal.querySelector("#lq-clue-close").addEventListener("click", () => {
         modal.remove();
-        renderJeopardyBoard();
+
+        const total = jeopardyBoard.categories.length * jeopardyBoard.values.length;
+
+        if (jeopardyBoard.answered >= total) {
+            showJeopardyResult();
+        } else {
+            renderJeopardyBoard();
+        }
     });
+}
+
+function showJeopardyResult() {
+    screen = "jeopardy-result";
+
+    const total = jeopardyBoard.categories.length * jeopardyBoard.values.length;
+    const accuracy = total ? Math.round((jeopardyBoard.correct / total) * 100) : 0;
+
+    render(`
+        <div class="lq-jeopardy-result">
+            <div class="lq-result-kicker">⚡ BOARD COMPLETE</div>
+            <h2 tabindex="-1" data-autofocus>YOU CLEARED THE BOARD!</h2>
+            <p class="lq-result-subtitle">
+                Nice run, ${escapeHTML(player.name)}. Here's how you played.
+            </p>
+
+            <div class="lq-result-score">
+                <span>BOARD SCORE</span>
+                <strong>${jeopardyBoard.score.toLocaleString("en-US")}</strong>
+            </div>
+
+            <div class="lq-result-grid">
+                <div><strong>${jeopardyBoard.correct}/${total}</strong><span>Correct</span></div>
+                <div><strong>${accuracy}%</strong><span>Accuracy</span></div>
+                <div><strong>${jeopardyBoard.bestBoardStreak}</strong><span>Best streak</span></div>
+                <div><strong>${player.xp}</strong><span>Total XP</span></div>
+            </div>
+
+            <div class="lq-result-actions">
+                <button id="jeopardy-play-again">🎮 PLAY AGAIN</button>
+                <button id="jeopardy-menu">🏠 BACK TO MENU</button>
+            </div>
+        </div>
+    `);
+
+    on("jeopardy-play-again", startJeopardyGame);
+    on("jeopardy-menu", showProfile);
 }
 
 function showCategories() {
@@ -5697,6 +5806,10 @@ function restoreScreen(name) {
 
         case "jeopardy-board":
             hasPlayer ? renderJeopardyBoard() : showWelcome();
+            break;
+
+        case "jeopardy-result":
+            hasPlayer ? showJeopardyResult() : showWelcome();
             break;
 
         case "modes":
