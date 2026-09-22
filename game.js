@@ -2480,7 +2480,7 @@ function openJeopardyClue(id) {
             <div class="lq-clue-controls">
                 ${q.answers.map((answer, i) => `
                     <button class="lq-answer-modal" data-choice="${i}">
-                        ${i + 1}. ${escapeHTML(answer)}
+                        ${escapeHTML(answer)}
                     </button>
                 `).join("")}
             </div>
