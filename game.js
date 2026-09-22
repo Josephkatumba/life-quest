@@ -4158,7 +4158,7 @@ function showProfile() {
 
 
 // ==========================================
-// CATEGORY SCREEN
+// JEOPARDY GAME HUB
 // ==========================================
 
 
@@ -4262,9 +4262,7 @@ function renderJeopardyBoard() {
         <p class="lq-board-caption">Cleared: ${used} / ${total}</p>
 
         <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px">
-            <button id="lq-board-reset">🔄 NEW BOARD</button>
-            <button id="lq-board-exit">🗺️ BACK TO WORLDS</button>
-        </div>
+            <button id="lq-board-reset">🔄 NEW BOARD</button>        </div>
     `);
 
     document.querySelectorAll("[data-clue]").forEach(button => {
@@ -4272,7 +4270,6 @@ function renderJeopardyBoard() {
     });
 
     on("lq-board-reset", startJeopardyGame);
-    on("lq-board-exit", showCategories);
 }
 
 function openJeopardyClue(id) {
@@ -4379,8 +4376,8 @@ function openJeopardyClue(id) {
 }
 
 function showCategories() {
-    // The Jeopardy board is now the main game hub.
-    // Keep this route for old saved sessions/back navigation.
+    // The old Worlds/category page has been removed.
+    // This route now goes directly to the Jeopardy board.
     screen = "jeopardy-board";
 
     if (!jeopardyBoard) {
@@ -4498,9 +4495,7 @@ function showQuestModes() {
         </div>
 
 
-        <button id="back-to-map">
-            🗺️ BACK TO MAP
-        </button>
+        <button id="back-to-board">⚡ BACK TO BOARD</button>
 
     `);
 
@@ -4513,7 +4508,7 @@ function showQuestModes() {
         });
     });
 
-    on("back-to-map", showCategories);
+    on("back-to-board", showCategories);
 }
 
 
