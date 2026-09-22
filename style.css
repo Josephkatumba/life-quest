@@ -1037,3 +1037,37 @@ body {
 .lq-clue-answer { color:#86efac;font-weight:900;font-size:24px; }
 @media(max-width:900px){.lq-board{grid-template-columns:repeat(3,minmax(0,1fr));}.lq-category{min-height:72px;}}
 @media(max-width:560px){.card{padding:18px}.lq-board{gap:6px}.lq-category{min-height:62px;font-size:13px}.lq-clue{min-height:64px;font-size:19px}.lq-clue-controls{grid-template-columns:1fr}}
+
+
+/* ==========================================
+   PROFILE / WORLD CARDS: READABLE ON LIGHT CARDS
+   ========================================== */
+.profile-category {
+    color: #172033 !important;
+    background: #f8fafc !important;
+}
+
+.profile-category .profile-category-title,
+.profile-category .profile-category-title strong {
+    color: #172033 !important;
+}
+
+.profile-category .profile-category-xp {
+    color: #475569 !important;
+}
+
+.profile-category small {
+    color: #64748b !important;
+}
+
+/* Keep world names readable even when the main dark theme is active. */
+.profile-categories .profile-category {
+    text-shadow: none;
+}
+
+/* Progress/report cards should also remain readable. */
+.lq-stat,
+.lq-report-row,
+.lq-stat-card {
+    color: #172033;
+}
