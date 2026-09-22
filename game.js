@@ -145,6 +145,71 @@ const categories = {
                 difficulty: "easy",
                 explanation: "Rio de Janeiro is a major city in Brazil."
             }
+,
+
+            {
+                question: "Which river is the longest in Africa?",
+                answers: ["Congo River","Nile River","Zambezi River","Niger River"],
+                correct: 1,
+                difficulty: "medium",
+                explanation: "The Nile is generally recognized as Africa's longest river."
+            },
+
+            {
+                question: "Which country is home to Mount Kilimanjaro?",
+                answers: ["Kenya","Uganda","Tanzania","Rwanda"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "Mount Kilimanjaro is in Tanzania."
+            },
+
+            {
+                question: "What is the smallest continent by land area?",
+                answers: ["Europe","Australia","Antarctica","South America"],
+                correct: 1,
+                difficulty: "medium",
+                explanation: "Australia is the smallest continent by land area."
+            },
+
+            {
+                question: "Which desert is the largest hot desert in the world?",
+                answers: ["Gobi","Kalahari","Sahara","Atacama"],
+                correct: 2,
+                difficulty: "medium",
+                explanation: "The Sahara is the world's largest hot desert."
+            },
+
+            {
+                question: "Which country has the most natural lakes?",
+                answers: ["Canada","Russia","Brazil","United States"],
+                correct: 0,
+                difficulty: "hard",
+                explanation: "Canada has more lakes than any other country."
+            },
+
+            {
+                question: "Which city is located on two continents?",
+                answers: ["Cairo","Istanbul","Nairobi","Lisbon"],
+                correct: 1,
+                difficulty: "medium",
+                explanation: "Istanbul spans Europe and Asia across the Bosporus."
+            },
+
+            {
+                question: "Which African lake is the world's second-largest freshwater lake by surface area?",
+                answers: ["Lake Victoria","Lake Tanganyika","Lake Malawi","Lake Chad"],
+                correct: 0,
+                difficulty: "hard",
+                explanation: "Lake Victoria is the second-largest freshwater lake by surface area after Lake Superior."
+            },
+
+            {
+                question: "Which country is completely surrounded by South Africa?",
+                answers: ["Eswatini","Lesotho","Botswana","Namibia"],
+                correct: 1,
+                difficulty: "hard",
+                explanation: "Lesotho is an enclave entirely surrounded by South Africa."
+            }
 
         ]
     },
@@ -231,6 +296,71 @@ const categories = {
                 correct: 0,
                 difficulty: "medium",
                 explanation: "Black Panther is the superhero and king associated with Wakanda."
+            }
+,
+
+            {
+                question: "Which fictional school does Harry Potter attend?",
+                answers: ["Nevermore Academy","Hogwarts","Xavier's School","Starfleet Academy"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "Harry Potter attends Hogwarts School of Witchcraft and Wizardry."
+            },
+
+            {
+                question: "Which animated film features the song 'Let It Go'?",
+                answers: ["Frozen","Encanto","Tangled","Brave"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "'Let It Go' is from Disney's Frozen."
+            },
+
+            {
+                question: "Which superhero is associated with the fictional country of Wakanda?",
+                answers: ["Black Panther","Aquaman","Flash","Doctor Strange"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Black Panther is the superhero identity of Wakanda's king, T'Challa."
+            },
+
+            {
+                question: "Which band released the song 'Bohemian Rhapsody'?",
+                answers: ["The Beatles","Queen","ABBA","U2"],
+                correct: 1,
+                difficulty: "medium",
+                explanation: "Queen released 'Bohemian Rhapsody' in 1975."
+            },
+
+            {
+                question: "Which film franchise features the character Jack Sparrow?",
+                answers: ["Pirates of the Caribbean","Indiana Jones","Mission: Impossible","The Mummy"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Captain Jack Sparrow is the central character of Pirates of the Caribbean."
+            },
+
+            {
+                question: "Which artist is known for the album 'Thriller'?",
+                answers: ["Prince","Michael Jackson","Elton John","Stevie Wonder"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "Michael Jackson released the album Thriller."
+            },
+
+            {
+                question: "In the Mario games, what is the name of Mario's brother?",
+                answers: ["Luigi","Wario","Toad","Yoshi"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Luigi is Mario's younger twin brother."
+            },
+
+            {
+                question: "Which television series follows a chemistry teacher who enters the illegal drug trade?",
+                answers: ["The Wire","Breaking Bad","Lost","Suits"],
+                correct: 1,
+                difficulty: "medium",
+                explanation: "Breaking Bad follows Walter White and his transformation into a methamphetamine manufacturer."
             }
 
         ]
@@ -334,6 +464,71 @@ const categories = {
                 correct: 2,
                 difficulty: "medium",
                 explanation: "8 × 8 = 64."
+            }
+,
+
+            {
+                question: "What gas do humans need to breathe to survive?",
+                answers: ["Oxygen","Helium","Hydrogen","Neon"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Humans need oxygen for cellular respiration."
+            },
+
+            {
+                question: "What is the process by which plants use light to make food?",
+                answers: ["Respiration","Photosynthesis","Fermentation","Digestion"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "Plants use photosynthesis to convert light energy into chemical energy."
+            },
+
+            {
+                question: "How many bones are in the adult human body, approximately?",
+                answers: ["106","206","306","406"],
+                correct: 1,
+                difficulty: "medium",
+                explanation: "A typical adult human skeleton has 206 bones."
+            },
+
+            {
+                question: "Which organ pumps blood around the human body?",
+                answers: ["Lungs","Liver","Heart","Kidneys"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "The heart pumps blood through the circulatory system."
+            },
+
+            {
+                question: "What is the chemical symbol for gold?",
+                answers: ["Ag","Au","Gd","Go"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "Gold's chemical symbol is Au, from the Latin word aurum."
+            },
+
+            {
+                question: "Which planet has the most prominent ring system?",
+                answers: ["Mars","Venus","Saturn","Mercury"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "Saturn is famous for its extensive and bright ring system."
+            },
+
+            {
+                question: "What force keeps planets in orbit around the Sun?",
+                answers: ["Magnetism","Friction","Gravity","Electricity"],
+                correct: 2,
+                difficulty: "medium",
+                explanation: "Gravity provides the force that keeps planets in orbit around the Sun."
+            },
+
+            {
+                question: "What is the approximate speed of light in a vacuum?",
+                answers: ["300,000 km/s","30,000 km/s","3,000 km/s","3,000,000 km/s"],
+                correct: 0,
+                difficulty: "hard",
+                explanation: "Light travels through a vacuum at about 300,000 kilometres per second."
             }
 
         ]
@@ -467,6 +662,71 @@ const categories = {
                 difficulty: "medium",
                 explanation: "Comparing prices can help you make informed spending decisions."
             }
+,
+
+            {
+                question: "What is a budget mainly used for?",
+                answers: ["Planning income and spending","Choosing a career","Measuring height","Tracking the weather"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "A budget helps plan how money will be earned, saved, and spent."
+            },
+
+            {
+                question: "Which habit can help build an emergency fund?",
+                answers: ["Saving regularly","Spending every payday","Ignoring expenses","Borrowing for every purchase"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Regular saving is a practical way to build an emergency fund."
+            },
+
+            {
+                question: "What does interest mean when you borrow money?",
+                answers: ["The cost of borrowing","A free gift","A tax refund","A salary increase"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Interest is generally the cost paid for using borrowed money."
+            },
+
+            {
+                question: "Which is generally a need rather than a want?",
+                answers: ["Designer shoes","Basic food","A luxury watch","A new game"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "Basic food is a necessity, while the other choices are generally discretionary wants."
+            },
+
+            {
+                question: "What is compound interest?",
+                answers: ["Interest earned on principal and accumulated interest","A bank fee only","A fixed salary","A type of tax"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Compound interest allows interest to be calculated on both the original amount and accumulated interest."
+            },
+
+            {
+                question: "What is a good first step before making a major purchase?",
+                answers: ["Compare the cost with your budget","Buy immediately","Borrow as much as possible","Ignore the price"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Checking a major purchase against your budget helps prevent unaffordable spending."
+            },
+
+            {
+                question: "What does diversification mean in investing?",
+                answers: ["Spreading investments across different assets","Putting all money into one asset","Avoiding all savings","Borrowing more money"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Diversification spreads exposure across different investments rather than concentrating it in one."
+            },
+
+            {
+                question: "If an investment rises from $1,000 to $1,200, what is the percentage gain?",
+                answers: ["10%","15%","20%","25%"],
+                correct: 2,
+                difficulty: "medium",
+                explanation: "The gain is $200, and $200 divided by $1,000 is 20%."
+            }
 
         ]
     },
@@ -563,6 +823,71 @@ const categories = {
                 correct: 0,
                 difficulty: "medium",
                 explanation: "Physics studies matter, energy, motion, forces, and their interactions."
+            }
+,
+
+            {
+                question: "What is 12 × 8?",
+                answers: ["86","96","108","116"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "12 multiplied by 8 equals 96."
+            },
+
+            {
+                question: "Which part of speech describes a noun?",
+                answers: ["Verb","Adjective","Conjunction","Preposition"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "An adjective describes or modifies a noun."
+            },
+
+            {
+                question: "What is the square root of 144?",
+                answers: ["10","11","12","14"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "12 × 12 equals 144."
+            },
+
+            {
+                question: "Which punctuation mark normally ends a direct question?",
+                answers: ["Comma","Period","Question mark","Colon"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "A question mark is normally used at the end of a direct question."
+            },
+
+            {
+                question: "What is the main gas in Earth's atmosphere?",
+                answers: ["Oxygen","Nitrogen","Carbon dioxide","Hydrogen"],
+                correct: 1,
+                difficulty: "medium",
+                explanation: "Nitrogen makes up about 78% of Earth's atmosphere."
+            },
+
+            {
+                question: "What is 15% of 200?",
+                answers: ["15","20","30","35"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "0.15 × 200 equals 30."
+            },
+
+            {
+                question: "Which branch of mathematics studies shapes, sizes, and properties of space?",
+                answers: ["Algebra","Geometry","Statistics","Calculus"],
+                correct: 1,
+                difficulty: "medium",
+                explanation: "Geometry studies shapes, sizes, and spatial relationships."
+            },
+
+            {
+                question: "If a triangle has angles of 50° and 60°, what is the third angle?",
+                answers: ["60°","70°","80°","90°"],
+                correct: 1,
+                difficulty: "medium",
+                explanation: "The angles of a triangle total 180°, so 180 - 50 - 60 = 70°."
             }
 
         ]
@@ -672,6 +997,71 @@ const categories = {
                 difficulty: "easy",
                 explanation: "Golf generally rewards completing the course using fewer strokes."
             }
+,
+
+            {
+                question: "How many players from one basketball team are on the court at one time?",
+                answers: ["4","5","6","7"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "In standard basketball, five players from each team are on the court."
+            },
+
+            {
+                question: "How many players are on the field for one soccer team during normal play?",
+                answers: ["9","10","11","12"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "A soccer team has 11 players on the field during normal play."
+            },
+
+            {
+                question: "How many Grand Slam tournaments are there in tennis each year?",
+                answers: ["2","3","4","5"],
+                correct: 2,
+                difficulty: "medium",
+                explanation: "The four Grand Slam tournaments are the Australian Open, French Open, Wimbledon, and US Open."
+            },
+
+            {
+                question: "In golf, what is one stroke under par on a hole called?",
+                answers: ["Bogey","Par","Birdie","Eagle"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "A birdie is one stroke under par on a hole."
+            },
+
+            {
+                question: "How long is an Olympic swimming pool?",
+                answers: ["25 metres","50 metres","75 metres","100 metres"],
+                correct: 1,
+                difficulty: "medium",
+                explanation: "The standard Olympic long-course swimming pool is 50 metres long."
+            },
+
+            {
+                question: "In athletics, how many laps of a standard 400-metre track make up a 1,500-metre race?",
+                answers: ["2","3","3.75","4.5"],
+                correct: 2,
+                difficulty: "medium",
+                explanation: "1,500 divided by 400 equals 3.75 laps."
+            },
+
+            {
+                question: "Which country won the first FIFA World Cup in 1930?",
+                answers: ["Brazil","Argentina","Uruguay","Italy"],
+                correct: 2,
+                difficulty: "hard",
+                explanation: "Uruguay won the inaugural FIFA World Cup in 1930."
+            },
+
+            {
+                question: "In cricket, how many legal deliveries are normally in one over?",
+                answers: ["4","5","6","8"],
+                correct: 2,
+                difficulty: "medium",
+                explanation: "A standard cricket over consists of six legal deliveries."
+            }
 
         ]
     },
@@ -768,6 +1158,71 @@ const categories = {
                 ["$66", "$242", "$246"],
                 "hard",
                 "6 × 4 = 24 hours, and 24 × $11 = $264.")
+,
+
+            {
+                question: "What does CV commonly stand for in job applications?",
+                answers: ["Career Value","Curriculum Vitae","Company Verification","Candidate Volume"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "CV stands for Curriculum Vitae."
+            },
+
+            {
+                question: "What is a deadline?",
+                answers: ["The latest time something should be completed","A lunch break","A salary bonus","A job title"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "A deadline is the latest time by which a task is expected to be completed."
+            },
+
+            {
+                question: "Which skill is most useful when working in a team?",
+                answers: ["Communication","Avoiding everyone","Ignoring feedback","Hiding problems"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Clear communication helps teams coordinate work and solve problems."
+            },
+
+            {
+                question: "What is a KPI?",
+                answers: ["Key Performance Indicator","Known Payment Invoice","Key Project Interview","Knowledge Planning Index"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "KPI stands for Key Performance Indicator, a measure used to track performance."
+            },
+
+            {
+                question: "What should you generally do when you make a mistake at work?",
+                answers: ["Hide it","Blame someone else","Acknowledge it and help fix it","Delete the evidence"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "Acknowledging a mistake and helping correct it supports accountability and problem solving."
+            },
+
+            {
+                question: "What is networking in a professional context?",
+                answers: ["Building useful professional relationships","Installing internet cables","Avoiding colleagues","Changing passwords"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Professional networking involves building and maintaining relationships that can support learning and opportunities."
+            },
+
+            {
+                question: "Which document usually summarizes a project's planned tasks and deadlines?",
+                answers: ["Project plan","Receipt","Passport","Menu"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "A project plan typically outlines tasks, responsibilities, timelines, and milestones."
+            },
+
+            {
+                question: "What is delegation?",
+                answers: ["Assigning tasks to others while retaining responsibility","Doing every task yourself","Cancelling a project","Avoiding deadlines"],
+                correct: 0,
+                difficulty: "hard",
+                explanation: "Delegation means assigning work to others while the person delegating remains accountable for the overall outcome."
+            }
 
         ]
     },
@@ -865,6 +1320,71 @@ const categories = {
                 ["Never come to class again", "Leave without telling anyone", "Pretend to be sick every day"],
                 "medium",
                 "Teachers can offer options, like writing your answer, sharing one-on-one, or practicing first.")
+,
+
+            {
+                question: "What is active listening?",
+                answers: ["Planning your reply while someone talks","Paying attention and trying to understand the speaker","Interrupting often","Ignoring body language"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "Active listening involves paying attention, understanding, and responding thoughtfully."
+            },
+
+            {
+                question: "What is empathy?",
+                answers: ["Understanding another person's feelings or perspective","Winning every argument","Avoiding people","Agreeing with everything"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Empathy involves understanding another person's feelings or point of view."
+            },
+
+            {
+                question: "What is a respectful way to disagree?",
+                answers: ["Insult the person","Explain your view calmly","Shout louder","End the conversation immediately"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "Calmly explaining a different view allows disagreement without attacking the other person."
+            },
+
+            {
+                question: "What does body language include?",
+                answers: ["Posture and facial expressions","Only spoken words","Written exams","Bank statements"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Body language includes nonverbal signals such as posture, gestures, and facial expressions."
+            },
+
+            {
+                question: "What is a boundary in a relationship?",
+                answers: ["A limit about what you are comfortable with","A rule that controls everyone","A financial investment","A punishment"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "A personal boundary communicates limits around what someone is comfortable with or willing to accept."
+            },
+
+            {
+                question: "When resolving a disagreement, what is usually most helpful?",
+                answers: ["Listening to both sides","Refusing to listen","Spreading rumors","Threatening the other person"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Listening to both sides can help identify the real issue and possible solutions."
+            },
+
+            {
+                question: "What is constructive feedback?",
+                answers: ["Specific feedback intended to help improvement","An insult disguised as advice","Only praise","Public embarrassment"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Constructive feedback identifies specific areas for improvement in a useful and respectful way."
+            },
+
+            {
+                question: "What is a good response when you do not understand someone's instructions?",
+                answers: ["Pretend you understand","Ask for clarification","Ignore the task","Blame the speaker"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "Asking for clarification reduces misunderstandings and helps ensure the task is done correctly."
+            }
 
         ]
     }
