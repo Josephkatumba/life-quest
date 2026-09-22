@@ -1028,7 +1028,7 @@ const categories = {
                 question: "You find a wallet at school. What should you do?",
                 answers: [
                     "Keep the money",
-                    "Give it to a teacher or trusted adult",
+                    "Report it to a trusted adult",
                     "Throw it away",
                     "Hide it"
                 ],
@@ -1067,7 +1067,7 @@ const categories = {
                 question: "You are running late for school. What should you do?",
                 answers: [
                     "Ignore it",
-                    "Tell a trusted adult or school staff member",
+                    "Tell a trusted adult",
                     "Skip school forever",
                     "Blame another student"
                 ],
@@ -1093,7 +1093,7 @@ const categories = {
                 question: "What should you do before crossing a road?",
                 answers: [
                     "Run without looking",
-                    "Look for traffic and use a safe crossing",
+                    "Check traffic and cross safely",
                     "Use your phone",
                     "Close your eyes"
                 ],
@@ -1120,7 +1120,7 @@ const categories = {
                 answers: [
                     "Keep talking to them",
                     "Share your address",
-                    "Block/report them and tell a trusted adult",
+                    "Block them and tell an adult",
                     "Meet them alone"
                 ],
                 correct: 2,
@@ -1184,7 +1184,7 @@ const categories = {
 
             {
                 question: "What is compound interest?",
-                answers: ["Interest earned on principal and accumulated interest","A bank fee only","A fixed salary","A type of tax"],
+                answers: ["Interest on principal and past interest","A bank fee only","A fixed salary","A type of tax"],
                 correct: 0,
                 difficulty: "medium",
                 explanation: "Compound interest allows interest to be calculated on both the original amount and accumulated interest."
@@ -1233,7 +1233,7 @@ const categories = {
 
             {
                 question: "What is an opportunity cost?",
-                answers: ["The value of the next best alternative you give up","A bank charge","A guaranteed profit","A government tax"],
+                answers: ["The next best choice you give up","A bank charge","A guaranteed profit","A government tax"],
                 correct: 0,
                 difficulty: "medium",
                 explanation: "Opportunity cost is the value of the next best alternative forgone."
@@ -1289,7 +1289,7 @@ const categories = {
 
             {
                 question: "What is a fixed expense?",
-                answers: ["A cost that generally stays the same from period to period","A surprise purchase","A discount","A one-time gift"],
+                answers: ["A cost that usually stays the same","A surprise purchase","A discount","A one-time gift"],
                 correct: 0,
                 difficulty: "easy",
                 explanation: "Rent or a fixed subscription can be examples of expenses that generally stay constant for a period."
@@ -1314,7 +1314,7 @@ const categories = {
 
             {
                 question: "What is a financial asset?",
-                answers: ["An item representing financial value or a claim","Only physical property","A household appliance","A work schedule"],
+                answers: ["Something with financial value","Only physical property","A household appliance","A work schedule"],
                 correct: 0,
                 difficulty: "medium",
                 explanation: "Financial assets include items such as cash, shares, and bonds that represent value or claims."
@@ -1362,7 +1362,7 @@ const categories = {
 
             {
                 question: "What is a financial goal?",
-                answers: ["A specific target for your money or finances","A random purchase","A bank password","A tax penalty"],
+                answers: ["A target for your money","A random purchase","A bank password","A tax penalty"],
                 correct: 0,
                 difficulty: "easy",
                 explanation: "A financial goal is a defined objective such as saving a target amount or paying down debt."
@@ -1370,7 +1370,7 @@ const categories = {
 
             {
                 question: "Why should an investor consider risk tolerance?",
-                answers: ["Different investments carry different levels of potential loss","It guarantees profits","It predicts every price","It eliminates uncertainty"],
+                answers: ["Investments have different levels of risk","It guarantees profits","It predicts every price","It eliminates uncertainty"],
                 correct: 0,
                 difficulty: "hard",
                 explanation: "Risk tolerance helps an investor choose exposures that fit their ability and willingness to handle losses."
@@ -1439,7 +1439,7 @@ const categories = {
             {
                 question: "What is the main purpose of the U.S. Constitution?",
                 answers: [
-                    "To establish the framework of government",
+                    "To set up the government framework",
                     "To list every school",
                     "To create weather forecasts",
                     "To explain sports rules"
@@ -1557,7 +1557,7 @@ const categories = {
 
             {
                 question: "What is the main function of the roots of most plants?",
-                answers: ["Absorb water and minerals and anchor the plant","Produce seeds only","Make flowers","Absorb sunlight"],
+                answers: ["Absorb water and anchor the plant","Produce seeds only","Make flowers","Absorb sunlight"],
                 correct: 0,
                 difficulty: "medium",
                 explanation: "Roots anchor plants and absorb water and minerals from the soil."
@@ -1799,7 +1799,7 @@ const categories = {
                 question: "In golf, what is the goal?",
                 answers: [
                     "Use the most strokes",
-                    "Complete the course in as few strokes as possible",
+                    "Finish in as few strokes as possible",
                     "Hit the ball the highest",
                     "Run the fastest"
                 ],
@@ -2013,7 +2013,7 @@ const categories = {
 
             {
                 question: "In boxing, what is a knockout?",
-                answers: ["A result where a fighter cannot continue after being knocked down","A type of training","A scoring bonus","A timeout"],
+                answers: ["When a fighter cannot continue","A type of training","A scoring bonus","A timeout"],
                 correct: 0,
                 difficulty: "medium",
                 explanation: "A knockout occurs when a fighter cannot continue within the referee's count or under the applicable rules."
@@ -2142,7 +2142,7 @@ const categories = {
 
             {
                 question: "What is a deadline?",
-                answers: ["The latest time something should be completed","A lunch break","A salary bonus","A job title"],
+                answers: ["The latest time to finish","A lunch break","A salary bonus","A job title"],
                 correct: 0,
                 difficulty: "easy",
                 explanation: "A deadline is the latest time by which a task is expected to be completed."
@@ -2174,7 +2174,7 @@ const categories = {
 
             {
                 question: "What is networking in a professional context?",
-                answers: ["Building useful professional relationships","Installing internet cables","Avoiding colleagues","Changing passwords"],
+                answers: ["Building professional relationships","Installing internet cables","Avoiding colleagues","Changing passwords"],
                 correct: 0,
                 difficulty: "medium",
                 explanation: "Professional networking involves building and maintaining relationships that can support learning and opportunities."
@@ -2190,7 +2190,7 @@ const categories = {
 
             {
                 question: "What is delegation?",
-                answers: ["Assigning tasks to others while retaining responsibility","Doing every task yourself","Cancelling a project","Avoiding deadlines"],
+                answers: ["Giving tasks to others while staying responsible","Doing every task yourself","Cancelling a project","Avoiding deadlines"],
                 correct: 0,
                 difficulty: "hard",
                 explanation: "Delegation means assigning work to others while the person delegating remains accountable for the overall outcome."
@@ -2207,7 +2207,7 @@ const categories = {
 
             {
                 question: "What is a milestone in project management?",
-                answers: ["A significant point or achievement in a project","A daily lunch","A company logo","A type of salary"],
+                answers: ["A key point in a project","A daily lunch","A company logo","A type of salary"],
                 correct: 0,
                 difficulty: "medium",
                 explanation: "A milestone marks an important stage, event, or achievement in a project."
@@ -2223,7 +2223,7 @@ const categories = {
 
             {
                 question: "What is a professional elevator pitch?",
-                answers: ["A brief explanation of who you are and what you offer","A building safety inspection","A long business report","A salary negotiation only"],
+                answers: ["A brief explanation of who you are","A building safety inspection","A long business report","A salary negotiation only"],
                 correct: 0,
                 difficulty: "medium",
                 explanation: "An elevator pitch is a concise introduction to a person, idea, product, or business."
@@ -2231,7 +2231,7 @@ const categories = {
 
             {
                 question: "What does remote work mean?",
-                answers: ["Working from a location outside the traditional office","Working only at night","Working without a manager","Working without technology"],
+                answers: ["Working outside the traditional office","Working only at night","Working without a manager","Working without technology"],
                 correct: 0,
                 difficulty: "easy",
                 explanation: "Remote work generally means performing job duties away from the traditional workplace."
@@ -2239,7 +2239,7 @@ const categories = {
 
             {
                 question: "What is a stakeholder?",
-                answers: ["A person or group affected by or interested in a project","Only the project manager","A type of software","A company vehicle"],
+                answers: ["A person affected by a project","Only the project manager","A type of software","A company vehicle"],
                 correct: 0,
                 difficulty: "medium",
                 explanation: "Stakeholders can include people or groups affected by or interested in a project."
@@ -2247,7 +2247,7 @@ const categories = {
 
             {
                 question: "What is a deliverable?",
-                answers: ["A specific output that a project is expected to produce","A lunch break","A job interview","A company holiday"],
+                answers: ["A specific project output","A lunch break","A job interview","A company holiday"],
                 correct: 0,
                 difficulty: "medium",
                 explanation: "A deliverable is a defined output or result that a project must produce."
@@ -2255,7 +2255,7 @@ const categories = {
 
             {
                 question: "What does productivity generally measure?",
-                answers: ["How effectively inputs are turned into useful outputs","How many meetings you attend","How long you stay online","How many emails you receive"],
+                answers: ["How effectively inputs become outputs","How many meetings you attend","How long you stay online","How many emails you receive"],
                 correct: 0,
                 difficulty: "hard",
                 explanation: "Productivity concerns the relationship between outputs and the inputs used to produce them."
@@ -2271,7 +2271,7 @@ const categories = {
 
             {
                 question: "What is a conflict of interest?",
-                answers: ["A situation where personal interests could improperly influence professional duties","A disagreement about lunch","A successful negotiation","A routine performance review"],
+                answers: ["Personal interests affecting work duties","A disagreement about lunch","A successful negotiation","A routine performance review"],
                 correct: 0,
                 difficulty: "hard",
                 explanation: "A conflict of interest occurs when competing personal interests could improperly influence professional responsibilities."
@@ -2288,7 +2288,7 @@ const categories = {
 
             {
                 question: "What is a business model?",
-                answers: ["How a business creates, delivers and captures value","A company logo","An employee badge","A meeting schedule"],
+                answers: ["How a business creates and earns value","A company logo","An employee badge","A meeting schedule"],
                 correct: 0,
                 difficulty: "medium",
                 explanation: "A business model describes how an organization creates, delivers, and captures value."
@@ -2296,7 +2296,7 @@ const categories = {
 
             {
                 question: "What is gross revenue?",
-                answers: ["Total revenue before deductions or expenses","Profit after all expenses","Cash in a personal wallet","Employee salary"],
+                answers: ["Revenue before costs or deductions","Profit after all expenses","Cash in a personal wallet","Employee salary"],
                 correct: 0,
                 difficulty: "medium",
                 explanation: "Gross revenue refers to total revenue before subtracting expenses or other deductions."
@@ -2304,7 +2304,7 @@ const categories = {
 
             {
                 question: "What is a target market?",
-                answers: ["A specific group of customers a business aims to serve","A stock exchange","A tax office","A company building"],
+                answers: ["A group of customers a business targets","A stock exchange","A tax office","A company building"],
                 correct: 0,
                 difficulty: "easy",
                 explanation: "A target market is the customer group a product or service is intended to reach."
@@ -2312,7 +2312,7 @@ const categories = {
 
             {
                 question: "What is an entrepreneur?",
-                answers: ["Someone who starts or develops a business venture","Only a government worker","A customer","A tax collector"],
+                answers: ["Someone who starts a business","Only a government worker","A customer","A tax collector"],
                 correct: 0,
                 difficulty: "easy",
                 explanation: "An entrepreneur creates or develops a business venture and accepts associated risks."
@@ -2320,7 +2320,7 @@ const categories = {
 
             {
                 question: "What is a profit margin?",
-                answers: ["The proportion of revenue left as profit","The number of employees","The price of a building","A loan term"],
+                answers: ["Revenue left as profit","The number of employees","The price of a building","A loan term"],
                 correct: 0,
                 difficulty: "medium",
                 explanation: "Profit margin measures profit relative to revenue."
@@ -2328,7 +2328,7 @@ const categories = {
 
             {
                 question: "Why is customer feedback valuable?",
-                answers: ["It can reveal needs and areas for improvement","It guarantees sales","It eliminates competition","It replaces accounting"],
+                answers: ["It reveals needs and improvements","It guarantees sales","It eliminates competition","It replaces accounting"],
                 correct: 0,
                 difficulty: "easy",
                 explanation: "Customer feedback can reveal problems, preferences, and opportunities for improvement."
@@ -2336,7 +2336,7 @@ const categories = {
 
             {
                 question: "What is cash flow?",
-                answers: ["Money moving into and out of a business or person","Only profit","Only debt","The company share price"],
+                answers: ["Money entering and leaving an account","Only profit","Only debt","The company share price"],
                 correct: 0,
                 difficulty: "medium",
                 explanation: "Cash flow tracks cash entering and leaving an entity."
@@ -2344,7 +2344,7 @@ const categories = {
 
             {
                 question: "What is a business expense?",
-                answers: ["A cost incurred to operate a business","A customer review","A sales target","A company slogan"],
+                answers: ["A cost of running a business","A customer review","A sales target","A company slogan"],
                 correct: 0,
                 difficulty: "easy",
                 explanation: "Business expenses are costs associated with operating the business."
@@ -2352,7 +2352,7 @@ const categories = {
 
             {
                 question: "What is a deadline in project management?",
-                answers: ["A date by which a task or deliverable is expected","A marketing slogan","A salary grade","A company logo"],
+                answers: ["A date when work is due","A marketing slogan","A salary grade","A company logo"],
                 correct: 0,
                 difficulty: "easy",
                 explanation: "A deadline is the expected latest date for completing a task or deliverable."
@@ -2466,7 +2466,7 @@ const categories = {
 
             {
                 question: "What is empathy?",
-                answers: ["Understanding another person's feelings or perspective","Winning every argument","Avoiding people","Agreeing with everything"],
+                answers: ["Understanding another person's feelings","Winning every argument","Avoiding people","Agreeing with everything"],
                 correct: 0,
                 difficulty: "easy",
                 explanation: "Empathy involves understanding another person's feelings or point of view."
@@ -2490,7 +2490,7 @@ const categories = {
 
             {
                 question: "What is a boundary in a relationship?",
-                answers: ["A limit about what you are comfortable with","A rule that controls everyone","A financial investment","A punishment"],
+                answers: ["A limit on what feels comfortable","A rule that controls everyone","A financial investment","A punishment"],
                 correct: 0,
                 difficulty: "medium",
                 explanation: "A personal boundary communicates limits around what someone is comfortable with or willing to accept."
@@ -2506,7 +2506,7 @@ const categories = {
 
             {
                 question: "What is constructive feedback?",
-                answers: ["Specific feedback intended to help improvement","An insult disguised as advice","Only praise","Public embarrassment"],
+                answers: ["Feedback meant to help improvement","An insult disguised as advice","Only praise","Public embarrassment"],
                 correct: 0,
                 difficulty: "medium",
                 explanation: "Constructive feedback identifies specific areas for improvement in a useful and respectful way."
@@ -2523,7 +2523,7 @@ const categories = {
 
             {
                 question: "What is a good way to show someone you are listening?",
-                answers: ["Maintain attention and respond to what they said","Check your phone repeatedly","Interrupt every sentence","Change the subject immediately"],
+                answers: ["Pay attention and respond","Check your phone repeatedly","Interrupt every sentence","Change the subject immediately"],
                 correct: 0,
                 difficulty: "easy",
                 explanation: "Focused attention and relevant responses are signs of active listening."
@@ -2531,7 +2531,7 @@ const categories = {
 
             {
                 question: "What is assertive communication?",
-                answers: ["Expressing your needs clearly while respecting others","Getting your way by force","Never speaking up","Agreeing with everyone"],
+                answers: ["Clearly stating needs while respecting others","Getting your way by force","Never speaking up","Agreeing with everyone"],
                 correct: 0,
                 difficulty: "medium",
                 explanation: "Assertive communication balances clear self-expression with respect for others."
@@ -2539,7 +2539,7 @@ const categories = {
 
             {
                 question: "What is peer pressure?",
-                answers: ["Influence from people in your social group","A school exam","A financial investment","A medical treatment"],
+                answers: ["Influence from your social group","A school exam","A financial investment","A medical treatment"],
                 correct: 0,
                 difficulty: "easy",
                 explanation: "Peer pressure is influence from peers or a social group."
@@ -2563,7 +2563,7 @@ const categories = {
 
             {
                 question: "What is digital citizenship?",
-                answers: ["Responsible and respectful participation in digital spaces","Owning a smartphone","Using social media every day","Having many followers"],
+                answers: ["Responsible participation online","Owning a smartphone","Using social media every day","Having many followers"],
                 correct: 0,
                 difficulty: "medium",
                 explanation: "Digital citizenship involves responsible, safe, and respectful behavior online."
@@ -2587,7 +2587,7 @@ const categories = {
 
             {
                 question: "What is compromise?",
-                answers: ["A solution where people make mutually acceptable concessions","One person always wins","Avoiding every discussion","Refusing to negotiate"],
+                answers: ["A solution with shared concessions","One person always wins","Avoiding every discussion","Refusing to negotiate"],
                 correct: 0,
                 difficulty: "medium",
                 explanation: "Compromise involves each side making concessions toward an acceptable solution."
@@ -2604,7 +2604,7 @@ const categories = {
 
             {
                 question: "What is respect?",
-                answers: ["Treating people with consideration and dignity","Always agreeing","Avoiding communication","Winning arguments"],
+                answers: ["Treating people with dignity","Always agreeing","Avoiding communication","Winning arguments"],
                 correct: 0,
                 difficulty: "easy",
                 explanation: "Respect involves treating others with consideration and dignity."
@@ -2612,7 +2612,7 @@ const categories = {
 
             {
                 question: "What is an assumption?",
-                answers: ["Something accepted as true without enough evidence","A confirmed measurement","A legal contract","A scientific law"],
+                answers: ["Something assumed without enough evidence","A confirmed measurement","A legal contract","A scientific law"],
                 correct: 0,
                 difficulty: "medium",
                 explanation: "An assumption is something accepted as true without sufficient evidence or verification."
@@ -2620,7 +2620,7 @@ const categories = {
 
             {
                 question: "What is active empathy?",
-                answers: ["Trying to understand another person's experience and responding appropriately","Giving advice immediately","Ignoring emotions","Agreeing with everything"],
+                answers: ["Understanding another person's experience","Giving advice immediately","Ignoring emotions","Agreeing with everything"],
                 correct: 0,
                 difficulty: "medium",
                 explanation: "Empathy involves understanding another person's experience and responding with awareness."
@@ -2628,7 +2628,7 @@ const categories = {
 
             {
                 question: "What is a healthy way to handle criticism?",
-                answers: ["Listen, consider it, and decide what can be learned","Insult the person","Reject every point automatically","Spread rumors"],
+                answers: ["Listen and consider what you can learn","Insult the person","Reject every point automatically","Spread rumors"],
                 correct: 0,
                 difficulty: "easy",
                 explanation: "Constructive reflection can turn useful criticism into learning."
@@ -2636,7 +2636,7 @@ const categories = {
 
             {
                 question: "What is collaboration?",
-                answers: ["Working with others toward a shared goal","Working alone","Avoiding responsibility","Competing on every task"],
+                answers: ["Working toward a shared goal","Working alone","Avoiding responsibility","Competing on every task"],
                 correct: 0,
                 difficulty: "easy",
                 explanation: "Collaboration means working together toward a shared objective."
@@ -2644,7 +2644,7 @@ const categories = {
 
             {
                 question: "What is a misunderstanding?",
-                answers: ["A situation where someone interprets information differently from what was intended","A confirmed agreement","A planned celebration","A legal judgment"],
+                answers: ["Information interpreted differently","A confirmed agreement","A planned celebration","A legal judgment"],
                 correct: 0,
                 difficulty: "easy",
                 explanation: "A misunderstanding occurs when communication is interpreted differently from the intended meaning."
@@ -2660,7 +2660,7 @@ const categories = {
 
             {
                 question: "What is mediation?",
-                answers: ["A process where a neutral person helps people work toward resolving a dispute","A punishment","A public argument","A social media post"],
+                answers: ["A neutral process for resolving disputes","A punishment","A public argument","A social media post"],
                 correct: 0,
                 difficulty: "hard",
                 explanation: "Mediation uses a neutral third party to help disputing people work toward a resolution."
@@ -2676,7 +2676,7 @@ const categories = {
 
             {
                 question: "What is a constructive conversation?",
-                answers: ["A discussion aimed at understanding, solving or improving something","A conversation designed to humiliate","An argument where nobody listens","A rumor session"],
+                answers: ["A discussion aimed at solving something","A conversation designed to humiliate","An argument where nobody listens","A rumor session"],
                 correct: 0,
                 difficulty: "easy",
                 explanation: "Constructive conversations focus on understanding, problem-solving, or improvement."
