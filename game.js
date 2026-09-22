@@ -210,6 +210,87 @@ const categories = {
                 difficulty: "hard",
                 explanation: "Lesotho is an enclave entirely surrounded by South Africa."
             }
+,
+
+            {
+                question: "Which African country is known as the 'Pearl of Africa'?",
+                answers: ["Uganda","Ghana","Ethiopia","Senegal"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Uganda has long been associated with the nickname 'Pearl of Africa'."
+            },
+
+            {
+                question: "Which strait separates Europe from Africa at the western Mediterranean?",
+                answers: ["Strait of Gibraltar","Bering Strait","Bosporus","Strait of Malacca"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "The Strait of Gibraltar separates southern Spain from northern Morocco."
+            },
+
+            {
+                question: "Which country has the city of Marrakech?",
+                answers: ["Morocco","Tunisia","Algeria","Egypt"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Marrakech is a major city in Morocco."
+            },
+
+            {
+                question: "Which mountain range contains Mount Everest?",
+                answers: ["Andes","Alps","Himalayas","Rockies"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "Mount Everest is part of the Himalaya mountain range."
+            },
+
+            {
+                question: "Which African country has Addis Ababa as its capital?",
+                answers: ["Ethiopia","Eritrea","Somalia","Sudan"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Addis Ababa is the capital of Ethiopia."
+            },
+
+            {
+                question: "Which ocean lies between Africa and Australia?",
+                answers: ["Atlantic Ocean","Indian Ocean","Pacific Ocean","Arctic Ocean"],
+                correct: 1,
+                difficulty: "medium",
+                explanation: "The Indian Ocean lies between Africa, Asia, and Australia."
+            },
+
+            {
+                question: "Which country is home to the ancient city of Petra?",
+                answers: ["Jordan","Lebanon","Turkey","Greece"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Petra is an ancient archaeological city in southern Jordan."
+            },
+
+            {
+                question: "Which river flows through Egypt and empties into the Mediterranean Sea?",
+                answers: ["Niger","Congo","Nile","Zambezi"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "The Nile flows north through Egypt into the Mediterranean."
+            },
+
+            {
+                question: "Which country is the world's most populous as of the mid-2020s?",
+                answers: ["China","India","United States","Indonesia"],
+                correct: 1,
+                difficulty: "medium",
+                explanation: "India surpassed China in population in 2023 and remains the most populous country in the mid-2020s."
+            },
+
+            {
+                question: "Which African island nation is famous for its lemurs?",
+                answers: ["Madagascar","Mauritius","Seychelles","Comoros"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Madagascar is famous for its many endemic lemur species."
+            }
 
         ]
     },
@@ -361,6 +442,87 @@ const categories = {
                 correct: 1,
                 difficulty: "medium",
                 explanation: "Breaking Bad follows Walter White and his transformation into a methamphetamine manufacturer."
+            }
+,
+
+            {
+                question: "Which film series features the fictional archaeologist Indiana Jones?",
+                answers: ["Indiana Jones","The Matrix","Jurassic Park","Rocky"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Indiana Jones is the archaeologist and adventurer at the center of the franchise."
+            },
+
+            {
+                question: "Which singer released the album '21'?",
+                answers: ["Adele","Rihanna","Beyoncé","Taylor Swift"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Adele released the album 21 in 2011."
+            },
+
+            {
+                question: "In the Harry Potter series, what is the name of Harry's owl?",
+                answers: ["Hedwig","Scabbers","Fawkes","Crookshanks"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Hedwig is Harry Potter's snowy owl."
+            },
+
+            {
+                question: "Which film won the Academy Award for Best Picture at the 67th Academy Awards?",
+                answers: ["Forrest Gump","Pulp Fiction","The Shawshank Redemption","Four Weddings and a Funeral"],
+                correct: 0,
+                difficulty: "hard",
+                explanation: "Forrest Gump won Best Picture at the 67th Academy Awards."
+            },
+
+            {
+                question: "Which fictional city is Batman primarily associated with?",
+                answers: ["Metropolis","Gotham City","Central City","Star City"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "Batman is primarily associated with Gotham City."
+            },
+
+            {
+                question: "Which video game character is known for the phrase 'It's-a me'?",
+                answers: ["Sonic","Mario","Link","Kirby"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "Mario is famously associated with the phrase 'It's-a me, Mario!'."
+            },
+
+            {
+                question: "Which artist painted the famous portrait 'Mona Lisa'?",
+                answers: ["Michelangelo","Leonardo da Vinci","Raphael","Donatello"],
+                correct: 1,
+                difficulty: "medium",
+                explanation: "Leonardo da Vinci painted the Mona Lisa."
+            },
+
+            {
+                question: "Which TV sitcom follows six friends living in New York City?",
+                answers: ["Friends","The Office","Modern Family","Brooklyn Nine-Nine"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Friends follows six friends living in New York City."
+            },
+
+            {
+                question: "Which movie features the fictional kingdom of Arendelle?",
+                answers: ["Frozen","Moana","Coco","Aladdin"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Arendelle is the fictional kingdom in Disney's Frozen."
+            },
+
+            {
+                question: "Which music group included John Lennon, Paul McCartney, George Harrison and Ringo Starr?",
+                answers: ["The Rolling Stones","The Beatles","ABBA","The Beach Boys"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "Those four musicians formed the classic lineup of The Beatles."
             }
 
         ]
@@ -529,6 +691,87 @@ const categories = {
                 correct: 0,
                 difficulty: "hard",
                 explanation: "Light travels through a vacuum at about 300,000 kilometres per second."
+            }
+,
+
+            {
+                question: "Which part of a cell contains most of its genetic material?",
+                answers: ["Nucleus","Cell wall","Ribosome","Vacuole"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "In eukaryotic cells, most DNA is contained in the nucleus."
+            },
+
+            {
+                question: "What is the boiling point of water at sea level in Celsius?",
+                answers: ["90°C","100°C","110°C","120°C"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "Pure water boils at 100°C at standard atmospheric pressure."
+            },
+
+            {
+                question: "Which blood cells primarily help fight infections?",
+                answers: ["Red blood cells","White blood cells","Platelets","Plasma"],
+                correct: 1,
+                difficulty: "medium",
+                explanation: "White blood cells are key components of the immune system."
+            },
+
+            {
+                question: "What is the largest organ of the human body?",
+                answers: ["Liver","Brain","Skin","Lungs"],
+                correct: 2,
+                difficulty: "medium",
+                explanation: "The skin is the body's largest organ by surface area and weight."
+            },
+
+            {
+                question: "Which planet is closest to the Sun?",
+                answers: ["Venus","Mercury","Earth","Mars"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "Mercury is the planet closest to the Sun."
+            },
+
+            {
+                question: "What type of energy is stored in food?",
+                answers: ["Chemical energy","Sound energy","Nuclear energy","Light energy"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Food stores chemical energy that the body can release through metabolism."
+            },
+
+            {
+                question: "Which vitamin is commonly produced in the skin after sunlight exposure?",
+                answers: ["Vitamin A","Vitamin C","Vitamin D","Vitamin K"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "Sunlight helps the skin produce vitamin D."
+            },
+
+            {
+                question: "What is the pH of a neutral solution at about room temperature?",
+                answers: ["0","5","7","14"],
+                correct: 2,
+                difficulty: "medium",
+                explanation: "A neutral aqueous solution has a pH of about 7 at room temperature."
+            },
+
+            {
+                question: "Which particle has a negative electric charge?",
+                answers: ["Proton","Neutron","Electron","Photon"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "Electrons carry negative electric charge."
+            },
+
+            {
+                question: "What is the name of the process in which a solid changes directly into a gas?",
+                answers: ["Condensation","Sublimation","Freezing","Melting"],
+                correct: 1,
+                difficulty: "hard",
+                explanation: "Sublimation is the direct change from solid to gas without becoming liquid."
             }
 
         ]
@@ -727,6 +970,87 @@ const categories = {
                 difficulty: "medium",
                 explanation: "The gain is $200, and $200 divided by $1,000 is 20%."
             }
+,
+
+            {
+                question: "If you earn $2,000 and spend $1,500, how much remains before savings or other deductions?",
+                answers: ["$300","$400","$500","$600"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "$2,000 minus $1,500 leaves $500."
+            },
+
+            {
+                question: "What does 'living below your means' generally mean?",
+                answers: ["Spending less than you earn","Borrowing more than you earn","Avoiding all spending","Spending everything you earn"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Living below your means means your spending is lower than your income."
+            },
+
+            {
+                question: "What is an opportunity cost?",
+                answers: ["The value of the next best alternative you give up","A bank charge","A guaranteed profit","A government tax"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Opportunity cost is the value of the next best alternative forgone."
+            },
+
+            {
+                question: "Why is an emergency fund useful?",
+                answers: ["To cover unexpected expenses","To increase taxes","To guarantee investment profits","To eliminate every bill"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Emergency savings can help cover unexpected costs."
+            },
+
+            {
+                question: "What is inflation?",
+                answers: ["A general rise in prices over time","A fall in all prices","A rise in wages only","A decrease in money supply only"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Inflation refers to a sustained increase in the general price level."
+            },
+
+            {
+                question: "What is the main purpose of insurance?",
+                answers: ["To transfer certain financial risks","To guarantee wealth","To eliminate every risk","To make all purchases cheaper"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Insurance can transfer specified financial risks to an insurer in exchange for premiums."
+            },
+
+            {
+                question: "If you save $100 every month, how much do you save in one year before interest?",
+                answers: ["$600","$1,000","$1,200","$1,500"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "$100 × 12 months equals $1,200."
+            },
+
+            {
+                question: "What does liquidity describe in finance?",
+                answers: ["How easily an asset can be converted to cash","How profitable a company must be","How much debt a person has","How old an investment is"],
+                correct: 0,
+                difficulty: "hard",
+                explanation: "Liquidity describes how readily an asset can be converted to cash with little loss in value."
+            },
+
+            {
+                question: "What is diversification intended to reduce?",
+                answers: ["Concentration risk","All possible losses","Taxes in every situation","Inflation completely"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Diversification can reduce the risk of concentrating an investment portfolio in one exposure."
+            },
+
+            {
+                question: "What is a fixed expense?",
+                answers: ["A cost that generally stays the same from period to period","A surprise purchase","A discount","A one-time gift"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Rent or a fixed subscription can be examples of expenses that generally stay constant for a period."
+            }
 
         ]
     },
@@ -888,6 +1212,87 @@ const categories = {
                 correct: 1,
                 difficulty: "medium",
                 explanation: "The angles of a triangle total 180°, so 180 - 50 - 60 = 70°."
+            }
+,
+
+            {
+                question: "What is the value of 9²?",
+                answers: ["18","72","81","99"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "9 squared is 9 × 9, which equals 81."
+            },
+
+            {
+                question: "Which planet is known as the Red Planet?",
+                answers: ["Venus","Mars","Jupiter","Saturn"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "Mars appears reddish because of iron minerals on its surface."
+            },
+
+            {
+                question: "What is the main function of the roots of most plants?",
+                answers: ["Absorb water and minerals and anchor the plant","Produce seeds only","Make flowers","Absorb sunlight"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Roots anchor plants and absorb water and minerals from the soil."
+            },
+
+            {
+                question: "Which literary term describes a comparison using 'like' or 'as'?",
+                answers: ["Metaphor","Simile","Hyperbole","Irony"],
+                correct: 1,
+                difficulty: "medium",
+                explanation: "A simile compares things using words such as 'like' or 'as'."
+            },
+
+            {
+                question: "What is 3/4 expressed as a percentage?",
+                answers: ["25%","50%","75%","80%"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "Three quarters equals 0.75, or 75%."
+            },
+
+            {
+                question: "Which ancient civilization built Machu Picchu?",
+                answers: ["Roman","Inca","Egyptian","Mayan"],
+                correct: 1,
+                difficulty: "medium",
+                explanation: "Machu Picchu was built by the Inca civilization."
+            },
+
+            {
+                question: "What is the perimeter of a square with sides of 6 cm?",
+                answers: ["12 cm","18 cm","24 cm","36 cm"],
+                correct: 2,
+                difficulty: "medium",
+                explanation: "A square has four equal sides, so 4 × 6 = 24 cm."
+            },
+
+            {
+                question: "Which layer of Earth is directly beneath the crust?",
+                answers: ["Inner core","Outer core","Mantle","Atmosphere"],
+                correct: 2,
+                difficulty: "medium",
+                explanation: "The mantle lies directly beneath Earth's crust."
+            },
+
+            {
+                question: "What is the next prime number after 17?",
+                answers: ["18","19","20","21"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "19 is the next prime number after 17."
+            },
+
+            {
+                question: "Which branch of government generally makes laws in a constitutional democracy?",
+                answers: ["Legislative","Judicial","Executive","Electoral"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "The legislative branch is generally responsible for making laws."
             }
 
         ]
@@ -1062,6 +1467,87 @@ const categories = {
                 difficulty: "medium",
                 explanation: "A standard cricket over consists of six legal deliveries."
             }
+,
+
+            {
+                question: "How many points is a free throw worth in basketball?",
+                answers: ["1","2","3","4"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "A successful free throw is worth one point."
+            },
+
+            {
+                question: "How many players are on a volleyball team on court at one time?",
+                answers: ["5","6","7","8"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "Indoor volleyball teams have six players on court."
+            },
+
+            {
+                question: "In football/soccer, what color card means a player is sent off?",
+                answers: ["Yellow","Green","Red","Blue"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "A red card results in a player's dismissal."
+            },
+
+            {
+                question: "How many minutes are in a standard football/soccer match, excluding added time?",
+                answers: ["60","75","90","120"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "A regulation football match has two 45-minute halves."
+            },
+
+            {
+                question: "Which sport uses a shuttlecock?",
+                answers: ["Tennis","Badminton","Squash","Table tennis"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "Badminton is played with a shuttlecock."
+            },
+
+            {
+                question: "In Formula 1, what flag traditionally signals the end of a race?",
+                answers: ["Red","Yellow","Green","Chequered"],
+                correct: 3,
+                difficulty: "medium",
+                explanation: "The chequered flag signals the end of a race."
+            },
+
+            {
+                question: "How many bases are there on a standard baseball diamond?",
+                answers: ["3","4","5","6"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "A baseball diamond has four bases, including home plate."
+            },
+
+            {
+                question: "In rugby union, how many points is a try worth?",
+                answers: ["3","5","7","10"],
+                correct: 1,
+                difficulty: "medium",
+                explanation: "A try in rugby union is worth five points."
+            },
+
+            {
+                question: "Which country hosted the first modern Olympic Games in 1896?",
+                answers: ["France","Greece","Italy","United Kingdom"],
+                correct: 1,
+                difficulty: "hard",
+                explanation: "The first modern Olympic Games were held in Athens, Greece, in 1896."
+            },
+
+            {
+                question: "In tennis, what score comes after 30?",
+                answers: ["35","40","45","50"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "The traditional sequence is love, 15, 30, 40, then game."
+            }
 
         ]
     },
@@ -1222,6 +1708,87 @@ const categories = {
                 correct: 0,
                 difficulty: "hard",
                 explanation: "Delegation means assigning work to others while the person delegating remains accountable for the overall outcome."
+            }
+,
+
+            {
+                question: "What does a meeting agenda normally provide?",
+                answers: ["A list of topics to discuss","A salary statement","A job contract","A tax receipt"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "An agenda outlines the topics and often the order for a meeting."
+            },
+
+            {
+                question: "What is a milestone in project management?",
+                answers: ["A significant point or achievement in a project","A daily lunch","A company logo","A type of salary"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "A milestone marks an important stage, event, or achievement in a project."
+            },
+
+            {
+                question: "What is prioritization?",
+                answers: ["Deciding which tasks deserve attention first","Doing every task simultaneously","Avoiding deadlines","Delegating every responsibility"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Prioritization helps determine which tasks should receive attention first."
+            },
+
+            {
+                question: "What is a professional elevator pitch?",
+                answers: ["A brief explanation of who you are and what you offer","A building safety inspection","A long business report","A salary negotiation only"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "An elevator pitch is a concise introduction to a person, idea, product, or business."
+            },
+
+            {
+                question: "What does remote work mean?",
+                answers: ["Working from a location outside the traditional office","Working only at night","Working without a manager","Working without technology"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Remote work generally means performing job duties away from the traditional workplace."
+            },
+
+            {
+                question: "What is a stakeholder?",
+                answers: ["A person or group affected by or interested in a project","Only the project manager","A type of software","A company vehicle"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Stakeholders can include people or groups affected by or interested in a project."
+            },
+
+            {
+                question: "What is a deliverable?",
+                answers: ["A specific output that a project is expected to produce","A lunch break","A job interview","A company holiday"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "A deliverable is a defined output or result that a project must produce."
+            },
+
+            {
+                question: "What does productivity generally measure?",
+                answers: ["How effectively inputs are turned into useful outputs","How many meetings you attend","How long you stay online","How many emails you receive"],
+                correct: 0,
+                difficulty: "hard",
+                explanation: "Productivity concerns the relationship between outputs and the inputs used to produce them."
+            },
+
+            {
+                question: "Why are meeting minutes useful?",
+                answers: ["They record key decisions and action items","They replace every company policy","They guarantee attendance","They calculate salaries"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Meeting minutes provide a record of decisions, discussions, and action items."
+            },
+
+            {
+                question: "What is a conflict of interest?",
+                answers: ["A situation where personal interests could improperly influence professional duties","A disagreement about lunch","A successful negotiation","A routine performance review"],
+                correct: 0,
+                difficulty: "hard",
+                explanation: "A conflict of interest occurs when competing personal interests could improperly influence professional responsibilities."
             }
 
         ]
@@ -1384,6 +1951,87 @@ const categories = {
                 correct: 1,
                 difficulty: "easy",
                 explanation: "Asking for clarification reduces misunderstandings and helps ensure the task is done correctly."
+            }
+,
+
+            {
+                question: "What is a good way to show someone you are listening?",
+                answers: ["Maintain attention and respond to what they said","Check your phone repeatedly","Interrupt every sentence","Change the subject immediately"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Focused attention and relevant responses are signs of active listening."
+            },
+
+            {
+                question: "What is assertive communication?",
+                answers: ["Expressing your needs clearly while respecting others","Getting your way by force","Never speaking up","Agreeing with everyone"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Assertive communication balances clear self-expression with respect for others."
+            },
+
+            {
+                question: "What is peer pressure?",
+                answers: ["Influence from people in your social group","A school exam","A financial investment","A medical treatment"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Peer pressure is influence from peers or a social group."
+            },
+
+            {
+                question: "What is a stereotype?",
+                answers: ["A generalized belief about a group","A verified fact about every individual","A personal budget","A communication skill"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "A stereotype is a generalized belief or assumption about a group."
+            },
+
+            {
+                question: "Why can asking open-ended questions improve a conversation?",
+                answers: ["They encourage fuller responses","They always end arguments","They prevent people from speaking","They guarantee agreement"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Open-ended questions often encourage people to explain their thoughts in more detail."
+            },
+
+            {
+                question: "What is digital citizenship?",
+                answers: ["Responsible and respectful participation in digital spaces","Owning a smartphone","Using social media every day","Having many followers"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Digital citizenship involves responsible, safe, and respectful behavior online."
+            },
+
+            {
+                question: "What is consent in an interpersonal situation?",
+                answers: ["A clear and voluntary agreement","Silence in every situation","Pressure from friends","An assumption"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Consent should be clear, voluntary, and free from coercion."
+            },
+
+            {
+                question: "What is a rumor?",
+                answers: ["Unverified information that is circulated","A confirmed official announcement","A written contract","A scientific law"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "A rumor is information circulated without reliable verification."
+            },
+
+            {
+                question: "What is compromise?",
+                answers: ["A solution where people make mutually acceptable concessions","One person always wins","Avoiding every discussion","Refusing to negotiate"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Compromise involves each side making concessions toward an acceptable solution."
+            },
+
+            {
+                question: "Why is it useful to pause before responding when angry?",
+                answers: ["It can reduce impulsive reactions","It guarantees you are right","It makes the other person agree","It ends every conflict"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Pausing can create space to respond thoughtfully rather than impulsively."
             }
 
         ]
