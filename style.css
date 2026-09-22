@@ -1071,3 +1071,117 @@ body {
 .lq-stat-card {
     color: #172033;
 }
+
+
+/* ==========================================
+   JEOPARDY FEEDBACK + RESULTS
+========================================== */
+.lq-clue-feedback {
+    min-height: 2.2em;
+    margin: 16px 0 8px;
+    font-size: 19px;
+    font-weight: 900;
+}
+.lq-clue-feedback.is-success { color:#86efac; }
+.lq-clue-feedback.is-wrong { color:#fde68a; }
+
+#game-card .lq-answer-modal.is-correct {
+    background:rgba(34,197,94,.20);
+    border-color:#4ade80;
+    color:#bbf7d0;
+}
+#game-card .lq-answer-modal.is-wrong {
+    background:rgba(239,68,68,.20);
+    border-color:#f87171;
+    color:#fecaca;
+}
+
+.lq-clue-explanation {
+    margin:16px auto 20px;
+    max-width:760px;
+    padding:15px 18px;
+    border-radius:14px;
+    background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.10);
+    color:#dbeafe;
+    line-height:1.5;
+    text-align:left;
+}
+.lq-clue-explanation strong { color:#ffd84d; }
+
+.lq-jeopardy-result {
+    text-align:center;
+    padding:10px 0 4px;
+}
+.lq-result-kicker {
+    color:#ffd84d;
+    font-size:15px;
+    font-weight:1000;
+    letter-spacing:.12em;
+}
+.lq-jeopardy-result h2 {
+    margin:10px 0 5px;
+    font-size:clamp(30px,5vw,48px);
+}
+.lq-result-subtitle {
+    color:#a8b7d4;
+    font-weight:700;
+}
+.lq-result-score {
+    margin:24px auto;
+    padding:22px;
+    max-width:440px;
+    border-radius:22px;
+    background:linear-gradient(135deg,rgba(37,99,235,.28),rgba(124,58,237,.30));
+    border:1px solid rgba(255,255,255,.13);
+}
+.lq-result-score span {
+    display:block;
+    color:#94a3b8;
+    font-size:13px;
+    font-weight:900;
+    letter-spacing:.1em;
+}
+.lq-result-score strong {
+    display:block;
+    margin-top:4px;
+    color:#ffd84d;
+    font-size:clamp(42px,8vw,68px);
+    line-height:1;
+}
+.lq-result-grid {
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+    margin:20px 0;
+}
+.lq-result-grid div {
+    padding:16px 10px;
+    border-radius:16px;
+    background:rgba(255,255,255,.06);
+    border:1px solid rgba(255,255,255,.09);
+}
+.lq-result-grid strong {
+    display:block;
+    font-size:25px;
+    color:#fff;
+}
+.lq-result-grid span {
+    display:block;
+    margin-top:4px;
+    color:#94a3b8;
+    font-size:12px;
+    font-weight:800;
+}
+.lq-result-actions {
+    display:flex;
+    gap:12px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin-top:22px;
+}
+#jeopardy-menu { background:#475569; }
+
+@media(max-width:600px) {
+    .lq-result-grid { grid-template-columns:repeat(2,1fr); }
+}
