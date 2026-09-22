@@ -291,6 +291,87 @@ const categories = {
                 difficulty: "medium",
                 explanation: "Madagascar is famous for its many endemic lemur species."
             }
+,
+
+            {
+                question: "Which country is home to the ancient city of Timbuktu?",
+                answers: ["Mali","Niger","Chad","Sudan"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Timbuktu is a historic city in Mali."
+            },
+
+            {
+                question: "Which African country has Kigali as its capital?",
+                answers: ["Rwanda","Burundi","Uganda","Kenya"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Kigali is the capital of Rwanda."
+            },
+
+            {
+                question: "Which country is famous for the fjords of Scandinavia?",
+                answers: ["Norway","Portugal","Egypt","Mexico"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Norway is famous for its dramatic fjords."
+            },
+
+            {
+                question: "Which sea lies between Europe and Africa?",
+                answers: ["Mediterranean Sea","Caribbean Sea","Baltic Sea","Arabian Sea"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "The Mediterranean Sea separates Europe from Africa in much of its extent."
+            },
+
+            {
+                question: "Which African country is crossed by the Equator and has Mount Kenya?",
+                answers: ["Kenya","Tanzania","Ethiopia","Ghana"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "The Equator crosses Kenya, which is also home to Mount Kenya."
+            },
+
+            {
+                question: "What is the capital of Canada?",
+                answers: ["Toronto","Vancouver","Ottawa","Montreal"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "Ottawa is Canada's capital."
+            },
+
+            {
+                question: "Which country is home to the ancient pyramids of Giza?",
+                answers: ["Egypt","Sudan","Jordan","Libya"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "The Giza pyramid complex is in Egypt."
+            },
+
+            {
+                question: "Which continent contains the Amazon rainforest?",
+                answers: ["Africa","Asia","South America","Europe"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "Most of the Amazon rainforest lies in South America."
+            },
+
+            {
+                question: "Which African country has Cape Town, Pretoria and Bloemfontein as its capitals for different branches of government?",
+                answers: ["South Africa","Namibia","Botswana","Zimbabwe"],
+                correct: 0,
+                difficulty: "hard",
+                explanation: "South Africa has three capital cities with different governmental functions."
+            },
+
+            {
+                question: "Which country is the world's largest archipelago by number of islands commonly cited?",
+                answers: ["Indonesia","Japan","Philippines","Greece"],
+                correct: 0,
+                difficulty: "hard",
+                explanation: "Indonesia is the world's largest archipelagic country."
+            }
 
         ]
     },
@@ -523,6 +604,87 @@ const categories = {
                 correct: 1,
                 difficulty: "easy",
                 explanation: "Those four musicians formed the classic lineup of The Beatles."
+            }
+,
+
+            {
+                question: "Which actor played Jack in the film Titanic?",
+                answers: ["Leonardo DiCaprio","Brad Pitt","Tom Hanks","Matt Damon"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Leonardo DiCaprio played Jack Dawson."
+            },
+
+            {
+                question: "Which Disney character is a wooden puppet who wants to become a real boy?",
+                answers: ["Pinocchio","Peter Pan","Aladdin","Hercules"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Pinocchio is the wooden puppet in the classic story."
+            },
+
+            {
+                question: "Which superhero carries a shield featuring a star?",
+                answers: ["Captain America","Thor","Iron Man","Hulk"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Captain America's iconic shield bears a star."
+            },
+
+            {
+                question: "Which franchise features the characters Luke Skywalker and Darth Vader?",
+                answers: ["Star Wars","Star Trek","Dune","Avatar"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Luke Skywalker and Darth Vader are central Star Wars characters."
+            },
+
+            {
+                question: "Which singer is known for the album 'Lemonade'?",
+                answers: ["Beyoncé","Adele","Sia","Ariana Grande"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Beyoncé released Lemonade in 2016."
+            },
+
+            {
+                question: "Which film features the character Forrest Gump?",
+                answers: ["Forrest Gump","The Green Mile","Cast Away","Apollo 13"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Forrest Gump is the title character of the film."
+            },
+
+            {
+                question: "Which fictional detective lives at 221B Baker Street?",
+                answers: ["Sherlock Holmes","Hercule Poirot","James Bond","Miss Marple"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Sherlock Holmes is famously associated with 221B Baker Street."
+            },
+
+            {
+                question: "Which gaming console was produced by Nintendo and features the character Link?",
+                answers: ["Nintendo systems","PlayStation","Xbox","Dreamcast"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Link is a Nintendo character from The Legend of Zelda series."
+            },
+
+            {
+                question: "Which movie franchise features dinosaurs brought back through genetic engineering?",
+                answers: ["Jurassic Park","Transformers","The Matrix","Terminator"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Jurassic Park centers on genetically recreated dinosaurs."
+            },
+
+            {
+                question: "Which singer released the song 'Shape of You'?",
+                answers: ["Ed Sheeran","Bruno Mars","Justin Bieber","Sam Smith"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Ed Sheeran released Shape of You."
             }
 
         ]
@@ -772,6 +934,87 @@ const categories = {
                 correct: 1,
                 difficulty: "hard",
                 explanation: "Sublimation is the direct change from solid to gas without becoming liquid."
+            }
+,
+
+            {
+                question: "What is the largest planet in our solar system?",
+                answers: ["Jupiter","Saturn","Neptune","Earth"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Jupiter is the largest planet in the solar system."
+            },
+
+            {
+                question: "Which gas do plants absorb from the atmosphere during photosynthesis?",
+                answers: ["Oxygen","Carbon dioxide","Nitrogen","Hydrogen"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "Plants use carbon dioxide during photosynthesis."
+            },
+
+            {
+                question: "What is the basic unit of life?",
+                answers: ["Cell","Atom","Tissue","Organ"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "The cell is the basic structural and functional unit of life."
+            },
+
+            {
+                question: "Which metal is liquid at room temperature?",
+                answers: ["Iron","Mercury","Copper","Aluminium"],
+                correct: 1,
+                difficulty: "medium",
+                explanation: "Mercury is liquid at typical room temperature."
+            },
+
+            {
+                question: "What is the hardest natural substance commonly known?",
+                answers: ["Quartz","Diamond","Granite","Steel"],
+                correct: 1,
+                difficulty: "medium",
+                explanation: "Diamond is the hardest naturally occurring mineral on the Mohs scale."
+            },
+
+            {
+                question: "Which organ is primarily responsible for filtering waste from the blood to make urine?",
+                answers: ["Heart","Kidney","Stomach","Pancreas"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "The kidneys filter blood and produce urine."
+            },
+
+            {
+                question: "What is DNA short for?",
+                answers: ["Deoxyribonucleic acid","Dynamic nuclear acid","Double nitrogen atom","Deoxygenated nucleic agent"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "DNA stands for deoxyribonucleic acid."
+            },
+
+            {
+                question: "Which phenomenon causes the apparent bending of a straw in water?",
+                answers: ["Refraction","Gravity","Magnetism","Evaporation"],
+                correct: 0,
+                difficulty: "hard",
+                explanation: "Light changes direction when it passes between materials with different optical densities."
+            },
+
+            {
+                question: "How many chromosomes are normally found in a human somatic cell?",
+                answers: ["23","46","44","48"],
+                correct: 1,
+                difficulty: "hard",
+                explanation: "Most human somatic cells contain 46 chromosomes arranged in 23 pairs."
+            },
+
+            {
+                question: "Which scientist formulated the laws of motion and universal gravitation?",
+                answers: ["Isaac Newton","Albert Einstein","Galileo Galilei","Marie Curie"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Isaac Newton formulated the classical laws of motion and universal gravitation."
             }
 
         ]
@@ -1051,6 +1294,87 @@ const categories = {
                 difficulty: "easy",
                 explanation: "Rent or a fixed subscription can be examples of expenses that generally stay constant for a period."
             }
+,
+
+            {
+                question: "What is net income generally?",
+                answers: ["Income after relevant deductions","Total sales before costs","Money borrowed","The value of possessions"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Net income is income remaining after applicable deductions and expenses depending on context."
+            },
+
+            {
+                question: "What does APR commonly represent on a loan?",
+                answers: ["Annual Percentage Rate","Average Payment Return","Annual Profit Ratio","Applied Principal Rate"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "APR stands for Annual Percentage Rate."
+            },
+
+            {
+                question: "What is a financial asset?",
+                answers: ["An item representing financial value or a claim","Only physical property","A household appliance","A work schedule"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Financial assets include items such as cash, shares, and bonds that represent value or claims."
+            },
+
+            {
+                question: "Why is tracking expenses useful?",
+                answers: ["It shows where money is going","It guarantees investment returns","It eliminates taxes","It increases salary automatically"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Expense tracking helps reveal spending patterns and supports budgeting."
+            },
+
+            {
+                question: "What is a credit score generally designed to indicate?",
+                answers: ["Creditworthiness","Height","Employment seniority","Investment profit"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Credit scores are used to assess aspects of a borrower's credit risk."
+            },
+
+            {
+                question: "What is a loan principal?",
+                answers: ["The original amount borrowed","The interest only","A late fee","The monthly payment only"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Principal is the amount originally borrowed, excluding interest."
+            },
+
+            {
+                question: "What is a bear market commonly associated with?",
+                answers: ["Broadly falling asset prices","Rapid price increases","No price movement","Guaranteed profits"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "A bear market is commonly associated with a sustained decline in market prices."
+            },
+
+            {
+                question: "What is a bull market commonly associated with?",
+                answers: ["Broadly rising asset prices","A total market closure","Falling wages only","Fixed prices"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "A bull market is generally characterized by rising asset prices."
+            },
+
+            {
+                question: "What is a financial goal?",
+                answers: ["A specific target for your money or finances","A random purchase","A bank password","A tax penalty"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "A financial goal is a defined objective such as saving a target amount or paying down debt."
+            },
+
+            {
+                question: "Why should an investor consider risk tolerance?",
+                answers: ["Different investments carry different levels of potential loss","It guarantees profits","It predicts every price","It eliminates uncertainty"],
+                correct: 0,
+                difficulty: "hard",
+                explanation: "Risk tolerance helps an investor choose exposures that fit their ability and willingness to handle losses."
+            }
 
         ]
     },
@@ -1293,6 +1617,87 @@ const categories = {
                 correct: 0,
                 difficulty: "medium",
                 explanation: "The legislative branch is generally responsible for making laws."
+            }
+,
+
+            {
+                question: "What is 7 × 9?",
+                answers: ["56","63","72","81"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "Seven times nine equals 63."
+            },
+
+            {
+                question: "What is the capital of Australia?",
+                answers: ["Sydney","Melbourne","Canberra","Perth"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "Canberra is Australia's capital."
+            },
+
+            {
+                question: "Which scientist is associated with the theory of evolution by natural selection?",
+                answers: ["Charles Darwin","Isaac Newton","Louis Pasteur","Nikola Tesla"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Charles Darwin developed the theory of evolution by natural selection."
+            },
+
+            {
+                question: "What is the chemical symbol for oxygen?",
+                answers: ["O","Ox","C","Og"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "O is the chemical symbol for oxygen."
+            },
+
+            {
+                question: "What is 2.5 × 4?",
+                answers: ["8","9","10","12"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "2.5 multiplied by 4 equals 10."
+            },
+
+            {
+                question: "Which ancient civilization developed democracy in Athens?",
+                answers: ["Ancient Greeks","Romans","Vikings","Persians"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Ancient Athens developed an early form of democracy."
+            },
+
+            {
+                question: "What is the area of a rectangle 8 cm long and 5 cm wide?",
+                answers: ["13 cm²","26 cm²","40 cm²","80 cm²"],
+                correct: 2,
+                difficulty: "medium",
+                explanation: "Area equals length × width, so 8 × 5 = 40 cm²."
+            },
+
+            {
+                question: "Which layer of the atmosphere contains most weather?",
+                answers: ["Troposphere","Stratosphere","Mesosphere","Thermosphere"],
+                correct: 0,
+                difficulty: "hard",
+                explanation: "Most weather occurs in the troposphere."
+            },
+
+            {
+                question: "What is 25% of 80?",
+                answers: ["10","15","20","25"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "One quarter of 80 is 20."
+            },
+
+            {
+                question: "Which instrument is used to measure temperature?",
+                answers: ["Barometer","Thermometer","Hygrometer","Anemometer"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "A thermometer measures temperature."
             }
 
         ]
@@ -1548,6 +1953,87 @@ const categories = {
                 difficulty: "easy",
                 explanation: "The traditional sequence is love, 15, 30, 40, then game."
             }
+,
+
+            {
+                question: "How many players are on a basketball team on court at one time?",
+                answers: ["4","5","6","7"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "Five players from each team are on court in standard basketball."
+            },
+
+            {
+                question: "How many sets must a player generally win to win a best-of-three tennis match?",
+                answers: ["1","2","3","4"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "A player must win two sets in a best-of-three match."
+            },
+
+            {
+                question: "Which country is strongly associated with the origin of modern rugby?",
+                answers: ["England","Brazil","Canada","Japan"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Modern rugby developed in England."
+            },
+
+            {
+                question: "How many holes are played in a standard full round of golf?",
+                answers: ["9","12","18","24"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "A standard full round consists of 18 holes."
+            },
+
+            {
+                question: "Which sport awards a touchdown?",
+                answers: ["American football","Basketball","Cricket","Hockey"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "A touchdown is a scoring play in American football."
+            },
+
+            {
+                question: "How many rings are on the Olympic symbol?",
+                answers: ["4","5","6","7"],
+                correct: 1,
+                difficulty: "easy",
+                explanation: "The Olympic symbol has five interlocking rings."
+            },
+
+            {
+                question: "Which country is home to the football club FC Barcelona?",
+                answers: ["Spain","Italy","Portugal","France"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "FC Barcelona is based in Barcelona, Spain."
+            },
+
+            {
+                question: "In boxing, what is a knockout?",
+                answers: ["A result where a fighter cannot continue after being knocked down","A type of training","A scoring bonus","A timeout"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "A knockout occurs when a fighter cannot continue within the referee's count or under the applicable rules."
+            },
+
+            {
+                question: "Which event combines swimming, cycling and running?",
+                answers: ["Triathlon","Decathlon","Pentathlon","Heptathlon"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "A triathlon combines swimming, cycling, and running."
+            },
+
+            {
+                question: "How many points is a three-point shot worth in basketball?",
+                answers: ["1","2","3","4"],
+                correct: 2,
+                difficulty: "easy",
+                explanation: "A successful shot from beyond the three-point line is worth three points."
+            }
 
         ]
     },
@@ -1789,6 +2275,87 @@ const categories = {
                 correct: 0,
                 difficulty: "hard",
                 explanation: "A conflict of interest occurs when competing personal interests could improperly influence professional responsibilities."
+            }
+,
+
+            {
+                question: "What does ROI commonly stand for in business?",
+                answers: ["Return on Investment","Rate of Income","Risk of Income","Return on Inventory"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "ROI stands for Return on Investment."
+            },
+
+            {
+                question: "What is a business model?",
+                answers: ["How a business creates, delivers and captures value","A company logo","An employee badge","A meeting schedule"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "A business model describes how an organization creates, delivers, and captures value."
+            },
+
+            {
+                question: "What is gross revenue?",
+                answers: ["Total revenue before deductions or expenses","Profit after all expenses","Cash in a personal wallet","Employee salary"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Gross revenue refers to total revenue before subtracting expenses or other deductions."
+            },
+
+            {
+                question: "What is a target market?",
+                answers: ["A specific group of customers a business aims to serve","A stock exchange","A tax office","A company building"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "A target market is the customer group a product or service is intended to reach."
+            },
+
+            {
+                question: "What is an entrepreneur?",
+                answers: ["Someone who starts or develops a business venture","Only a government worker","A customer","A tax collector"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "An entrepreneur creates or develops a business venture and accepts associated risks."
+            },
+
+            {
+                question: "What is a profit margin?",
+                answers: ["The proportion of revenue left as profit","The number of employees","The price of a building","A loan term"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Profit margin measures profit relative to revenue."
+            },
+
+            {
+                question: "Why is customer feedback valuable?",
+                answers: ["It can reveal needs and areas for improvement","It guarantees sales","It eliminates competition","It replaces accounting"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Customer feedback can reveal problems, preferences, and opportunities for improvement."
+            },
+
+            {
+                question: "What is cash flow?",
+                answers: ["Money moving into and out of a business or person","Only profit","Only debt","The company share price"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Cash flow tracks cash entering and leaving an entity."
+            },
+
+            {
+                question: "What is a business expense?",
+                answers: ["A cost incurred to operate a business","A customer review","A sales target","A company slogan"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Business expenses are costs associated with operating the business."
+            },
+
+            {
+                question: "What is a deadline in project management?",
+                answers: ["A date by which a task or deliverable is expected","A marketing slogan","A salary grade","A company logo"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "A deadline is the expected latest date for completing a task or deliverable."
             }
 
         ]
@@ -2032,6 +2599,87 @@ const categories = {
                 correct: 0,
                 difficulty: "easy",
                 explanation: "Pausing can create space to respond thoughtfully rather than impulsively."
+            }
+,
+
+            {
+                question: "What is respect?",
+                answers: ["Treating people with consideration and dignity","Always agreeing","Avoiding communication","Winning arguments"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Respect involves treating others with consideration and dignity."
+            },
+
+            {
+                question: "What is an assumption?",
+                answers: ["Something accepted as true without enough evidence","A confirmed measurement","A legal contract","A scientific law"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "An assumption is something accepted as true without sufficient evidence or verification."
+            },
+
+            {
+                question: "What is active empathy?",
+                answers: ["Trying to understand another person's experience and responding appropriately","Giving advice immediately","Ignoring emotions","Agreeing with everything"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Empathy involves understanding another person's experience and responding with awareness."
+            },
+
+            {
+                question: "What is a healthy way to handle criticism?",
+                answers: ["Listen, consider it, and decide what can be learned","Insult the person","Reject every point automatically","Spread rumors"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Constructive reflection can turn useful criticism into learning."
+            },
+
+            {
+                question: "What is collaboration?",
+                answers: ["Working with others toward a shared goal","Working alone","Avoiding responsibility","Competing on every task"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Collaboration means working together toward a shared objective."
+            },
+
+            {
+                question: "What is a misunderstanding?",
+                answers: ["A situation where someone interprets information differently from what was intended","A confirmed agreement","A planned celebration","A legal judgment"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "A misunderstanding occurs when communication is interpreted differently from the intended meaning."
+            },
+
+            {
+                question: "Why is tone important in communication?",
+                answers: ["It can change how a message is perceived","It always makes facts true","It removes the need for words","It guarantees agreement"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Tone can strongly influence how the receiver interprets a message."
+            },
+
+            {
+                question: "What is mediation?",
+                answers: ["A process where a neutral person helps people work toward resolving a dispute","A punishment","A public argument","A social media post"],
+                correct: 0,
+                difficulty: "hard",
+                explanation: "Mediation uses a neutral third party to help disputing people work toward a resolution."
+            },
+
+            {
+                question: "What is confidentiality?",
+                answers: ["Keeping appropriate information private","Sharing everything publicly","Ignoring a promise","Changing someone's password"],
+                correct: 0,
+                difficulty: "medium",
+                explanation: "Confidentiality means protecting information from unauthorized disclosure."
+            },
+
+            {
+                question: "What is a constructive conversation?",
+                answers: ["A discussion aimed at understanding, solving or improving something","A conversation designed to humiliate","An argument where nobody listens","A rumor session"],
+                correct: 0,
+                difficulty: "easy",
+                explanation: "Constructive conversations focus on understanding, problem-solving, or improvement."
             }
 
         ]
@@ -3731,143 +4379,16 @@ function openJeopardyClue(id) {
 }
 
 function showCategories() {
+    // The Jeopardy board is now the main game hub.
+    // Keep this route for old saved sessions/back navigation.
+    screen = "jeopardy-board";
 
-    screen = "categories";
-
-    const level = getLevel(player.xp);
-    const rank = getRank(level);
-    const progress = getLevelProgress(player.xp, level);
-
-    const missedCount = player.missed.filter(id => questionById[id]).length;
-
-    render(`
-
-        <div class="quest-map-header">
-
-            <div class="map-title">
-                🗺️ YOUR QUEST WORLD
-            </div>
-
-            <div class="map-player">
-                <strong>${escapeHTML(player.name)}</strong>
-                <span>Level ${level} • ${rank}</span>
-            </div>
-
-            <div class="map-xp">
-                ⭐ ${player.xp} XP
-            </div>
-
-            <div
-                class="progress-bar map-progress"
-                role="progressbar"
-                aria-label="Progress to the next level"
-                aria-valuemin="0"
-                aria-valuemax="100"
-                aria-valuenow="${progress}"
-            >
-
-                <div
-                    class="progress-fill"
-                    style="width:${progress}%"
-                ></div>
-
-            </div>
-
-        </div>
-
-
-        <button id="play-jeopardy" style="width:100%;margin-bottom:16px;background:linear-gradient(135deg,#2563eb,#7c3aed);font-size:22px;">🎯 PLAY LIFE QUEST JEOPARDY</button>
-
-        <p class="map-instruction" tabindex="-1" data-autofocus>
-            Choose a world and begin your adventure!
-        </p>
-
-
-        <div class="quest-map">
-
-            ${Object.keys(categories).map(key => {
-
-                const label = splitLabel(categories[key].name);
-
-                return `
-
-                    <button
-                        class="quest-world world-${escapeHTML(key)}"
-                        data-category="${escapeHTML(key)}"
-                    >
-
-                        <div class="world-icon">
-                            ${label.icon}
-                        </div>
-
-                        <div class="world-name">
-                            ${escapeHTML(label.text)}
-                        </div>
-
-                        <div class="world-xp">
-                            ⭐ ${player.categoryXP[key] || 0} XP
-                        </div>
-
-                        <div class="world-action">
-                            ENTER QUEST →
-                        </div>
-
-                    </button>
-
-                `;
-
-            }).join("")}
-
-            ${missedCount > 0 ? `
-
-                <button
-                    class="quest-world world-practice"
-                    id="practice-button"
-                >
-
-                    <div class="world-icon">🔁</div>
-
-                    <div class="world-name">Practice Mistakes</div>
-
-                    <div class="world-xp">
-                        ${missedCount} to review
-                    </div>
-
-                    <div class="world-action">
-                        START PRACTICE →
-                    </div>
-
-                </button>
-
-            ` : ""}
-
-        </div>
-
-
-        <button id="back-profile">
-            👤 BACK TO PROFILE
-        </button>
-
-    `);
-
-
-    document.querySelectorAll("[data-category]").forEach(button => {
-
-        button.addEventListener("click", function () {
-
-            chooseCategory(this.dataset.category);
-        });
-    });
-
-    on("play-jeopardy", startJeopardyGame);
-    on("practice-button", startPractice);
-    on("back-profile", showProfile);
+    if (!jeopardyBoard) {
+        startJeopardyGame();
+    } else {
+        renderJeopardyBoard();
+    }
 }
-
-
-// ==========================================
-// QUEST MODE SCREEN
-// ==========================================
 
 function chooseCategory(category) {
     if (!categories[category]) return;
