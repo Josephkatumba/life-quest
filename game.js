@@ -3939,9 +3939,8 @@ function showSettings() {
             this.setAttribute("aria-checked", settings[key] ? "true" : "false");
             this.textContent = settings[key] ? "ON" : "OFF";
 
-            // Give instant feedback for the two settings you can hear
+            // Give instant feedback when sound effects are enabled
             if (key === "sound" && settings.sound) playSound("correct");
-            if (key === "autoRead" && settings.autoRead) speak("Read aloud is on.");
         });
     });
 
