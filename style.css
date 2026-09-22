@@ -978,3 +978,62 @@ small {
     background: #64748b;
     margin-top: 25px;
 }
+
+
+/* ==========================================
+   LIFE QUEST JEOPARDY REDESIGN
+========================================== */
+body {
+    background:
+        radial-gradient(circle at 15% 10%, rgba(34,211,238,.18), transparent 28%),
+        radial-gradient(circle at 85% 90%, rgba(168,85,247,.20), transparent 30%),
+        linear-gradient(135deg,#050b18 0%,#102451 48%,#230b3e 100%);
+}
+.game-container { max-width:1180px; width:min(96vw,1180px); }
+.card {
+    background:rgba(6,15,34,.92);
+    color:#fff;
+    border:1px solid rgba(255,255,255,.12);
+    box-shadow:0 36px 100px rgba(0,0,0,.48),inset 0 1px 0 rgba(255,255,255,.05);
+}
+.lq-jeopardy-head { display:flex;justify-content:space-between;gap:18px;align-items:center;flex-wrap:wrap;text-align:left; }
+.lq-jeopardy-title { font-size:clamp(26px,4vw,42px);font-weight:1000;letter-spacing:-.04em; }
+.lq-jeopardy-meta { display:flex;gap:8px;flex-wrap:wrap; }
+.lq-pill { padding:8px 12px;border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.10);font-weight:800;color:#dbeafe; }
+.lq-board-caption { margin:10px 0;color:#94a3b8;font-weight:700;text-align:left; }
+.lq-board { display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:9px;margin-top:16px; }
+.lq-category {
+    min-height:88px;padding:12px 8px;display:grid;place-items:center;text-align:center;
+    border-radius:12px;background:linear-gradient(145deg,#102f73,#2f1a72);
+    color:#fff;border:1px solid rgba(255,255,255,.13);font-weight:1000;
+}
+.lq-clue {
+    min-height:90px;margin:0;padding:10px;border-radius:12px;
+    background:linear-gradient(145deg,#1547af,#225edb 55%,#4537c7);
+    color:#ffd84d;border:1px solid rgba(255,255,255,.14);
+    font-size:clamp(22px,3vw,31px);font-weight:1000;
+    transition:transform .16s ease,filter .16s ease;
+}
+.lq-clue:hover:not(:disabled) { transform:translateY(-3px);filter:brightness(1.08); }
+.lq-clue.is-used { background:#172238;color:#667794; }
+.lq-clue:disabled { opacity:1;cursor:default; }
+.lq-clue-modal {
+    position:fixed;inset:0;z-index:5000;display:grid;place-items:center;
+    padding:16px;background:rgba(1,6,18,.82);backdrop-filter:blur(8px);
+}
+.lq-clue-panel {
+    width:min(900px,96vw);max-height:90vh;overflow:auto;padding:30px;
+    border-radius:26px;background:linear-gradient(155deg,#081735,#1b2e68);
+    border:1px solid rgba(255,255,255,.16);box-shadow:0 30px 100px rgba(0,0,0,.55);text-align:center;
+}
+.lq-clue-value { color:#ffd84d;font-size:19px;font-weight:1000; }
+.lq-clue-question { color:#fff;font-size:clamp(28px,5vw,48px);font-weight:900;line-height:1.15;margin:22px 0; }
+.lq-clue-controls { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
+#game-card .lq-answer-modal {
+    margin:0;min-height:68px;padding:14px;border-radius:14px;
+    background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.14);font:inherit;font-weight:800;
+}
+#game-card .lq-answer-modal:hover:not(:disabled) { background:rgba(255,216,77,.16);border-color:#ffd84d; }
+.lq-clue-answer { color:#86efac;font-weight:900;font-size:24px; }
+@media(max-width:900px){.lq-board{grid-template-columns:repeat(3,minmax(0,1fr));}.lq-category{min-height:72px;}}
+@media(max-width:560px){.card{padding:18px}.lq-board{gap:6px}.lq-category{min-height:62px;font-size:13px}.lq-clue{min-height:64px;font-size:19px}.lq-clue-controls{grid-template-columns:1fr}}
