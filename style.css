@@ -1285,32 +1285,45 @@ body {
     font-size:18px;
 }
 .lq-active-team span { color:#94a3b8; font-size:14px; }
-.lq-clue-timer {
-    width:82px;
-    height:82px;
-    display:grid;
-    place-items:center;
-    margin:12px auto 8px;
-    border-radius:50%;
-    background:rgba(255,216,77,.12);
-    border:4px solid #ffd84d;
-    color:#ffd84d;
-    font-size:32px;
-    font-weight:1000;
-    box-shadow:0 0 30px rgba(255,216,77,.12);
+/* ----- question timer -----
+   A ring that empties as time runs out. Calm blue, amber at 10 seconds,
+   red at 5. The number and a short label change too, so color is never
+   the only signal. Only the red state moves, gently, and never under
+   "Less movement". */
+.lq-timer {
+    --lq-timer-color:#7dd3fc;
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    margin:14px auto 4px;
 }
-.lq-clue-timer.is-danger {
-    border-color:#fb7185;
-    color:#fb7185;
-    animation:timerPulse .45s ease-in-out infinite alternate;
+.lq-timer-ring {
+    width:88px;height:88px;border-radius:50%;
+    display:grid;place-items:center;
+    background:conic-gradient(var(--lq-timer-color) calc(var(--lq-timer-p, 1) * 360deg), rgba(255,255,255,.12) 0);
 }
-@keyframes timerPulse {
+.lq-timer-num {
+    width:70px;height:70px;border-radius:50%;
+    display:grid;place-items:center;box-sizing:border-box;
+    background:#0b1a3d;color:#fff;
+    font-size:32px;font-weight:1000;font-variant-numeric:tabular-nums;
+}
+.lq-timer-label { color:#a8b7d4;font-size:14px;font-weight:900;letter-spacing:.02em; }
+.lq-timer.is-warning { --lq-timer-color:#fbbf24; }
+.lq-timer.is-warning .lq-timer-num { color:#fde68a; }
+.lq-timer.is-warning .lq-timer-label { color:#fde68a; }
+.lq-timer.is-urgent { --lq-timer-color:#f87171; }
+.lq-timer.is-urgent .lq-timer-num { color:#fecaca;border:3px solid #f87171; }
+.lq-timer.is-urgent .lq-timer-label { color:#fecaca; }
+body:not(.lq-reduce-motion) .lq-timer.is-urgent .lq-timer-ring {
+    animation:lqTimerBreathe 1.2s ease-in-out infinite alternate;
+}
+@keyframes lqTimerBreathe {
     from { transform:scale(1); }
-    to { transform:scale(1.08); }
+    to { transform:scale(1.04); }
 }
 @media(max-width:650px) {
     .lq-team-setup-grid { grid-template-columns:1fr; }
-    .lq-clue-timer { width:68px;height:68px;font-size:27px; }
+    .lq-timer-ring { width:76px;height:76px; }
+    .lq-timer-num { width:60px;height:60px;font-size:27px; }
 }
 
 

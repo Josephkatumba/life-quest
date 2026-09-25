@@ -300,6 +300,48 @@ console.log("\n11. Timer");
     await wait(1800);
     check("resumed timer expires after the time left", expired === 1, expired);
 
+    // Question lengths (Phase 2)
+    check("easy 45s, medium 40s, hard 35s, Final Challenge 60s",
+        [T.secondsFor("easy"), T.secondsFor("medium"), T.secondsFor("hard"), T.secondsFor("final")].join() === "45,40,35,60");
+    check("Extra time (+50%): 68s / 60s / 53s / 90s",
+        ["easy", "medium", "hard", "final"].map(d => T.secondsFor(d, "extra")).join() === "68,60,53,90",
+        ["easy", "medium", "hard", "final"].map(d => T.secondsFor(d, "extra")).join());
+    check("Off: 0 seconds (no timer)", ["easy", "medium", "hard", "final"].every(d => T.secondsFor(d, "off") === 0));
+    check("unknown mode falls back to standard", T.secondsFor("hard", "banana") === 35);
+    check("states: normal above 10, warning at 10-6, urgent at 5-1",
+        [T.stateFor(11), T.stateFor(10), T.stateFor(6), T.stateFor(5), T.stateFor(1)].join() === "normal,warning,warning,urgent,urgent");
+
+    // Warnings: once at 10 and once at 5, never every second, and not again after pause/resume
+    const warnings = [];
+    let tickCount = 0;
+    expired = 0;
+    T.start(11, { onTick: () => tickCount++, onWarning: mark => warnings.push(mark), onExpire: () => expired++ });
+    await wait(1300);                  // now at 10 → first warning
+    T.pause();
+    await wait(500);
+    T.resume();                        // resuming at 10 must not warn again
+    await wait(5000);                  // now at 5 → second warning
+    T.pause(); T.resume();
+    await wait(5400);
+    check("warnings fired exactly twice: 10 then 5", warnings.join() === "10,5", warnings.join());
+    check("expired once after the warnings", expired === 1, expired);
+    check("ticks are per whole second (not 5 per second)", tickCount <= 14, tickCount);
+
+    const early = [];
+    T.start(4, { onWarning: mark => early.push(mark) });
+    await wait(300);
+    T.stop();
+    check("a question shorter than 5s gives no surprise warnings", early.length === 0, early.join());
+
+    // A background tab: the browser holds back timers, then check() catches up at once
+    expired = 0;
+    T.start(1, { onExpire: () => expired++ });
+    const blockUntil = Date.now() + 1500;
+    while (Date.now() < blockUntil) { /* page is "in the background": no timer callbacks run */ }
+    check("time ran out while timers were held back: not yet noticed", expired === 0);
+    T.check();
+    check("check() ends the question immediately, so a late answer can't count", expired === 1 && !T.isRunning());
+
     check("stop() is safe when nothing runs", (() => { try { T.stop(); T.pause(); T.resume(); return true; } catch (e) { return false; } })());
 
     console.log("\n" + passed + " passed, " + failed + " failed (" + ((Date.now() - started) / 1000).toFixed(1) + "s)\n");

@@ -265,6 +265,14 @@ function isPlainObject(value) {
 
 const TEXT_SIZES = ["normal", "large", "xlarge"];
 
+// Question timer: normal time, 50% extra time, or no timer (see timer.js)
+const TIMER_MODES = ["standard", "extra", "off"];
+const TIMER_MODE_LABELS = {
+    standard: "Standard timer",
+    extra: "Extra time (+50%)",
+    off: "No timer"
+};
+
 function prefersReducedMotion() {
     return typeof window.matchMedia === "function" &&
         window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -278,7 +286,8 @@ function defaultSettings() {
         reduceMotion: prefersReducedMotion(),
         sound: false,          // off by default: sudden sounds can be stressful
         secondChances: true,
-        autoRead: false        // read each new question aloud
+        autoRead: false,       // read each new question aloud
+        timerMode: "standard"  // "standard", "extra" (+50%) or "off"
     };
 }
 
@@ -297,6 +306,7 @@ function loadSettings() {
 
         if (isPlainObject(saved)) {
             if (TEXT_SIZES.includes(saved.textSize)) merged.textSize = saved.textSize;
+            if (TIMER_MODES.includes(saved.timerMode)) merged.timerMode = saved.timerMode;
             ["highContrast", "readableFont", "reduceMotion", "sound", "secondChances", "autoRead"]
                 .forEach(key => {
                     if (typeof saved[key] === "boolean") merged[key] = saved[key];
@@ -425,8 +435,11 @@ body.lq-high-contrast #game-card .lq-seg[aria-pressed="true"] * { color: #000 !i
 body.lq-high-contrast #game-card input { background: #000 !important; color: #fff !important; border: 3px solid #fff !important; }
 body.lq-high-contrast #game-card .lq-answer-modal.is-correct { border: 5px solid #00ff66 !important; }
 body.lq-high-contrast #game-card .lq-answer-modal.is-wrong { border: 5px dashed #ff5c5c !important; }
-body.lq-high-contrast #game-card .lq-clue-timer { border-color: #fff !important; }
-body.lq-high-contrast #game-card .lq-clue-timer.is-danger { border-color: #ff5c5c !important; }
+body.lq-high-contrast #game-card .lq-timer-ring { background: conic-gradient(#fff calc(var(--lq-timer-p, 1) * 360deg), #444 0) !important; }
+body.lq-high-contrast #game-card .lq-timer.is-warning .lq-timer-ring { background: conic-gradient(#ffeb3b calc(var(--lq-timer-p, 1) * 360deg), #444 0) !important; }
+body.lq-high-contrast #game-card .lq-timer.is-urgent .lq-timer-ring { background: conic-gradient(#ff5c5c calc(var(--lq-timer-p, 1) * 360deg), #444 0) !important; }
+body.lq-high-contrast #game-card .lq-timer-num { background: #000 !important; }
+body.lq-high-contrast #game-card .lq-timer.is-urgent .lq-timer-num { border: 3px solid #ff5c5c !important; }
 body.lq-high-contrast #game-card .lq-clue.is-used { color: #999 !important; border-color: #666 !important; }
 body.lq-high-contrast .lq-fab { background: #000; color: #ffeb3b; border-color: #ffeb3b; }
 body.lq-high-contrast .lq-toast { background: #000 !important; border: 3px solid #ffeb3b; }
@@ -501,6 +514,10 @@ body.lq-high-contrast .lq-toast * { color: #fff !important; }
 .lq-setting-label { font-weight: 800; }
 .lq-setting-help { font-size: 0.9em; opacity: 0.8; }
 .lq-segment { display: flex; flex-wrap: wrap; gap: 8px; }
+.lq-setting-wide { flex-wrap: wrap; }
+.lq-setting-wide > div:first-child { flex: 1 1 260px; }
+.lq-setting-wide .lq-segment { flex: 1 1 100%; }
+.lq-setting-wide .lq-seg { flex: 1 1 0; }
 #game-card .lq-seg, #game-card .lq-switch {
     min-height: 48px; padding: 8px 16px;
     border-radius: 12px; border: 3px solid #64748b;
@@ -958,7 +975,12 @@ const SOUNDS = {
     miss:        [[330.0, 0], [294.0, 0.16]],
     levelup:     [[523.25, 0], [659.25, 0.1], [783.99, 0.2], [1046.5, 0.32]],
     achievement: [[659.25, 0], [880.0, 0.14]],
-    complete:    [[523.25, 0], [659.25, 0.14], [783.99, 0.28], [1046.5, 0.42]]
+    complete:    [[523.25, 0], [659.25, 0.14], [783.99, 0.28], [1046.5, 0.42]],
+    // Timer: one soft note at 10 and at 5 seconds, a gentle two-note cue at zero.
+    // Never a sound every second.
+    warning:     [[440.0, 0]],
+    urgent:      [[493.88, 0]],
+    timeup:      [[392.0, 0], [329.63, 0.2]]
 };
 
 function soundSupported() {
@@ -1485,7 +1507,7 @@ function getClassroom() {
 
     if (classroomData) return classroomData;
 
-    classroomData = { history: QuestionEngine.createHistory(), missed: [] };
+    classroomData = { history: QuestionEngine.createHistory(), missed: [], timerMode: "standard" };
 
     const raw = storage.get(STORAGE_KEYS.classroom);
 
@@ -1497,6 +1519,7 @@ function getClassroom() {
                 classroomData.missed = Array.isArray(saved.missed)
                     ? saved.missed.filter(id => typeof id === "string").slice(-MAX_CLASSROOM_MISSED)
                     : [];
+                if (TIMER_MODES.includes(saved.timerMode)) classroomData.timerMode = saved.timerMode;
             }
         } catch (error) {
             console.error("Could not load classroom data:", error);
@@ -1535,6 +1558,7 @@ function showClassroomSetup() {
     screen = "classroom-setup";
 
     const inProgress = questBoard && questBoard.mode === "teams" && !questBoard.finished;
+    const lastTimerMode = getClassroom().timerMode;
 
     render(`
         <div class="lq-classroom-setup">
@@ -1576,12 +1600,24 @@ function showClassroomSetup() {
                 </div>
             </div>
 
-            <div class="lq-time-options" role="group" aria-label="Answer time">
-                <strong>Answer time</strong>
-                <button class="lq-time-choice is-selected" data-time="10" aria-pressed="true">10 seconds</button>
-                <button class="lq-time-choice" data-time="15" aria-pressed="false">15 seconds</button>
-                <button class="lq-time-choice" data-time="20" aria-pressed="false">20 seconds</button>
+            <div class="lq-time-options" role="group" aria-labelledby="lq-time-label">
+                <strong id="lq-time-label">Answer time</strong>
+                ${[
+                    ["standard", "Standard (45 / 40 / 35s)"],
+                    ["extra", "Extra time (+50%)"],
+                    ["off", "No timer"]
+                ].map(([mode, label]) => `
+                    <button
+                        class="lq-time-choice ${mode === lastTimerMode ? "is-selected" : ""}"
+                        data-timer="${mode}"
+                        aria-pressed="${mode === lastTimerMode ? "true" : "false"}"
+                    >${label}</button>
+                `).join("")}
             </div>
+            <p class="lq-board-caption">
+                Time depends on the question: 45 seconds for easy, 40 for medium, 35 for hard.
+                Extra time gives everyone 50% longer. Pick what suits your class.
+            </p>
 
             <p class="lq-board-caption">
                 Correct answers add the clue value to the team's score. Wrong or timed-out answers score 0.
@@ -1597,7 +1633,7 @@ function showClassroomSetup() {
         </div>
     `);
 
-    let selectedTime = 10;
+    let selectedTimerMode = lastTimerMode;
     let selectedCategoryCount = 6;
     let selectedValueScale = 100;
 
@@ -1625,7 +1661,7 @@ function showClassroomSetup() {
 
     document.querySelectorAll(".lq-time-choice").forEach(button => {
         button.addEventListener("click", () => {
-            selectedTime = Number(button.dataset.time);
+            selectedTimerMode = button.dataset.timer;
             choose(".lq-time-choice", button);
         });
     });
@@ -1641,10 +1677,14 @@ function showClassroomSetup() {
             return;
         }
 
+        // Remember the teacher's timing choice for next time
+        getClassroom().timerMode = selectedTimerMode;
+        saveClassroom();
+
         startQuestBoard({
             mode: "teams",
             teams: names,
-            timeLimit: selectedTime,
+            timerMode: selectedTimerMode,
             categoryCount: selectedCategoryCount,
             valueScale: selectedValueScale
         });
@@ -1671,7 +1711,7 @@ function boardOptions(board) {
         ? {
             mode: "teams",
             teams: board.teams.map(team => team.name),
-            timeLimit: board.timeLimit,
+            timerMode: board.timerMode,
             categoryCount: board.categoryCount,
             valueScale: board.valueScale
         }
@@ -1714,7 +1754,8 @@ function startQuestBoard(options = {}) {
         sessionKey,
         teams: teamMode ? options.teams.map(name => ({ name, score: 0 })) : [],
         currentTeam: 0,
-        timeLimit: teamMode ? Number(options.timeLimit || 10) : 0,
+        // Classroom: the teacher's choice. Solo: the player's own setting, read per question.
+        timerMode: teamMode && TIMER_MODES.includes(options.timerMode) ? options.timerMode : "standard",
         finished: false
     };
 
@@ -1762,7 +1803,7 @@ function renderQuestBoard() {
                 </h2>
                 <div class="lq-board-caption">
                     ${teamMode
-                        ? "Pick a category and value. Answer before the clock hits zero."
+                        ? "Pick a category and value." + (boardTimerMode() === "off" ? "" : " Answer before the clock hits zero.")
                         : "Pick a category. Pick a value. Answer the clue. Clear the board."}
                 </div>
             </div>
@@ -1770,7 +1811,7 @@ function renderQuestBoard() {
             <div class="lq-board-meta">
                 ${teamMode ? `
                     <span class="lq-pill lq-turn-pill">🎤 ${escapeHTML(currentTeam.name)}'s turn</span>
-                    <span class="lq-pill">⏱️ ${questBoard.timeLimit}s</span>
+                    <span class="lq-pill">⏱️ ${TIMER_MODE_LABELS[boardTimerMode()]}</span>
                     ${questBoard.teams.map(team => `
                         <span class="lq-pill">🏆 ${escapeHTML(team.name)}: ${team.score}</span>
                     `).join("")}
@@ -1778,6 +1819,7 @@ function renderQuestBoard() {
                     <span class="lq-pill">👤 ${escapeHTML(player.name)}</span>
                     <span class="lq-pill">⭐ ${player.xp} XP</span>
                     <span class="lq-pill">🏆 Board score: ${questBoard.score}</span>
+                    <span class="lq-pill">⏱️ ${TIMER_MODE_LABELS[boardTimerMode()]}</span>
                 `}
             </div>
         </div>
@@ -1865,7 +1907,8 @@ function openBoardClue(id) {
         correct: false,
         timedOut: false,
         streakBonus: 0,
-        timing: newTiming()
+        timing: newTiming(),
+        seconds: questionSeconds(q, boardTimerMode())   // 0 = no timer
     };
 
     if (teamMode) {
@@ -1878,23 +1921,82 @@ function openBoardClue(id) {
 
     renderClue();
 
-    if (teamMode && questBoard.timeLimit) startClueTimer(questBoard.timeLimit);
+    // The clock starts once the question is on screen
+    if (activeClue.seconds) startClueTimer(activeClue.seconds);
 
     if (settings.autoRead) readClueAloud();
+}
+
+// Classroom: the teacher's choice for the whole game. Solo: the player's own setting.
+function boardTimerMode() {
+    if (!questBoard) return settings.timerMode;
+    return questBoard.mode === "teams" ? questBoard.timerMode : settings.timerMode;
+}
+
+// How long a question gets. Quest Run's Final Challenge will pass { final: true } (60 seconds).
+function questionSeconds(q, mode, options = {}) {
+    if (mode === "off") return 0;
+    return QuestionTimer.secondsFor(options.final ? "final" : q.difficulty, mode);
+}
+
+// Turning the timer Off in Settings also stops the clock on the question you are on
+function applyTimerOffToClue() {
+    const c = activeClue;
+    if (!c || c.answered || !c.seconds || boardTimerMode() !== "off") return;
+    QuestionTimer.stop();
+    c.seconds = 0;
+    announce("Timer turned off for this question.");
+}
+
+const TIMER_STATE_LABELS = {
+    normal: "seconds left",
+    warning: "Time check",
+    urgent: "Last few seconds"
+};
+
+// A ring that empties as time runs out, with the seconds in the middle.
+// Screen readers are not told every second: see the announcements in startClueTimer.
+function timerHTML(left, total) {
+    const state = QuestionTimer.stateFor(left);
+    return `
+        <div
+            id="lq-timer"
+            class="lq-timer is-${state}"
+            role="timer"
+            aria-label="${left} seconds left"
+            style="--lq-timer-p:${total ? Math.max(0, Math.min(1, left / total)) : 0}"
+        >
+            <div class="lq-timer-ring" aria-hidden="true">
+                <span class="lq-timer-num" id="lq-timer-num">${left}</span>
+            </div>
+            <span class="lq-timer-label" id="lq-timer-label" aria-hidden="true">${TIMER_STATE_LABELS[state]}</span>
+        </div>
+    `;
+}
+
+function updateTimerDisplay(left, total) {
+    const timer = document.getElementById("lq-timer");
+    if (!timer) return;
+    const state = QuestionTimer.stateFor(left);
+    timer.className = "lq-timer is-" + state;
+    timer.style.setProperty("--lq-timer-p", total ? Math.max(0, Math.min(1, left / total)) : 0);
+    timer.setAttribute("aria-label", left + " seconds left");
+    document.getElementById("lq-timer-num").textContent = left;
+    document.getElementById("lq-timer-label").textContent = TIMER_STATE_LABELS[state];
 }
 
 function startClueTimer(seconds) {
 
     QuestionTimer.start(seconds, {
 
-        onTick(left) {
-            const timer = document.getElementById("lq-clue-timer");
-            if (timer) {
-                timer.textContent = left;
-                timer.classList.toggle("is-danger", left <= 3);
-                timer.setAttribute("aria-label", left + " seconds left");
-            }
-            if (left === 5) announce("5 seconds left.");
+        onTick(left, total) {
+            updateTimerDisplay(left, total);
+        },
+
+        // Only at 10 and 5 seconds: never every second
+        onWarning(mark) {
+            announce(mark + " seconds left.");
+            playSound(mark === QuestionTimer.WARNING_AT ? "warning" : "urgent");
         },
 
         onExpire() {
@@ -1934,7 +2036,7 @@ function renderClue() {
     const correctText = c.answers.find(answer => answer.correct).text;
     const secondsLeft = QuestionTimer.isRunning() || QuestionTimer.isPaused()
         ? QuestionTimer.secondsLeft()
-        : questBoard.timeLimit;
+        : c.seconds;
 
     render(`
         <div class="lq-clue-panel">
@@ -1947,15 +2049,9 @@ function renderClue() {
                     🎤 ${escapeHTML(team.name)}
                     <span>• ${team.score} points</span>
                 </div>
-                ${c.answered ? "" : `
-                    <div
-                        id="lq-clue-timer"
-                        class="lq-clue-timer ${secondsLeft <= 3 ? "is-danger" : ""}"
-                        role="timer"
-                        aria-label="${secondsLeft} seconds left"
-                    >${secondsLeft}</div>
-                `}
             ` : ""}
+
+            ${!c.answered && c.seconds ? timerHTML(secondsLeft, c.seconds) : ""}
 
             <h2
                 class="lq-clue-question"
@@ -2059,6 +2155,13 @@ function answerClue(index, timedOut = false) {
     if (!c || c.answered) return;
     if (!timedOut && !c.answers[index]) return;
 
+    // Is time already up? (A background tab may not have caught up yet.)
+    // If so this answer doesn't count: the check ends the question as timed out.
+    if (!timedOut && c.seconds) {
+        QuestionTimer.check();
+        if (c.answered) return;
+    }
+
     QuestionTimer.stop();
     stopSpeaking();
 
@@ -2145,11 +2248,13 @@ function answerClue(index, timedOut = false) {
         }
     }
 
-    playSound(c.correct ? "correct" : "miss");
+    playSound(c.correct ? "correct" : timedOut ? "timeup" : "miss");
 
     renderClue();
 
-    announce(clueFeedbackText(c));
+    announce(timedOut
+        ? "Time's up. The correct answer is " + c.answers.find(answer => answer.correct).text + "."
+        : clueFeedbackText(c));
 }
 
 function closeClue() {
@@ -2608,6 +2713,10 @@ function showQuestion() {
         <p class="score">
             Quest XP: ${questScore}
         </p>
+
+        ${currentCategory === "practice" ? `
+            <p class="lq-note">⏱️ No timer in Practice Mistakes. Take your time.</p>
+        ` : ""}
 
         <p class="lq-note">
             Tip: press the number keys ${
@@ -3577,6 +3686,30 @@ function showSettings() {
 
         </div>
 
+        <div class="lq-setting lq-setting-wide">
+
+            <div>
+                <div class="lq-setting-label" id="lq-label-timer">Question timer</div>
+                <div class="lq-setting-help">
+                    Standard: 45 / 40 / 35 seconds for easy / medium / hard questions.
+                    Off also stops the timer on the current question.
+                    Practice Mistakes has no timer. Classroom Mode uses the teacher's choice.
+                </div>
+            </div>
+
+            <div class="lq-segment" role="group" aria-labelledby="lq-label-timer">
+                ${TIMER_MODES.map(mode => `
+                    <button
+                        type="button"
+                        class="lq-seg"
+                        data-timer-mode="${mode}"
+                        aria-pressed="${settings.timerMode === mode ? "true" : "false"}"
+                    >${{ standard: "Standard", extra: "Extra time (+50%)", off: "Off" }[mode]}</button>
+                `).join("")}
+            </div>
+
+        </div>
+
         ${switchRow("highContrast", "High contrast", "Black background with bright text")}
 
         ${switchRow("readableFont", "Easy-to-read font", "Clearer letters with extra spacing")}
@@ -3647,6 +3780,20 @@ function showSettings() {
         });
     });
 
+    document.querySelectorAll("[data-timer-mode]").forEach(button => {
+
+        button.addEventListener("click", function () {
+
+            settings.timerMode = this.dataset.timerMode;
+
+            saveSettings();
+
+            document.querySelectorAll("[data-timer-mode]").forEach(other => {
+                other.setAttribute("aria-pressed", other === this ? "true" : "false");
+            });
+        });
+    });
+
 
     on("reset-progress", () => {
 
@@ -3699,7 +3846,12 @@ function restoreScreen(name) {
             break;
 
         case "clue":
-            activeClue && questBoard ? renderClue() : showCategories();
+            if (activeClue && questBoard) {
+                applyTimerOffToClue();
+                renderClue();
+            } else {
+                showCategories();
+            }
             break;
 
         case "board-result":
