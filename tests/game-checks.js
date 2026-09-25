@@ -41,7 +41,13 @@ function load(files, globals) {
     console.log("\n1. XP progression");
     {
         const noop = () => {};
-        const windowStub = { addEventListener: noop, matchMedia: () => ({ matches: false }) };
+        const voiceList = [];
+        const windowStub = {
+            addEventListener: noop,
+            matchMedia: () => ({ matches: false }),
+            speechSynthesis: { getVoices: () => voiceList, speak: noop, cancel: noop },
+            SpeechSynthesisUtterance: function () {}
+        };
         const game = load(
             ["questions.js", "engine.js", "timer.js", "voice-config.js", "voice.js", "game.js"],
             {
@@ -79,6 +85,46 @@ function load(files, globals) {
         check("old save gets a history and drops removed questions", old.history.v === 1 && old.missed.join() === "world-yv76y6");
         const junk = g(`normalizePlayer({ name: "X", xp: "lots", history: 7, missed: "nope" })`);
         check("damaged save loads with safe values", junk.xp === 0 && junk.missed.length === 0 && junk.history.v === 1);
+
+        console.log("\n1b. Choosing the built-in voice (no voice name is required)");
+        const pick = voices => {
+            voiceList.length = 0;
+            voices.forEach(([name, lang, isDefault]) => voiceList.push({ name, lang, default: Boolean(isDefault) }));
+            const v = g("skippedVoices = new Set(); browserVoice = null; pickBrowserVoice()");
+            return v ? v.name : null;
+        };
+        check("Edge on Windows: natural female US voice",
+            pick([["Microsoft David - English (United States)", "en-US", 1], ["Microsoft Zira - English (United States)", "en-US"],
+                  ["Microsoft Guy Online (Natural) - English (United States)", "en-US"], ["Microsoft Aria Online (Natural) - English (United States)", "en-US"],
+                  ["Microsoft Sonia Online (Natural) - English (United Kingdom)", "en-GB"], ["Microsoft Denise Online (Natural) - French (France)", "fr-FR"]])
+            === "Microsoft Aria Online (Natural) - English (United States)");
+        check("Chrome on Windows: Google US English (female) over local voices",
+            pick([["Microsoft David - English (United States)", "en-US", 1], ["Microsoft Mark - English (United States)", "en-US"],
+                  ["Microsoft Zira - English (United States)", "en-US"], ["Google US English", "en-US"], ["Google UK English Male", "en-GB"]])
+            === "Google US English");
+        check("Windows without online voices: Zira (female) over David and Mark",
+            pick([["Microsoft David - English (United States)", "en-US", 1], ["Microsoft Mark - English (United States)", "en-US"],
+                  ["Microsoft Zira - English (United States)", "en-US"]]) === "Microsoft Zira - English (United States)");
+        check("Mac / iPad: Samantha",
+            pick([["Alex", "en-US", 1], ["Daniel", "en-GB"], ["Samantha", "en-US"], ["Thomas", "fr-FR"]]) === "Samantha");
+        check("no US voice: best English female voice (Hazel, UK)",
+            pick([["Microsoft George - English (United Kingdom)", "en-GB", 1], ["Microsoft Hazel - English (United Kingdom)", "en-GB"]])
+            === "Microsoft Hazel - English (United Kingdom)");
+        check("only male English voices: still reads (David)",
+            pick([["Microsoft David - English (United States)", "en-US", 1], ["Microsoft Pablo - Spanish (Spain)", "es-ES"]])
+            === "Microsoft David - English (United States)");
+        check("no English voice at all: browser default, no crash",
+            pick([["Microsoft Pablo - Spanish (Spain)", "es-ES", 1]]) === null);
+        check("a voice that failed (offline online voice) is skipped next time",
+            (() => { pick([["Microsoft Aria Online (Natural) - English (United States)", "en-US"], ["Microsoft Zira - English (United States)", "en-US"]]);
+                     g('skippedVoices.add("Microsoft Aria Online (Natural) - English (United States)"); browserVoice = null');
+                     return g("pickBrowserVoice().name") === "Microsoft Zira - English (United States)"; })());
+        const sample = "Social Skills, for 300 points. What is assertive communication? Choice 1: Clearly stating needs while respecting others. Choice 2: Getting your way by force.";
+        check("reading in pieces keeps every word exactly",
+            g("speechChunks(" + JSON.stringify(sample) + ")").join(" ") === sample,
+            g("speechChunks(" + JSON.stringify(sample) + ")").join(" | "));
+        check("long text is read in short pieces (no cut-off)",
+            g('speechChunks("First sentence here. " + "Second sentence is a bit longer than the first one. ".repeat(6) + "Last?")').every(c => c.length <= 200));
     }
 
 

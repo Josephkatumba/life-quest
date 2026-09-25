@@ -1075,32 +1075,110 @@ function stopSpeaking() {
 
 
 // A clear US English voice from the ones this computer has, if possible
+// ------------------------------
+// CHOOSING THE BUILT-IN VOICE
+// Every computer has different voices, so no single voice name is required.
+// Each English voice gets a score and the best one is used:
+//   natural / neural voices (e.g. Edge's "Microsoft Aria Online (Natural)") first,
+//   then female voices, then US English. A male voice is only used when no
+//   female English voice exists.
+// ------------------------------
+
+const FEMALE_VOICE_NAMES = /\b(female|woman|aria|jenny|michelle|ana|emma|ava|sonia|libby|natasha|clara|zira|hazel|susan|samantha|allison|karen|moira|tessa|serena|fiona|victoria|kathy|nicky|joanna|salli|kimberly|kendra|ivy|ruth|olivia|amy|linda|heera|catherine|elizabeth|jane|nancy|sara|aurora|ashley|cora|elise|monica|paulina|google us english|google uk english female)\b/i;
+const MALE_VOICE_NAMES = /\b(male|man|david|mark|guy|andrew|brian|christopher|eric|roger|steffan|ryan|thomas|george|alex|daniel|fred|aaron|arthur|tom|james|william|richard|matthew|justin|joey|russell|lee|ravi|oliver|rishi|gordon)\b/i;
+
 let browserVoice = null;
+let skippedVoices = new Set();      // voices that failed to speak (e.g. online voices when offline)
+
+function scoreVoice(voice) {
+
+    const lang = String(voice.lang || "").replace("_", "-");
+    const name = String(voice.name || "");
+
+    if (!/^en(-|$)/i.test(lang)) return null;        // English only
+
+    let score = 0;
+
+    if (/^en-US$/i.test(lang)) score += 30;          // American English first
+    else score += 10;
+
+    if (/natural|neural/i.test(name)) score += 40;   // modern, human-sounding voices
+    else if (/online|google/i.test(name)) score += 20;
+
+    if (/female/i.test(name) || (FEMALE_VOICE_NAMES.test(name) && !/\bmale\b/i.test(name))) score += 25;
+    else if (MALE_VOICE_NAMES.test(name)) score -= 50;
+
+    if (voice.default) score += 2;
+
+    return score;
+}
 
 function pickBrowserVoice() {
 
     if (!speechSupported()) return null;
 
-    const voices = window.speechSynthesis.getVoices().filter(v => /^en[-_]US/i.test(v.lang));
-    const preferred = /natural|neural|google us english|samantha|aria|jenny|guy/i;
+    const ranked = window.speechSynthesis.getVoices()
+        .filter(voice => !skippedVoices.has(voice.name))
+        .map(voice => ({ voice, score: scoreVoice(voice) }))
+        .filter(item => item.score !== null)               // English voices only
+        .sort((a, b) => b.score - a.score);
 
-    browserVoice = voices.find(v => preferred.test(v.name)) || voices[0] || null;
+    browserVoice = ranked.length ? ranked[0].voice : null;
 
     return browserVoice;
 }
 
+// Short pieces: some browsers stop long speech part-way through
+function speechChunks(text) {
 
-function speakWithBrowser(text) {
+    const sentences = String(text).replace(/\s+/g, " ").trim().match(/[^.!?]+[.!?]*\s*/g) || [];
+    const chunks = [];
+
+    sentences.forEach(sentence => {
+        const last = chunks[chunks.length - 1];
+        if (last && (last + sentence).length <= 180) chunks[chunks.length - 1] = last + sentence;
+        else chunks.push(sentence);
+    });
+
+    return chunks.map(chunk => chunk.trim()).filter(Boolean);
+}
+
+// Calm, friendly and a little slower than conversation. Never touches the timer.
+function speakWithBrowser(text, retried = false) {
 
     if (!speechSupported()) return;
 
-    const utterance = new window.SpeechSynthesisUtterance(text);
+    const voice = browserVoice || pickBrowserVoice();
 
-    utterance.lang = "en-US";
-    utterance.rate = 0.95;      // calm and clear, not slow
-    utterance.voice = browserVoice || pickBrowserVoice();
+    speechChunks(text).forEach((chunk, index) => {
 
-    window.speechSynthesis.speak(utterance);
+        const utterance = new window.SpeechSynthesisUtterance(chunk);
+
+        utterance.lang = voice ? voice.lang : "en-US";
+        utterance.voice = voice;
+        utterance.rate = 0.9;
+        utterance.pitch = 1;
+        utterance.volume = 1;
+
+        // An online voice that can't speak (no internet): try the next best voice once
+        if (index === 0 && voice && !retried) {
+            utterance.onerror = event => {
+                if (event.error === "canceled" || event.error === "interrupted") return;
+                skippedVoices.add(voice.name);
+                browserVoice = null;
+                window.speechSynthesis.cancel();
+                speakWithBrowser(text, true);
+            };
+        }
+
+        window.speechSynthesis.speak(utterance);
+    });
+}
+
+// The voice the game will use, for the Settings screen
+function browserVoiceName() {
+    const voice = browserVoice || pickBrowserVoice();
+    return voice ? voice.name : "";
 }
 
 
@@ -3874,7 +3952,8 @@ function showSettings() {
                 <div class="lq-setting-help">
                     ${LifeQuestVoice.isConfigured()
                         ? "The natural voice sounds more like a real person. If it can't play, the built-in voice reads instead."
-                        : "The natural voice isn't set up on this computer. Ask your teacher. The built-in voice works now."}
+                        : "Uses the best voice on this computer."}
+                    ${browserVoiceName() ? `<br>Built-in voice: <strong>${escapeHTML(browserVoiceName())}</strong>` : ""}
                 </div>
             </div>
 
