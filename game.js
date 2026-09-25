@@ -1,2758 +1,25 @@
 // ==========================================
-// LIFE QUEST V3
-// An accessible quiz adventure for high school students.
+// LIFE QUEST
+// An accessible quiz adventure for American high school students.
 //
-// What's new in V3 (see the settings ⚙️ button in the game):
-//   • Accessibility: text size, high contrast, easy-to-read font,
-//     reduced motion, read-aloud, keyboard play (keys 1-4), screen-reader support
-//   • Learning supports: 50/50 hints, second chances, breathing breaks,
-//     "Practice Mistakes" quests that revisit missed questions
-//   • Life-skills worlds: 💼 Work Ready and 🤝 Social Skills
-//   • Stars, confetti, level-up and achievement toasts (no timers, no pressure)
-//   • Multiple players on one shared computer + a printable / CSV progress report
-//   • Safer saving (works even if the browser blocks storage) and old saves are migrated
+// Files (loaded in this order by index.html):
+//   questions.js  the question bank (see the top of that file to add questions)
+//   engine.js     QuestionEngine: picks questions, stops repeats, keeps history
+//   timer.js      QuestionTimer: the one countdown used by the game
+//   game.js       screens, scoring, profiles, settings (this file)
 //
-// HOW TO ADD QUESTIONS
-//   Use the mc() helper inside a category:
-//     mc("Question?", "The correct answer", ["Wrong 1", "Wrong 2", "Wrong 3"],
-//        "easy" | "medium" | "hard", "Short, kind explanation.")
-//   Answers are shuffled every time a question is shown, and number-only
-//   answers are sorted from smallest to largest automatically.
-//   Existing questions can keep using the { question, answers, correct, ... } format.
+// Modes:
+//   ⚡ Quest Board       pick a category and a value, clear the board
+//   🎓 Classroom Mode    teams take turns on a timed board (kept separate from
+//                        personal progress)
+//   🔁 Practice Mistakes revisits missed questions, no timer
+//
+// Accessibility: text size, high contrast, easy-to-read font, less movement,
+// read-aloud (button or R key, optional auto-read), keyboard play (keys 1-4),
+// screen-reader support, gentle optional sounds.
 // ==========================================
 
 "use strict";
-
-
-// ------------------------------
-// QUESTION HELPER
-// ------------------------------
-
-function mc(question, correctAnswer, wrongAnswers, difficulty, explanation) {
-
-    return {
-        question: question,
-        answers: [correctAnswer, ...wrongAnswers],
-        correct: 0, // shuffled when the question is shown
-        difficulty: difficulty,
-        explanation: explanation
-    };
-}
-
-
-// ------------------------------
-// QUESTION BANK
-// ------------------------------
-
-const categories = {
-
-    world: {
-        name: "🌍 World Explorer",
-        questions: [
-
-            {
-                question: "What is the capital city of France?",
-                answers: ["Paris", "London", "Rome", "Madrid"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Paris is the capital and largest city of France."
-            },
-
-            {
-                question: "Which country is famous for the Great Wall?",
-                answers: ["Japan", "China", "India", "Thailand"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "The Great Wall is one of China's most famous landmarks."
-            },
-
-            {
-                question: "What is the largest continent?",
-                answers: ["Africa", "Europe", "Asia", "North America"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "Asia is the world's largest continent by both area and population."
-            },
-
-            {
-                question: "Which ocean is the largest?",
-                answers: ["Atlantic", "Indian", "Arctic", "Pacific"],
-                correct: 3,
-                difficulty: "easy",
-                explanation: "The Pacific Ocean is the largest ocean on Earth."
-            },
-
-            {
-                question: "Which country is shaped like a boot?",
-                answers: ["Italy", "Spain", "Greece", "Portugal"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Italy is often described as looking like a boot."
-            },
-
-            {
-                question: "What is the capital of Japan?",
-                answers: ["Kyoto", "Tokyo", "Osaka", "Hiroshima"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Tokyo is the capital of Japan."
-            },
-
-            {
-                question: "Which continent is Egypt located in?",
-                answers: ["Asia", "Europe", "Africa", "South America"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "Egypt is primarily located in northeastern Africa."
-            },
-
-            {
-                question: "What is the largest country by land area?",
-                answers: ["Canada", "China", "United States", "Russia"],
-                correct: 3,
-                difficulty: "medium",
-                explanation: "Russia is the world's largest country by land area."
-            },
-
-            {
-                question: "Which country is home to the city of Sydney?",
-                answers: ["Australia", "New Zealand", "Canada", "South Africa"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Sydney is one of Australia's largest cities."
-            },
-
-            {
-                question: "Which African country has the famous Serengeti?",
-                answers: ["Kenya", "Tanzania", "Uganda", "Ghana"],
-                correct: 1,
-                difficulty: "medium",
-                explanation: "The Serengeti ecosystem is primarily in Tanzania."
-            },
-
-            {
-                question: "What is the capital of Uganda?",
-                answers: ["Entebbe", "Jinja", "Kampala", "Mbarara"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "Kampala is the capital city of Uganda."
-            },
-
-            {
-                question: "Which country has the city of Rio de Janeiro?",
-                answers: ["Argentina", "Brazil", "Chile", "Colombia"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Rio de Janeiro is a major city in Brazil."
-            }
-,
-
-            {
-                question: "Which river is the longest in Africa?",
-                answers: ["Congo River","Nile River","Zambezi River","Niger River"],
-                correct: 1,
-                difficulty: "medium",
-                explanation: "The Nile is generally recognized as Africa's longest river."
-            },
-
-            {
-                question: "Which country is home to Mount Kilimanjaro?",
-                answers: ["Kenya","Uganda","Tanzania","Rwanda"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "Mount Kilimanjaro is in Tanzania."
-            },
-
-            {
-                question: "What is the smallest continent by land area?",
-                answers: ["Europe","Australia","Antarctica","South America"],
-                correct: 1,
-                difficulty: "medium",
-                explanation: "Australia is the smallest continent by land area."
-            },
-
-            {
-                question: "Which desert is the largest hot desert in the world?",
-                answers: ["Gobi","Kalahari","Sahara","Atacama"],
-                correct: 2,
-                difficulty: "medium",
-                explanation: "The Sahara is the world's largest hot desert."
-            },
-
-            {
-                question: "Which country has the most natural lakes?",
-                answers: ["Canada","Russia","Brazil","United States"],
-                correct: 0,
-                difficulty: "hard",
-                explanation: "Canada has more lakes than any other country."
-            },
-
-            {
-                question: "Which city is located on two continents?",
-                answers: ["Cairo","Istanbul","Nairobi","Lisbon"],
-                correct: 1,
-                difficulty: "medium",
-                explanation: "Istanbul spans Europe and Asia across the Bosporus."
-            },
-
-            {
-                question: "Which African lake is the world's second-largest freshwater lake by surface area?",
-                answers: ["Lake Victoria","Lake Tanganyika","Lake Malawi","Lake Chad"],
-                correct: 0,
-                difficulty: "hard",
-                explanation: "Lake Victoria is the second-largest freshwater lake by surface area after Lake Superior."
-            },
-
-            {
-                question: "Which country is completely surrounded by South Africa?",
-                answers: ["Eswatini","Lesotho","Botswana","Namibia"],
-                correct: 1,
-                difficulty: "hard",
-                explanation: "Lesotho is an enclave entirely surrounded by South Africa."
-            }
-,
-
-            {
-                question: "Which African country is known as the 'Pearl of Africa'?",
-                answers: ["Uganda","Ghana","Ethiopia","Senegal"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Uganda has long been associated with the nickname 'Pearl of Africa'."
-            },
-
-            {
-                question: "Which strait separates Europe from Africa at the western Mediterranean?",
-                answers: ["Strait of Gibraltar","Bering Strait","Bosporus","Strait of Malacca"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "The Strait of Gibraltar separates southern Spain from northern Morocco."
-            },
-
-            {
-                question: "Which country has the city of Marrakech?",
-                answers: ["Morocco","Tunisia","Algeria","Egypt"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Marrakech is a major city in Morocco."
-            },
-
-            {
-                question: "Which mountain range contains Mount Everest?",
-                answers: ["Andes","Alps","Himalayas","Rockies"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "Mount Everest is part of the Himalaya mountain range."
-            },
-
-            {
-                question: "Which African country has Addis Ababa as its capital?",
-                answers: ["Ethiopia","Eritrea","Somalia","Sudan"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Addis Ababa is the capital of Ethiopia."
-            },
-
-            {
-                question: "Which ocean lies between Africa and Australia?",
-                answers: ["Atlantic Ocean","Indian Ocean","Pacific Ocean","Arctic Ocean"],
-                correct: 1,
-                difficulty: "medium",
-                explanation: "The Indian Ocean lies between Africa, Asia, and Australia."
-            },
-
-            {
-                question: "Which country is home to the ancient city of Petra?",
-                answers: ["Jordan","Lebanon","Turkey","Greece"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Petra is an ancient archaeological city in southern Jordan."
-            },
-
-            {
-                question: "Which river flows through Egypt and empties into the Mediterranean Sea?",
-                answers: ["Niger","Congo","Nile","Zambezi"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "The Nile flows north through Egypt into the Mediterranean."
-            },
-
-            {
-                question: "Which country is the world's most populous as of the mid-2020s?",
-                answers: ["China","India","United States","Indonesia"],
-                correct: 1,
-                difficulty: "medium",
-                explanation: "India surpassed China in population in 2023 and remains the most populous country in the mid-2020s."
-            },
-
-            {
-                question: "Which African island nation is famous for its lemurs?",
-                answers: ["Madagascar","Mauritius","Seychelles","Comoros"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Madagascar is famous for its many endemic lemur species."
-            }
-,
-
-            {
-                question: "Which country is home to the ancient city of Timbuktu?",
-                answers: ["Mali","Niger","Chad","Sudan"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Timbuktu is a historic city in Mali."
-            },
-
-            {
-                question: "Which African country has Kigali as its capital?",
-                answers: ["Rwanda","Burundi","Uganda","Kenya"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Kigali is the capital of Rwanda."
-            },
-
-            {
-                question: "Which country is famous for the fjords of Scandinavia?",
-                answers: ["Norway","Portugal","Egypt","Mexico"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Norway is famous for its dramatic fjords."
-            },
-
-            {
-                question: "Which sea lies between Europe and Africa?",
-                answers: ["Mediterranean Sea","Caribbean Sea","Baltic Sea","Arabian Sea"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "The Mediterranean Sea separates Europe from Africa in much of its extent."
-            },
-
-            {
-                question: "Which African country is crossed by the Equator and has Mount Kenya?",
-                answers: ["Kenya","Tanzania","Ethiopia","Ghana"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "The Equator crosses Kenya, which is also home to Mount Kenya."
-            },
-
-            {
-                question: "What is the capital of Canada?",
-                answers: ["Toronto","Vancouver","Ottawa","Montreal"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "Ottawa is Canada's capital."
-            },
-
-            {
-                question: "Which country is home to the ancient pyramids of Giza?",
-                answers: ["Egypt","Sudan","Jordan","Libya"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "The Giza pyramid complex is in Egypt."
-            },
-
-            {
-                question: "Which continent contains the Amazon rainforest?",
-                answers: ["Africa","Asia","South America","Europe"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "Most of the Amazon rainforest lies in South America."
-            },
-
-            {
-                question: "Which African country has Cape Town, Pretoria and Bloemfontein as its capitals for different branches of government?",
-                answers: ["South Africa","Namibia","Botswana","Zimbabwe"],
-                correct: 0,
-                difficulty: "hard",
-                explanation: "South Africa has three capital cities with different governmental functions."
-            },
-
-            {
-                question: "Which country is the world's largest archipelago by number of islands commonly cited?",
-                answers: ["Indonesia","Japan","Philippines","Greece"],
-                correct: 0,
-                difficulty: "hard",
-                explanation: "Indonesia is the world's largest archipelagic country."
-            }
-
-        ]
-    },
-
-    pop: {
-        name: "🇺🇸 Pop Culture",
-        questions: [
-
-            {
-                question: "Which superhero is known as the Dark Knight?",
-                answers: ["Superman", "Batman", "Iron Man", "Spider-Man"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Batman is commonly known as the Dark Knight."
-            },
-
-            {
-                question: "Which movie features the character Simba?",
-                answers: ["Frozen", "Moana", "The Lion King", "Toy Story"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "Simba is the main character in Disney's The Lion King."
-            },
-
-            {
-                question: "Which instrument has black and white keys?",
-                answers: ["Guitar", "Piano", "Trumpet", "Drum"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "A piano keyboard has black and white keys."
-            },
-
-            {
-                question: "Which superhero can climb walls?",
-                answers: ["Hulk", "Thor", "Spider-Man", "Batman"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "Spider-Man is famous for climbing walls and swinging between buildings."
-            },
-
-            {
-                question: "Which game series features Mario?",
-                answers: ["Minecraft", "Super Mario", "Fortnite", "Halo"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Mario is the famous character from Nintendo's Super Mario series."
-            },
-
-            {
-                question: "What color is traditionally associated with Pikachu?",
-                answers: ["Blue", "Green", "Yellow", "Purple"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "Pikachu is famously yellow."
-            },
-
-            {
-                question: "Which fictional school does Harry Potter attend?",
-                answers: ["Hogwarts", "Ravenclaw", "Wakanda", "Nevermore"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Harry Potter attends Hogwarts School of Witchcraft and Wizardry."
-            },
-
-            {
-                question: "Which film series includes the character Buzz Lightyear?",
-                answers: ["Toy Story", "Cars", "Shrek", "Avatar"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Buzz Lightyear is one of the main characters in Toy Story."
-            },
-
-            {
-                question: "Which social media platform is known for short-form videos?",
-                answers: ["TikTok", "Wikipedia", "Google Maps", "Gmail"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "TikTok became widely known for short-form video content."
-            },
-
-            {
-                question: "Which fictional country is Black Panther associated with?",
-                answers: ["Wakanda", "Atlantis", "Gotham", "Metropolis"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Black Panther is the superhero and king associated with Wakanda."
-            }
-,
-
-            {
-                question: "Which fictional school does Harry Potter attend?",
-                answers: ["Nevermore Academy","Hogwarts","Xavier's School","Starfleet Academy"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Harry Potter attends Hogwarts School of Witchcraft and Wizardry."
-            },
-
-            {
-                question: "Which animated film features the song 'Let It Go'?",
-                answers: ["Frozen","Encanto","Tangled","Brave"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "'Let It Go' is from Disney's Frozen."
-            },
-
-            {
-                question: "Which superhero is associated with the fictional country of Wakanda?",
-                answers: ["Black Panther","Aquaman","Flash","Doctor Strange"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Black Panther is the superhero identity of Wakanda's king, T'Challa."
-            },
-
-            {
-                question: "Which band released the song 'Bohemian Rhapsody'?",
-                answers: ["The Beatles","Queen","ABBA","U2"],
-                correct: 1,
-                difficulty: "medium",
-                explanation: "Queen released 'Bohemian Rhapsody' in 1975."
-            },
-
-            {
-                question: "Which film franchise features the character Jack Sparrow?",
-                answers: ["Pirates of the Caribbean","Indiana Jones","Mission: Impossible","The Mummy"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Captain Jack Sparrow is the central character of Pirates of the Caribbean."
-            },
-
-            {
-                question: "Which artist is known for the album 'Thriller'?",
-                answers: ["Prince","Michael Jackson","Elton John","Stevie Wonder"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Michael Jackson released the album Thriller."
-            },
-
-            {
-                question: "In the Mario games, what is the name of Mario's brother?",
-                answers: ["Luigi","Wario","Toad","Yoshi"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Luigi is Mario's younger twin brother."
-            },
-
-            {
-                question: "Which television series follows a chemistry teacher who enters the illegal drug trade?",
-                answers: ["The Wire","Breaking Bad","Lost","Suits"],
-                correct: 1,
-                difficulty: "medium",
-                explanation: "Breaking Bad follows Walter White and his transformation into a methamphetamine manufacturer."
-            }
-,
-
-            {
-                question: "Which film series features the fictional archaeologist Indiana Jones?",
-                answers: ["Indiana Jones","The Matrix","Jurassic Park","Rocky"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Indiana Jones is the archaeologist and adventurer at the center of the franchise."
-            },
-
-            {
-                question: "Which singer released the album '21'?",
-                answers: ["Adele","Rihanna","Beyoncé","Taylor Swift"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Adele released the album 21 in 2011."
-            },
-
-            {
-                question: "In the Harry Potter series, what is the name of Harry's owl?",
-                answers: ["Hedwig","Scabbers","Fawkes","Crookshanks"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Hedwig is Harry Potter's snowy owl."
-            },
-
-            {
-                question: "Which film won the Academy Award for Best Picture at the 67th Academy Awards?",
-                answers: ["Forrest Gump","Pulp Fiction","The Shawshank Redemption","Four Weddings and a Funeral"],
-                correct: 0,
-                difficulty: "hard",
-                explanation: "Forrest Gump won Best Picture at the 67th Academy Awards."
-            },
-
-            {
-                question: "Which fictional city is Batman primarily associated with?",
-                answers: ["Metropolis","Gotham City","Central City","Star City"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Batman is primarily associated with Gotham City."
-            },
-
-            {
-                question: "Which video game character is known for the phrase 'It's-a me'?",
-                answers: ["Sonic","Mario","Link","Kirby"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Mario is famously associated with the phrase 'It's-a me, Mario!'."
-            },
-
-            {
-                question: "Which artist painted the famous portrait 'Mona Lisa'?",
-                answers: ["Michelangelo","Leonardo da Vinci","Raphael","Donatello"],
-                correct: 1,
-                difficulty: "medium",
-                explanation: "Leonardo da Vinci painted the Mona Lisa."
-            },
-
-            {
-                question: "Which TV sitcom follows six friends living in New York City?",
-                answers: ["Friends","The Office","Modern Family","Brooklyn Nine-Nine"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Friends follows six friends living in New York City."
-            },
-
-            {
-                question: "Which movie features the fictional kingdom of Arendelle?",
-                answers: ["Frozen","Moana","Coco","Aladdin"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Arendelle is the fictional kingdom in Disney's Frozen."
-            },
-
-            {
-                question: "Which music group included John Lennon, Paul McCartney, George Harrison and Ringo Starr?",
-                answers: ["The Rolling Stones","The Beatles","ABBA","The Beach Boys"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Those four musicians formed the classic lineup of The Beatles."
-            }
-,
-
-            {
-                question: "Which actor played Jack in the film Titanic?",
-                answers: ["Leonardo DiCaprio","Brad Pitt","Tom Hanks","Matt Damon"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Leonardo DiCaprio played Jack Dawson."
-            },
-
-            {
-                question: "Which Disney character is a wooden puppet who wants to become a real boy?",
-                answers: ["Pinocchio","Peter Pan","Aladdin","Hercules"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Pinocchio is the wooden puppet in the classic story."
-            },
-
-            {
-                question: "Which superhero carries a shield featuring a star?",
-                answers: ["Captain America","Thor","Iron Man","Hulk"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Captain America's iconic shield bears a star."
-            },
-
-            {
-                question: "Which franchise features the characters Luke Skywalker and Darth Vader?",
-                answers: ["Star Wars","Star Trek","Dune","Avatar"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Luke Skywalker and Darth Vader are central Star Wars characters."
-            },
-
-            {
-                question: "Which singer is known for the album 'Lemonade'?",
-                answers: ["Beyoncé","Adele","Sia","Ariana Grande"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Beyoncé released Lemonade in 2016."
-            },
-
-            {
-                question: "Which film features the character Forrest Gump?",
-                answers: ["Forrest Gump","The Green Mile","Cast Away","Apollo 13"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Forrest Gump is the title character of the film."
-            },
-
-            {
-                question: "Which fictional detective lives at 221B Baker Street?",
-                answers: ["Sherlock Holmes","Hercule Poirot","James Bond","Miss Marple"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Sherlock Holmes is famously associated with 221B Baker Street."
-            },
-
-            {
-                question: "Which gaming console was produced by Nintendo and features the character Link?",
-                answers: ["Nintendo systems","PlayStation","Xbox","Dreamcast"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Link is a Nintendo character from The Legend of Zelda series."
-            },
-
-            {
-                question: "Which movie franchise features dinosaurs brought back through genetic engineering?",
-                answers: ["Jurassic Park","Transformers","The Matrix","Terminator"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Jurassic Park centers on genetically recreated dinosaurs."
-            },
-
-            {
-                question: "Which singer released the song 'Shape of You'?",
-                answers: ["Ed Sheeran","Bruno Mars","Justin Bieber","Sam Smith"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Ed Sheeran released Shape of You."
-            }
-
-        ]
-    },
-
-    brain: {
-        name: "🧠 Brain Power",
-        questions: [
-
-            {
-                question: "What is 12 × 5?",
-                answers: ["50", "60", "70", "80"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "12 multiplied by 5 equals 60."
-            },
-
-            {
-                question: "What planet is closest to the Sun?",
-                answers: ["Venus", "Earth", "Mercury", "Mars"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "Mercury is the planet closest to the Sun."
-            },
-
-            {
-                question: "How many sides does a triangle have?",
-                answers: ["2", "3", "4", "5"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "A triangle has three sides."
-            },
-
-            {
-                question: "What gas do humans need to breathe?",
-                answers: ["Oxygen", "Helium", "Carbon dioxide", "Hydrogen"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Humans need oxygen for cellular respiration."
-            },
-
-            {
-                question: "What is 100 divided by 4?",
-                answers: ["20", "25", "30", "40"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "100 ÷ 4 = 25."
-            },
-
-            {
-                question: "Which organ pumps blood around the body?",
-                answers: ["Brain", "Lungs", "Heart", "Kidney"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "The heart pumps blood throughout the body."
-            },
-
-            {
-                question: "What is the freezing point of water in Celsius?",
-                answers: ["0°C", "10°C", "32°C", "100°C"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Water freezes at 0°C under standard conditions."
-            },
-
-            {
-                question: "What is 15% of 100?",
-                answers: ["5", "10", "15", "20"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "15% of 100 is 15."
-            },
-
-            {
-                question: "Which force keeps us on the ground?",
-                answers: ["Magnetism", "Gravity", "Friction", "Electricity"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Gravity pulls objects toward Earth."
-            },
-
-            {
-                question: "If a pattern is 2, 4, 6, 8, what comes next?",
-                answers: ["9", "10", "12", "14"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "The pattern increases by 2 each time."
-            },
-
-            {
-                question: "Which part of a plant usually absorbs water from the soil?",
-                answers: ["Flower", "Leaf", "Root", "Fruit"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "Roots absorb water and minerals from the soil."
-            },
-
-            {
-                question: "What is the square root of 64?",
-                answers: ["6", "7", "8", "9"],
-                correct: 2,
-                difficulty: "medium",
-                explanation: "8 × 8 = 64."
-            }
-,
-
-            {
-                question: "What gas do humans need to breathe to survive?",
-                answers: ["Oxygen","Helium","Hydrogen","Neon"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Humans need oxygen for cellular respiration."
-            },
-
-            {
-                question: "What is the process by which plants use light to make food?",
-                answers: ["Respiration","Photosynthesis","Fermentation","Digestion"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Plants use photosynthesis to convert light energy into chemical energy."
-            },
-
-            {
-                question: "How many bones are in the adult human body, approximately?",
-                answers: ["106","206","306","406"],
-                correct: 1,
-                difficulty: "medium",
-                explanation: "A typical adult human skeleton has 206 bones."
-            },
-
-            {
-                question: "Which organ pumps blood around the human body?",
-                answers: ["Lungs","Liver","Heart","Kidneys"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "The heart pumps blood through the circulatory system."
-            },
-
-            {
-                question: "What is the chemical symbol for gold?",
-                answers: ["Ag","Au","Gd","Go"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Gold's chemical symbol is Au, from the Latin word aurum."
-            },
-
-            {
-                question: "Which planet has the most prominent ring system?",
-                answers: ["Mars","Venus","Saturn","Mercury"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "Saturn is famous for its extensive and bright ring system."
-            },
-
-            {
-                question: "What force keeps planets in orbit around the Sun?",
-                answers: ["Magnetism","Friction","Gravity","Electricity"],
-                correct: 2,
-                difficulty: "medium",
-                explanation: "Gravity provides the force that keeps planets in orbit around the Sun."
-            },
-
-            {
-                question: "What is the approximate speed of light in a vacuum?",
-                answers: ["300,000 km/s","30,000 km/s","3,000 km/s","3,000,000 km/s"],
-                correct: 0,
-                difficulty: "hard",
-                explanation: "Light travels through a vacuum at about 300,000 kilometres per second."
-            }
-,
-
-            {
-                question: "Which part of a cell contains most of its genetic material?",
-                answers: ["Nucleus","Cell wall","Ribosome","Vacuole"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "In eukaryotic cells, most DNA is contained in the nucleus."
-            },
-
-            {
-                question: "What is the boiling point of water at sea level in Celsius?",
-                answers: ["90°C","100°C","110°C","120°C"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Pure water boils at 100°C at standard atmospheric pressure."
-            },
-
-            {
-                question: "Which blood cells primarily help fight infections?",
-                answers: ["Red blood cells","White blood cells","Platelets","Plasma"],
-                correct: 1,
-                difficulty: "medium",
-                explanation: "White blood cells are key components of the immune system."
-            },
-
-            {
-                question: "What is the largest organ of the human body?",
-                answers: ["Liver","Brain","Skin","Lungs"],
-                correct: 2,
-                difficulty: "medium",
-                explanation: "The skin is the body's largest organ by surface area and weight."
-            },
-
-            {
-                question: "Which planet is closest to the Sun?",
-                answers: ["Venus","Mercury","Earth","Mars"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Mercury is the planet closest to the Sun."
-            },
-
-            {
-                question: "What type of energy is stored in food?",
-                answers: ["Chemical energy","Sound energy","Nuclear energy","Light energy"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Food stores chemical energy that the body can release through metabolism."
-            },
-
-            {
-                question: "Which vitamin is commonly produced in the skin after sunlight exposure?",
-                answers: ["Vitamin A","Vitamin C","Vitamin D","Vitamin K"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "Sunlight helps the skin produce vitamin D."
-            },
-
-            {
-                question: "What is the pH of a neutral solution at about room temperature?",
-                answers: ["0","5","7","14"],
-                correct: 2,
-                difficulty: "medium",
-                explanation: "A neutral aqueous solution has a pH of about 7 at room temperature."
-            },
-
-            {
-                question: "Which particle has a negative electric charge?",
-                answers: ["Proton","Neutron","Electron","Photon"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "Electrons carry negative electric charge."
-            },
-
-            {
-                question: "What is the name of the process in which a solid changes directly into a gas?",
-                answers: ["Condensation","Sublimation","Freezing","Melting"],
-                correct: 1,
-                difficulty: "hard",
-                explanation: "Sublimation is the direct change from solid to gas without becoming liquid."
-            }
-,
-
-            {
-                question: "What is the largest planet in our solar system?",
-                answers: ["Jupiter","Saturn","Neptune","Earth"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Jupiter is the largest planet in the solar system."
-            },
-
-            {
-                question: "Which gas do plants absorb from the atmosphere during photosynthesis?",
-                answers: ["Oxygen","Carbon dioxide","Nitrogen","Hydrogen"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Plants use carbon dioxide during photosynthesis."
-            },
-
-            {
-                question: "What is the basic unit of life?",
-                answers: ["Cell","Atom","Tissue","Organ"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "The cell is the basic structural and functional unit of life."
-            },
-
-            {
-                question: "Which metal is liquid at room temperature?",
-                answers: ["Iron","Mercury","Copper","Aluminium"],
-                correct: 1,
-                difficulty: "medium",
-                explanation: "Mercury is liquid at typical room temperature."
-            },
-
-            {
-                question: "What is the hardest natural substance commonly known?",
-                answers: ["Quartz","Diamond","Granite","Steel"],
-                correct: 1,
-                difficulty: "medium",
-                explanation: "Diamond is the hardest naturally occurring mineral on the Mohs scale."
-            },
-
-            {
-                question: "Which organ is primarily responsible for filtering waste from the blood to make urine?",
-                answers: ["Heart","Kidney","Stomach","Pancreas"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "The kidneys filter blood and produce urine."
-            },
-
-            {
-                question: "What is DNA short for?",
-                answers: ["Deoxyribonucleic acid","Dynamic nuclear acid","Double nitrogen atom","Deoxygenated nucleic agent"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "DNA stands for deoxyribonucleic acid."
-            },
-
-            {
-                question: "Which phenomenon causes the apparent bending of a straw in water?",
-                answers: ["Refraction","Gravity","Magnetism","Evaporation"],
-                correct: 0,
-                difficulty: "hard",
-                explanation: "Light changes direction when it passes between materials with different optical densities."
-            },
-
-            {
-                question: "How many chromosomes are normally found in a human somatic cell?",
-                answers: ["23","46","44","48"],
-                correct: 1,
-                difficulty: "hard",
-                explanation: "Most human somatic cells contain 46 chromosomes arranged in 23 pairs."
-            },
-
-            {
-                question: "Which scientist formulated the laws of motion and universal gravitation?",
-                answers: ["Isaac Newton","Albert Einstein","Galileo Galilei","Marie Curie"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Isaac Newton formulated the classical laws of motion and universal gravitation."
-            }
-
-        ]
-    },
-
-    life: {
-        name: "💰 Real Life",
-        questions: [
-
-            {
-                question: "You find a wallet at school. What should you do?",
-                answers: [
-                    "Keep the money",
-                    "Report it to a trusted adult",
-                    "Throw it away",
-                    "Hide it"
-                ],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Giving lost property to a trusted adult gives the owner the best chance of getting it back."
-            },
-
-            {
-                question: "You receive $100. Which is generally a smart financial habit?",
-                answers: [
-                    "Spend everything immediately",
-                    "Save part of it",
-                    "Give it all away",
-                    "Buy something you don't need"
-                ],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Saving part of your money can help you prepare for future needs."
-            },
-
-            {
-                question: "Someone online asks for your password. What should you do?",
-                answers: [
-                    "Send it",
-                    "Post it publicly",
-                    "Keep it private",
-                    "Ask them for their password first"
-                ],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "Passwords should be kept private."
-            },
-
-            {
-                question: "You are running late for school. What should you do?",
-                answers: [
-                    "Ignore it",
-                    "Tell a trusted adult",
-                    "Skip school forever",
-                    "Blame another student"
-                ],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Communicating honestly helps adults understand what happened and support you."
-            },
-
-            {
-                question: "Which is usually a need rather than a want?",
-                answers: [
-                    "Food",
-                    "Video game",
-                    "Designer shoes",
-                    "New headphones"
-                ],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Food is a basic need."
-            },
-
-            {
-                question: "What should you do before crossing a road?",
-                answers: [
-                    "Run without looking",
-                    "Check traffic and cross safely",
-                    "Use your phone",
-                    "Close your eyes"
-                ],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Checking for traffic and using a safe crossing helps reduce risk."
-            },
-
-            {
-                question: "What does a budget help you do?",
-                answers: [
-                    "Track and plan your money",
-                    "Make unlimited money",
-                    "Avoid all bills",
-                    "Predict the future"
-                ],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "A budget helps you plan how money will be earned, spent, and saved."
-            },
-
-            {
-                question: "Someone makes you uncomfortable online. What can you do?",
-                answers: [
-                    "Keep talking to them",
-                    "Share your address",
-                    "Block them and tell an adult",
-                    "Meet them alone"
-                ],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "Blocking/reporting and telling a trusted adult can help keep you safe."
-            },
-
-            {
-                question: "What is an emergency phone number in the United States?",
-                answers: ["211", "311", "911", "999"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "911 is the emergency number commonly used in the United States."
-            },
-
-            {
-                question: "Why is it useful to compare prices before buying something?",
-                answers: [
-                    "It can help you find better value",
-                    "It guarantees free products",
-                    "It makes products cheaper automatically",
-                    "It avoids paying taxes"
-                ],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Comparing prices can help you make informed spending decisions."
-            }
-,
-
-            {
-                question: "What is a budget mainly used for?",
-                answers: ["Planning income and spending","Choosing a career","Measuring height","Tracking the weather"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "A budget helps plan how money will be earned, saved, and spent."
-            },
-
-            {
-                question: "Which habit can help build an emergency fund?",
-                answers: ["Saving regularly","Spending every payday","Ignoring expenses","Borrowing for every purchase"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Regular saving is a practical way to build an emergency fund."
-            },
-
-            {
-                question: "What does interest mean when you borrow money?",
-                answers: ["The cost of borrowing","A free gift","A tax refund","A salary increase"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Interest is generally the cost paid for using borrowed money."
-            },
-
-            {
-                question: "Which is generally a need rather than a want?",
-                answers: ["Designer shoes","Basic food","A luxury watch","A new game"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Basic food is a necessity, while the other choices are generally discretionary wants."
-            },
-
-            {
-                question: "What is compound interest?",
-                answers: ["Interest on principal and past interest","A bank fee only","A fixed salary","A type of tax"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Compound interest allows interest to be calculated on both the original amount and accumulated interest."
-            },
-
-            {
-                question: "What is a good first step before making a major purchase?",
-                answers: ["Compare the cost with your budget","Buy immediately","Borrow as much as possible","Ignore the price"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Checking a major purchase against your budget helps prevent unaffordable spending."
-            },
-
-            {
-                question: "What does diversification mean in investing?",
-                answers: ["Spreading investments across different assets","Putting all money into one asset","Avoiding all savings","Borrowing more money"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Diversification spreads exposure across different investments rather than concentrating it in one."
-            },
-
-            {
-                question: "If an investment rises from $1,000 to $1,200, what is the percentage gain?",
-                answers: ["10%","15%","20%","25%"],
-                correct: 2,
-                difficulty: "medium",
-                explanation: "The gain is $200, and $200 divided by $1,000 is 20%."
-            }
-,
-
-            {
-                question: "If you earn $2,000 and spend $1,500, how much remains before savings or other deductions?",
-                answers: ["$300","$400","$500","$600"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "$2,000 minus $1,500 leaves $500."
-            },
-
-            {
-                question: "What does 'living below your means' generally mean?",
-                answers: ["Spending less than you earn","Borrowing more than you earn","Avoiding all spending","Spending everything you earn"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Living below your means means your spending is lower than your income."
-            },
-
-            {
-                question: "What is an opportunity cost?",
-                answers: ["The next best choice you give up","A bank charge","A guaranteed profit","A government tax"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Opportunity cost is the value of the next best alternative forgone."
-            },
-
-            {
-                question: "Why is an emergency fund useful?",
-                answers: ["To cover unexpected expenses","To increase taxes","To guarantee investment profits","To eliminate every bill"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Emergency savings can help cover unexpected costs."
-            },
-
-            {
-                question: "What is inflation?",
-                answers: ["A general rise in prices over time","A fall in all prices","A rise in wages only","A decrease in money supply only"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Inflation refers to a sustained increase in the general price level."
-            },
-
-            {
-                question: "What is the main purpose of insurance?",
-                answers: ["To transfer certain financial risks","To guarantee wealth","To eliminate every risk","To make all purchases cheaper"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Insurance can transfer specified financial risks to an insurer in exchange for premiums."
-            },
-
-            {
-                question: "If you save $100 every month, how much do you save in one year before interest?",
-                answers: ["$600","$1,000","$1,200","$1,500"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "$100 × 12 months equals $1,200."
-            },
-
-            {
-                question: "What does liquidity describe in finance?",
-                answers: ["How easily an asset can be converted to cash","How profitable a company must be","How much debt a person has","How old an investment is"],
-                correct: 0,
-                difficulty: "hard",
-                explanation: "Liquidity describes how readily an asset can be converted to cash with little loss in value."
-            },
-
-            {
-                question: "What is diversification intended to reduce?",
-                answers: ["Concentration risk","All possible losses","Taxes in every situation","Inflation completely"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Diversification can reduce the risk of concentrating an investment portfolio in one exposure."
-            },
-
-            {
-                question: "What is a fixed expense?",
-                answers: ["A cost that usually stays the same","A surprise purchase","A discount","A one-time gift"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Rent or a fixed subscription can be examples of expenses that generally stay constant for a period."
-            }
-,
-
-            {
-                question: "What is net income generally?",
-                answers: ["Income after relevant deductions","Total sales before costs","Money borrowed","The value of possessions"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Net income is income remaining after applicable deductions and expenses depending on context."
-            },
-
-            {
-                question: "What does APR commonly represent on a loan?",
-                answers: ["Annual Percentage Rate","Average Payment Return","Annual Profit Ratio","Applied Principal Rate"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "APR stands for Annual Percentage Rate."
-            },
-
-            {
-                question: "What is a financial asset?",
-                answers: ["Something with financial value","Only physical property","A household appliance","A work schedule"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Financial assets include items such as cash, shares, and bonds that represent value or claims."
-            },
-
-            {
-                question: "Why is tracking expenses useful?",
-                answers: ["It shows where money is going","It guarantees investment returns","It eliminates taxes","It increases salary automatically"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Expense tracking helps reveal spending patterns and supports budgeting."
-            },
-
-            {
-                question: "What is a credit score generally designed to indicate?",
-                answers: ["Creditworthiness","Height","Employment seniority","Investment profit"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Credit scores are used to assess aspects of a borrower's credit risk."
-            },
-
-            {
-                question: "What is a loan principal?",
-                answers: ["The original amount borrowed","The interest only","A late fee","The monthly payment only"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Principal is the amount originally borrowed, excluding interest."
-            },
-
-            {
-                question: "What is a bear market commonly associated with?",
-                answers: ["Broadly falling asset prices","Rapid price increases","No price movement","Guaranteed profits"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "A bear market is commonly associated with a sustained decline in market prices."
-            },
-
-            {
-                question: "What is a bull market commonly associated with?",
-                answers: ["Broadly rising asset prices","A total market closure","Falling wages only","Fixed prices"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "A bull market is generally characterized by rising asset prices."
-            },
-
-            {
-                question: "What is a financial goal?",
-                answers: ["A target for your money","A random purchase","A bank password","A tax penalty"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "A financial goal is a defined objective such as saving a target amount or paying down debt."
-            },
-
-            {
-                question: "Why should an investor consider risk tolerance?",
-                answers: ["Investments have different levels of risk","It guarantees profits","It predicts every price","It eliminates uncertainty"],
-                correct: 0,
-                difficulty: "hard",
-                explanation: "Risk tolerance helps an investor choose exposures that fit their ability and willingness to handle losses."
-            }
-
-        ]
-    },
-
-    school: {
-        name: "🏫 School Challenge",
-        questions: [
-
-            {
-                question: "Who was the first president of the United States?",
-                answers: [
-                    "Abraham Lincoln",
-                    "George Washington",
-                    "Thomas Jefferson",
-                    "Barack Obama"
-                ],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "George Washington was the first U.S. president."
-            },
-
-            {
-                question: "How many states are in the United States?",
-                answers: ["48", "49", "50", "52"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "The United States has 50 states."
-            },
-
-            {
-                question: "What language is primarily spoken in Brazil?",
-                answers: ["Spanish", "Portuguese", "French", "English"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Portuguese is the official language of Brazil."
-            },
-
-            {
-                question: "Which subject studies living organisms?",
-                answers: ["Biology", "Geometry", "History", "Economics"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Biology is the study of living organisms."
-            },
-
-            {
-                question: "What is the opposite of 'ancient'?",
-                answers: ["Old", "Historic", "Modern", "Past"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "Modern means relating to the present or recent times."
-            },
-
-            {
-                question: "Which number is a prime number?",
-                answers: ["4", "6", "9", "11"],
-                correct: 3,
-                difficulty: "medium",
-                explanation: "11 can only be divided evenly by 1 and itself."
-            },
-
-            {
-                question: "What is the main purpose of the U.S. Constitution?",
-                answers: [
-                    "To set up the government framework",
-                    "To list every school",
-                    "To create weather forecasts",
-                    "To explain sports rules"
-                ],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "The Constitution establishes the framework and powers of the U.S. government."
-            },
-
-            {
-                question: "Which punctuation mark ends most questions?",
-                answers: [".", ",", "?", "!"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "A question mark is normally used at the end of a question."
-            },
-
-            {
-                question: "What is 9 × 9?",
-                answers: ["72", "81", "90", "99"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "9 × 9 = 81."
-            },
-
-            {
-                question: "Which branch of science studies matter and energy?",
-                answers: ["Physics", "Literature", "History", "Geography"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Physics studies matter, energy, motion, forces, and their interactions."
-            }
-,
-
-            {
-                question: "What is 12 × 8?",
-                answers: ["86","96","108","116"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "12 multiplied by 8 equals 96."
-            },
-
-            {
-                question: "Which part of speech describes a noun?",
-                answers: ["Verb","Adjective","Conjunction","Preposition"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "An adjective describes or modifies a noun."
-            },
-
-            {
-                question: "What is the square root of 144?",
-                answers: ["10","11","12","14"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "12 × 12 equals 144."
-            },
-
-            {
-                question: "Which punctuation mark normally ends a direct question?",
-                answers: ["Comma","Period","Question mark","Colon"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "A question mark is normally used at the end of a direct question."
-            },
-
-            {
-                question: "What is the main gas in Earth's atmosphere?",
-                answers: ["Oxygen","Nitrogen","Carbon dioxide","Hydrogen"],
-                correct: 1,
-                difficulty: "medium",
-                explanation: "Nitrogen makes up about 78% of Earth's atmosphere."
-            },
-
-            {
-                question: "What is 15% of 200?",
-                answers: ["15","20","30","35"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "0.15 × 200 equals 30."
-            },
-
-            {
-                question: "Which branch of mathematics studies shapes, sizes, and properties of space?",
-                answers: ["Algebra","Geometry","Statistics","Calculus"],
-                correct: 1,
-                difficulty: "medium",
-                explanation: "Geometry studies shapes, sizes, and spatial relationships."
-            },
-
-            {
-                question: "If a triangle has angles of 50° and 60°, what is the third angle?",
-                answers: ["60°","70°","80°","90°"],
-                correct: 1,
-                difficulty: "medium",
-                explanation: "The angles of a triangle total 180°, so 180 - 50 - 60 = 70°."
-            }
-,
-
-            {
-                question: "What is the value of 9²?",
-                answers: ["18","72","81","99"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "9 squared is 9 × 9, which equals 81."
-            },
-
-            {
-                question: "Which planet is known as the Red Planet?",
-                answers: ["Venus","Mars","Jupiter","Saturn"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Mars appears reddish because of iron minerals on its surface."
-            },
-
-            {
-                question: "What is the main function of the roots of most plants?",
-                answers: ["Absorb water and anchor the plant","Produce seeds only","Make flowers","Absorb sunlight"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Roots anchor plants and absorb water and minerals from the soil."
-            },
-
-            {
-                question: "Which literary term describes a comparison using 'like' or 'as'?",
-                answers: ["Metaphor","Simile","Hyperbole","Irony"],
-                correct: 1,
-                difficulty: "medium",
-                explanation: "A simile compares things using words such as 'like' or 'as'."
-            },
-
-            {
-                question: "What is 3/4 expressed as a percentage?",
-                answers: ["25%","50%","75%","80%"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "Three quarters equals 0.75, or 75%."
-            },
-
-            {
-                question: "Which ancient civilization built Machu Picchu?",
-                answers: ["Roman","Inca","Egyptian","Mayan"],
-                correct: 1,
-                difficulty: "medium",
-                explanation: "Machu Picchu was built by the Inca civilization."
-            },
-
-            {
-                question: "What is the perimeter of a square with sides of 6 cm?",
-                answers: ["12 cm","18 cm","24 cm","36 cm"],
-                correct: 2,
-                difficulty: "medium",
-                explanation: "A square has four equal sides, so 4 × 6 = 24 cm."
-            },
-
-            {
-                question: "Which layer of Earth is directly beneath the crust?",
-                answers: ["Inner core","Outer core","Mantle","Atmosphere"],
-                correct: 2,
-                difficulty: "medium",
-                explanation: "The mantle lies directly beneath Earth's crust."
-            },
-
-            {
-                question: "What is the next prime number after 17?",
-                answers: ["18","19","20","21"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "19 is the next prime number after 17."
-            },
-
-            {
-                question: "Which branch of government generally makes laws in a constitutional democracy?",
-                answers: ["Legislative","Judicial","Executive","Electoral"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "The legislative branch is generally responsible for making laws."
-            }
-,
-
-            {
-                question: "What is 7 × 9?",
-                answers: ["56","63","72","81"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Seven times nine equals 63."
-            },
-
-            {
-                question: "What is the capital of Australia?",
-                answers: ["Sydney","Melbourne","Canberra","Perth"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "Canberra is Australia's capital."
-            },
-
-            {
-                question: "Which scientist is associated with the theory of evolution by natural selection?",
-                answers: ["Charles Darwin","Isaac Newton","Louis Pasteur","Nikola Tesla"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Charles Darwin developed the theory of evolution by natural selection."
-            },
-
-            {
-                question: "What is the chemical symbol for oxygen?",
-                answers: ["O","Ox","C","Og"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "O is the chemical symbol for oxygen."
-            },
-
-            {
-                question: "What is 2.5 × 4?",
-                answers: ["8","9","10","12"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "2.5 multiplied by 4 equals 10."
-            },
-
-            {
-                question: "Which ancient civilization developed democracy in Athens?",
-                answers: ["Ancient Greeks","Romans","Vikings","Persians"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Ancient Athens developed an early form of democracy."
-            },
-
-            {
-                question: "What is the area of a rectangle 8 cm long and 5 cm wide?",
-                answers: ["13 cm²","26 cm²","40 cm²","80 cm²"],
-                correct: 2,
-                difficulty: "medium",
-                explanation: "Area equals length × width, so 8 × 5 = 40 cm²."
-            },
-
-            {
-                question: "Which layer of the atmosphere contains most weather?",
-                answers: ["Troposphere","Stratosphere","Mesosphere","Thermosphere"],
-                correct: 0,
-                difficulty: "hard",
-                explanation: "Most weather occurs in the troposphere."
-            },
-
-            {
-                question: "What is 25% of 80?",
-                answers: ["10","15","20","25"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "One quarter of 80 is 20."
-            },
-
-            {
-                question: "Which instrument is used to measure temperature?",
-                answers: ["Barometer","Thermometer","Hygrometer","Anemometer"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "A thermometer measures temperature."
-            }
-
-        ]
-    },
-
-    sports: {
-        name: "⚽ Sports Arena",
-        questions: [
-
-            {
-                question: "How many players from one team are on the field in soccer?",
-                answers: ["7", "9", "11", "13"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "A soccer team has 11 players on the field during normal play."
-            },
-
-            {
-                question: "How many points is a touchdown worth in American football before the extra point?",
-                answers: ["3", "6", "7", "10"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "A touchdown is worth 6 points before any extra-point attempt."
-            },
-
-            {
-                question: "How many players from one basketball team are on the court?",
-                answers: ["4", "5", "6", "7"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Five players from each team are normally on the basketball court."
-            },
-
-            {
-                question: "Which sport uses a racket and a shuttlecock?",
-                answers: ["Tennis", "Badminton", "Baseball", "Hockey"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Badminton is played with rackets and a shuttlecock."
-            },
-
-            {
-                question: "How many bases are there on a baseball diamond?",
-                answers: ["3", "4", "5", "6"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Baseball has four bases: first, second, third, and home plate."
-            },
-
-            {
-                question: "Which sport is played at Wimbledon?",
-                answers: ["Tennis", "Golf", "Soccer", "Swimming"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Wimbledon is one of tennis's four Grand Slam tournaments."
-            },
-
-            {
-                question: "What sport uses a puck?",
-                answers: ["Basketball", "Ice hockey", "Tennis", "Golf"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Ice hockey is played with a puck."
-            },
-
-            {
-                question: "Which country is strongly associated with the sport of sumo?",
-                answers: ["Japan", "Brazil", "Canada", "France"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Sumo is a traditional Japanese sport."
-            },
-
-            {
-                question: "What color card usually means a player is sent off in soccer?",
-                answers: ["Blue", "Green", "Yellow", "Red"],
-                correct: 3,
-                difficulty: "easy",
-                explanation: "A red card means the player is sent off."
-            },
-
-            {
-                question: "How many rings are on the Olympic symbol?",
-                answers: ["4", "5", "6", "7"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "The Olympic symbol contains five interlocking rings."
-            },
-
-            {
-                question: "Which sport is associated with the NBA?",
-                answers: ["Basketball", "Baseball", "Football", "Hockey"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "The NBA is the National Basketball Association."
-            },
-
-            {
-                question: "In golf, what is the goal?",
-                answers: [
-                    "Use the most strokes",
-                    "Finish in as few strokes as possible",
-                    "Hit the ball the highest",
-                    "Run the fastest"
-                ],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Golf generally rewards completing the course using fewer strokes."
-            }
-,
-
-            {
-                question: "How many players from one basketball team are on the court at one time?",
-                answers: ["4","5","6","7"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "In standard basketball, five players from each team are on the court."
-            },
-
-            {
-                question: "How many players are on the field for one soccer team during normal play?",
-                answers: ["9","10","11","12"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "A soccer team has 11 players on the field during normal play."
-            },
-
-            {
-                question: "How many Grand Slam tournaments are there in tennis each year?",
-                answers: ["2","3","4","5"],
-                correct: 2,
-                difficulty: "medium",
-                explanation: "The four Grand Slam tournaments are the Australian Open, French Open, Wimbledon, and US Open."
-            },
-
-            {
-                question: "In golf, what is one stroke under par on a hole called?",
-                answers: ["Bogey","Par","Birdie","Eagle"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "A birdie is one stroke under par on a hole."
-            },
-
-            {
-                question: "How long is an Olympic swimming pool?",
-                answers: ["25 metres","50 metres","75 metres","100 metres"],
-                correct: 1,
-                difficulty: "medium",
-                explanation: "The standard Olympic long-course swimming pool is 50 metres long."
-            },
-
-            {
-                question: "In athletics, how many laps of a standard 400-metre track make up a 1,500-metre race?",
-                answers: ["2","3","3.75","4.5"],
-                correct: 2,
-                difficulty: "medium",
-                explanation: "1,500 divided by 400 equals 3.75 laps."
-            },
-
-            {
-                question: "Which country won the first FIFA World Cup in 1930?",
-                answers: ["Brazil","Argentina","Uruguay","Italy"],
-                correct: 2,
-                difficulty: "hard",
-                explanation: "Uruguay won the inaugural FIFA World Cup in 1930."
-            },
-
-            {
-                question: "In cricket, how many legal deliveries are normally in one over?",
-                answers: ["4","5","6","8"],
-                correct: 2,
-                difficulty: "medium",
-                explanation: "A standard cricket over consists of six legal deliveries."
-            }
-,
-
-            {
-                question: "How many points is a free throw worth in basketball?",
-                answers: ["1","2","3","4"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "A successful free throw is worth one point."
-            },
-
-            {
-                question: "How many players are on a volleyball team on court at one time?",
-                answers: ["5","6","7","8"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Indoor volleyball teams have six players on court."
-            },
-
-            {
-                question: "In football/soccer, what color card means a player is sent off?",
-                answers: ["Yellow","Green","Red","Blue"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "A red card results in a player's dismissal."
-            },
-
-            {
-                question: "How many minutes are in a standard football/soccer match, excluding added time?",
-                answers: ["60","75","90","120"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "A regulation football match has two 45-minute halves."
-            },
-
-            {
-                question: "Which sport uses a shuttlecock?",
-                answers: ["Tennis","Badminton","Squash","Table tennis"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Badminton is played with a shuttlecock."
-            },
-
-            {
-                question: "In Formula 1, what flag traditionally signals the end of a race?",
-                answers: ["Red","Yellow","Green","Chequered"],
-                correct: 3,
-                difficulty: "medium",
-                explanation: "The chequered flag signals the end of a race."
-            },
-
-            {
-                question: "How many bases are there on a standard baseball diamond?",
-                answers: ["3","4","5","6"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "A baseball diamond has four bases, including home plate."
-            },
-
-            {
-                question: "In rugby union, how many points is a try worth?",
-                answers: ["3","5","7","10"],
-                correct: 1,
-                difficulty: "medium",
-                explanation: "A try in rugby union is worth five points."
-            },
-
-            {
-                question: "Which country hosted the first modern Olympic Games in 1896?",
-                answers: ["France","Greece","Italy","United Kingdom"],
-                correct: 1,
-                difficulty: "hard",
-                explanation: "The first modern Olympic Games were held in Athens, Greece, in 1896."
-            },
-
-            {
-                question: "In tennis, what score comes after 30?",
-                answers: ["35","40","45","50"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "The traditional sequence is love, 15, 30, 40, then game."
-            }
-,
-
-            {
-                question: "How many players are on a basketball team on court at one time?",
-                answers: ["4","5","6","7"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Five players from each team are on court in standard basketball."
-            },
-
-            {
-                question: "How many sets must a player generally win to win a best-of-three tennis match?",
-                answers: ["1","2","3","4"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "A player must win two sets in a best-of-three match."
-            },
-
-            {
-                question: "Which country is strongly associated with the origin of modern rugby?",
-                answers: ["England","Brazil","Canada","Japan"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Modern rugby developed in England."
-            },
-
-            {
-                question: "How many holes are played in a standard full round of golf?",
-                answers: ["9","12","18","24"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "A standard full round consists of 18 holes."
-            },
-
-            {
-                question: "Which sport awards a touchdown?",
-                answers: ["American football","Basketball","Cricket","Hockey"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "A touchdown is a scoring play in American football."
-            },
-
-            {
-                question: "How many rings are on the Olympic symbol?",
-                answers: ["4","5","6","7"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "The Olympic symbol has five interlocking rings."
-            },
-
-            {
-                question: "Which country is home to the football club FC Barcelona?",
-                answers: ["Spain","Italy","Portugal","France"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "FC Barcelona is based in Barcelona, Spain."
-            },
-
-            {
-                question: "In boxing, what is a knockout?",
-                answers: ["When a fighter cannot continue","A type of training","A scoring bonus","A timeout"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "A knockout occurs when a fighter cannot continue within the referee's count or under the applicable rules."
-            },
-
-            {
-                question: "Which event combines swimming, cycling and running?",
-                answers: ["Triathlon","Decathlon","Pentathlon","Heptathlon"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "A triathlon combines swimming, cycling, and running."
-            },
-
-            {
-                question: "How many points is a three-point shot worth in basketball?",
-                answers: ["1","2","3","4"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "A successful shot from beyond the three-point line is worth three points."
-            }
-
-        ]
-    },
-
-
-    // ------------------------------------------
-    // NEW IN V3: life-skills worlds
-    // ------------------------------------------
-
-    work: {
-        name: "💼 Work Ready",
-        questions: [
-
-            mc("It's your first day at a new job and you don't understand a task. What's the best thing to do?",
-                "Politely ask for the task to be explained again",
-                ["Guess and hope it works out", "Wait and do nothing", "Go home"],
-                "easy",
-                "Asking questions shows you care about doing the job well. Good workers ask for help when they need it."),
-
-            mc("You'll be late for work because your bus is delayed. What should you do?",
-                "Tell your manager as soon as you can",
-                ["Say nothing and hope no one notices", "Skip the shift without telling anyone", "Blame a coworker"],
-                "easy",
-                "Letting your manager know early is responsible and helps the team plan."),
-
-            mc("What is a good way to get ready for a job interview?",
-                "Practice answers to common questions",
-                ["Show up 30 minutes late", "Wear pajamas", "Plan to look at your phone the whole time"],
-                "easy",
-                "Practicing helps you feel calm and confident. A family member, friend, or teacher can help you practice."),
-
-            mc("What is a paycheck?",
-                "Money your employer pays you for the work you did",
-                ["A gift card from a friend", "A school report card", "A coupon for a store"],
-                "easy",
-                "A paycheck is the pay you earn for your work."),
-
-            mc("What is a resume?",
-                "A short document that lists your skills, education, and experience",
-                ["A type of uniform", "A list of your favorite foods", "A bus schedule"],
-                "easy",
-                "A resume helps an employer learn about you. School projects and volunteering count as experience too!"),
-
-            mc("Why do some workers wear safety gear like gloves or safety glasses?",
-                "To help prevent injuries",
-                ["To look silly", "To hide from customers", "Because it's a costume"],
-                "easy",
-                "Safety gear protects workers from getting hurt on the job."),
-
-            mc("Which shows that you are dependable at work?",
-                "Showing up on time and doing what you said you would do",
-                ["Leaving early without telling anyone", "Forgetting instructions on purpose", "Using your phone during the whole shift"],
-                "easy",
-                "Being dependable means people can count on you. That's one of the most valuable job skills."),
-
-            mc("A customer is upset with you at work. What is a calm way to respond?",
-                "Listen, then say you will get help to solve the problem",
-                ["Yell back", "Walk away without a word", "Laugh at them"],
-                "medium",
-                "Staying calm and listening helps solve problems. If you can't fix it, it's okay to ask a supervisor for help."),
-
-            mc("You want to ask for a day off. What is the best way?",
-                "Ask politely and early, following your workplace's rules",
-                ["Just don't show up", "Ask a coworker to lie for you", "Send an angry message"],
-                "medium",
-                "Asking early and politely gives your workplace time to plan."),
-
-            mc("A coworker asks you to clock in for them while they aren't there. What should you do?",
-                "Politely say no",
-                ["Do it to be nice", "Do it just this once", "Ask them to pay you first"],
-                "medium",
-                "Clocking in for someone else is dishonest and could get you both in trouble. It's okay to say no."),
-
-            mc("On a paycheck, what is 'net pay'?",
-                "The money you take home after taxes and deductions",
-                ["The money you earned before anything is taken out", "The amount of tax you owe", "A bonus"],
-                "medium",
-                "Gross pay is what you earn before deductions. Net pay is what you actually take home."),
-
-            mc("You earn $12 an hour and work 5 hours. How much do you earn before taxes?",
-                "$60",
-                ["$17", "$50", "$72"],
-                "medium",
-                "5 × $12 = $60."),
-
-            mc("In the U.S., what does 'overtime pay' usually mean?",
-                "Extra pay for hours worked over a weekly limit",
-                ["Pay for time you were asleep", "Less pay for working longer", "A free day off"],
-                "medium",
-                "Many hourly workers in the U.S. earn a higher rate, often 1.5 times their normal pay, for hours over 40 in a week."),
-
-            mc("You work 6 hours a day for 4 days at $11 an hour. How much do you earn before taxes?",
-                "$264",
-                ["$66", "$242", "$246"],
-                "hard",
-                "6 × 4 = 24 hours, and 24 × $11 = $264.")
-,
-
-            {
-                question: "What does CV commonly stand for in job applications?",
-                answers: ["Career Value","Curriculum Vitae","Company Verification","Candidate Volume"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "CV stands for Curriculum Vitae."
-            },
-
-            {
-                question: "What is a deadline?",
-                answers: ["The latest time to finish","A lunch break","A salary bonus","A job title"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "A deadline is the latest time by which a task is expected to be completed."
-            },
-
-            {
-                question: "Which skill is most useful when working in a team?",
-                answers: ["Communication","Avoiding everyone","Ignoring feedback","Hiding problems"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Clear communication helps teams coordinate work and solve problems."
-            },
-
-            {
-                question: "What is a KPI?",
-                answers: ["Key Performance Indicator","Known Payment Invoice","Key Project Interview","Knowledge Planning Index"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "KPI stands for Key Performance Indicator, a measure used to track performance."
-            },
-
-            {
-                question: "What should you generally do when you make a mistake at work?",
-                answers: ["Hide it","Blame someone else","Acknowledge it and help fix it","Delete the evidence"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "Acknowledging a mistake and helping correct it supports accountability and problem solving."
-            },
-
-            {
-                question: "What is networking in a professional context?",
-                answers: ["Building professional relationships","Installing internet cables","Avoiding colleagues","Changing passwords"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Professional networking involves building and maintaining relationships that can support learning and opportunities."
-            },
-
-            {
-                question: "Which document usually summarizes a project's planned tasks and deadlines?",
-                answers: ["Project plan","Receipt","Passport","Menu"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "A project plan typically outlines tasks, responsibilities, timelines, and milestones."
-            },
-
-            {
-                question: "What is delegation?",
-                answers: ["Giving tasks to others while staying responsible","Doing every task yourself","Cancelling a project","Avoiding deadlines"],
-                correct: 0,
-                difficulty: "hard",
-                explanation: "Delegation means assigning work to others while the person delegating remains accountable for the overall outcome."
-            }
-,
-
-            {
-                question: "What does a meeting agenda normally provide?",
-                answers: ["A list of topics to discuss","A salary statement","A job contract","A tax receipt"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "An agenda outlines the topics and often the order for a meeting."
-            },
-
-            {
-                question: "What is a milestone in project management?",
-                answers: ["A key point in a project","A daily lunch","A company logo","A type of salary"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "A milestone marks an important stage, event, or achievement in a project."
-            },
-
-            {
-                question: "What is prioritization?",
-                answers: ["Deciding which tasks deserve attention first","Doing every task simultaneously","Avoiding deadlines","Delegating every responsibility"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Prioritization helps determine which tasks should receive attention first."
-            },
-
-            {
-                question: "What is a professional elevator pitch?",
-                answers: ["A brief explanation of who you are","A building safety inspection","A long business report","A salary negotiation only"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "An elevator pitch is a concise introduction to a person, idea, product, or business."
-            },
-
-            {
-                question: "What does remote work mean?",
-                answers: ["Working outside the traditional office","Working only at night","Working without a manager","Working without technology"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Remote work generally means performing job duties away from the traditional workplace."
-            },
-
-            {
-                question: "What is a stakeholder?",
-                answers: ["A person affected by a project","Only the project manager","A type of software","A company vehicle"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Stakeholders can include people or groups affected by or interested in a project."
-            },
-
-            {
-                question: "What is a deliverable?",
-                answers: ["A specific project output","A lunch break","A job interview","A company holiday"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "A deliverable is a defined output or result that a project must produce."
-            },
-
-            {
-                question: "What does productivity generally measure?",
-                answers: ["How effectively inputs become outputs","How many meetings you attend","How long you stay online","How many emails you receive"],
-                correct: 0,
-                difficulty: "hard",
-                explanation: "Productivity concerns the relationship between outputs and the inputs used to produce them."
-            },
-
-            {
-                question: "Why are meeting minutes useful?",
-                answers: ["They record key decisions and action items","They replace every company policy","They guarantee attendance","They calculate salaries"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Meeting minutes provide a record of decisions, discussions, and action items."
-            },
-
-            {
-                question: "What is a conflict of interest?",
-                answers: ["Personal interests affecting work duties","A disagreement about lunch","A successful negotiation","A routine performance review"],
-                correct: 0,
-                difficulty: "hard",
-                explanation: "A conflict of interest occurs when competing personal interests could improperly influence professional responsibilities."
-            }
-,
-
-            {
-                question: "What does ROI commonly stand for in business?",
-                answers: ["Return on Investment","Rate of Income","Risk of Income","Return on Inventory"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "ROI stands for Return on Investment."
-            },
-
-            {
-                question: "What is a business model?",
-                answers: ["How a business creates and earns value","A company logo","An employee badge","A meeting schedule"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "A business model describes how an organization creates, delivers, and captures value."
-            },
-
-            {
-                question: "What is gross revenue?",
-                answers: ["Revenue before costs or deductions","Profit after all expenses","Cash in a personal wallet","Employee salary"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Gross revenue refers to total revenue before subtracting expenses or other deductions."
-            },
-
-            {
-                question: "What is a target market?",
-                answers: ["A group of customers a business targets","A stock exchange","A tax office","A company building"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "A target market is the customer group a product or service is intended to reach."
-            },
-
-            {
-                question: "What is an entrepreneur?",
-                answers: ["Someone who starts a business","Only a government worker","A customer","A tax collector"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "An entrepreneur creates or develops a business venture and accepts associated risks."
-            },
-
-            {
-                question: "What is a profit margin?",
-                answers: ["Revenue left as profit","The number of employees","The price of a building","A loan term"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Profit margin measures profit relative to revenue."
-            },
-
-            {
-                question: "Why is customer feedback valuable?",
-                answers: ["It reveals needs and improvements","It guarantees sales","It eliminates competition","It replaces accounting"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Customer feedback can reveal problems, preferences, and opportunities for improvement."
-            },
-
-            {
-                question: "What is cash flow?",
-                answers: ["Money entering and leaving an account","Only profit","Only debt","The company share price"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Cash flow tracks cash entering and leaving an entity."
-            },
-
-            {
-                question: "What is a business expense?",
-                answers: ["A cost of running a business","A customer review","A sales target","A company slogan"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Business expenses are costs associated with operating the business."
-            },
-
-            {
-                question: "What is a deadline in project management?",
-                answers: ["A date when work is due","A marketing slogan","A salary grade","A company logo"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "A deadline is the expected latest date for completing a task or deliverable."
-            }
-
-        ]
-    },
-
-    social: {
-        name: "🤝 Social Skills",
-        questions: [
-
-            mc("You feel overwhelmed in a loud, crowded room. What is a healthy thing to do?",
-                "Ask for a short break or move somewhere quieter",
-                ["Yell at everyone", "Throw something", "Stay and never tell anyone"],
-                "easy",
-                "Taking a break can help your body and mind calm down. It's okay to ask for what you need."),
-
-            mc("You don't understand the teacher's directions. What's a good way to speak up?",
-                "Raise your hand and ask for the directions again",
-                ["Stay quiet and guess", "Copy from a classmate", "Give up"],
-                "easy",
-                "Asking questions is a strength. Teachers want to help you understand."),
-
-            mc("What does it mean to be a good listener?",
-                "Paying attention and waiting for your turn to talk",
-                ["Interrupting often", "Looking at your phone", "Talking louder than the speaker"],
-                "easy",
-                "Good listeners pay attention and give the other person a chance to finish."),
-
-            mc("A friend seems sad. What is a kind thing to do?",
-                "Ask if they are okay and listen",
-                ["Laugh at them", "Ignore them", "Tell everyone their business"],
-                "easy",
-                "Checking in and listening shows you care."),
-
-            mc("You disagree with a friend. What is a good way to handle it?",
-                "Use a calm voice and explain how you feel",
-                ["Shout at them", "Spread rumors", "Never speak to them again"],
-                "easy",
-                "Calm words help people understand each other, even when they disagree."),
-
-            mc("Someone asks you to do something that feels unsafe or wrong. What can you do?",
-                "Say no and tell a trusted adult",
-                ["Do it so they will like you", "Do it and keep it a secret", "Pretend you didn't hear"],
-                "easy",
-                "You always have the right to say no to things that feel unsafe. A trusted adult can help."),
-
-            mc("Which shows someone that you are listening?",
-                "Facing them and giving nods or short replies",
-                ["Turning your back", "Rolling your eyes", "Walking away mid-sentence"],
-                "easy",
-                "There are many ways to show you are listening. Eye contact is one way, but it isn't the only way, and it's okay if it feels hard."),
-
-            mc("You made a mistake. What is a good way to respond?",
-                "Say sorry and try to fix it",
-                ["Blame someone else", "Hide it", "Pretend it didn't happen"],
-                "easy",
-                "Everyone makes mistakes. What matters is how we work to fix them."),
-
-            mc("What can help you calm down when you feel upset?",
-                "Taking slow, deep breaths",
-                ["Holding your breath", "Yelling at someone", "Breaking something"],
-                "easy",
-                "Slow breathing tells your body it's safe to relax. Try the 🌿 Break button in this game!"),
-
-            mc("Who are trusted adults you can talk to at school?",
-                "A teacher, counselor, or other staff member you trust",
-                ["A stranger online", "No one", "Someone who asks you to keep secrets"],
-                "easy",
-                "Trusted adults are there to help you stay safe and supported."),
-
-            mc("A classmate says hello to you. What is a friendly response?",
-                "Say hello back",
-                ["Ignore them", "Walk away", "Make a face"],
-                "easy",
-                "A simple hello can start a friendship."),
-
-            mc("What is self-advocacy?",
-                "Speaking up for what you need and want",
-                ["Bragging about yourself", "Arguing with everyone", "Never asking for help"],
-                "medium",
-                "Self-advocacy means speaking up for yourself, like asking for extra time, a quiet space, or a different way to learn."),
-
-            mc("Your group is working on a class project. What does a good teammate do?",
-                "Does their part and listens to others' ideas",
-                ["Does nothing", "Takes over everything", "Makes fun of other people's ideas"],
-                "medium",
-                "Teamwork works best when everyone shares the work and respects each other's ideas."),
-
-            mc("What is a polite way to join a conversation?",
-                "Wait for a pause, then say something related",
-                ["Shout over people", "Interrupt with a totally different topic", "Grab someone's arm"],
-                "medium",
-                "Waiting for a pause and staying on topic helps everyone feel respected."),
-
-            mc("You feel too nervous to speak in front of the class. What can you do?",
-                "Tell your teacher and ask about other ways to share, like writing it down",
-                ["Never come to class again", "Leave without telling anyone", "Pretend to be sick every day"],
-                "medium",
-                "Teachers can offer options, like writing your answer, sharing one-on-one, or practicing first.")
-,
-
-            {
-                question: "What is active listening?",
-                answers: ["Planning your reply while someone talks","Paying attention and trying to understand the speaker","Interrupting often","Ignoring body language"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Active listening involves paying attention, understanding, and responding thoughtfully."
-            },
-
-            {
-                question: "What is empathy?",
-                answers: ["Understanding another person's feelings","Winning every argument","Avoiding people","Agreeing with everything"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Empathy involves understanding another person's feelings or point of view."
-            },
-
-            {
-                question: "What is a respectful way to disagree?",
-                answers: ["Insult the person","Explain your view calmly","Shout louder","End the conversation immediately"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Calmly explaining a different view allows disagreement without attacking the other person."
-            },
-
-            {
-                question: "What does body language include?",
-                answers: ["Posture and facial expressions","Only spoken words","Written exams","Bank statements"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Body language includes nonverbal signals such as posture, gestures, and facial expressions."
-            },
-
-            {
-                question: "What is a boundary in a relationship?",
-                answers: ["A limit on what feels comfortable","A rule that controls everyone","A financial investment","A punishment"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "A personal boundary communicates limits around what someone is comfortable with or willing to accept."
-            },
-
-            {
-                question: "When resolving a disagreement, what is usually most helpful?",
-                answers: ["Listening to both sides","Refusing to listen","Spreading rumors","Threatening the other person"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Listening to both sides can help identify the real issue and possible solutions."
-            },
-
-            {
-                question: "What is constructive feedback?",
-                answers: ["Feedback meant to help improvement","An insult disguised as advice","Only praise","Public embarrassment"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Constructive feedback identifies specific areas for improvement in a useful and respectful way."
-            },
-
-            {
-                question: "What is a good response when you do not understand someone's instructions?",
-                answers: ["Pretend you understand","Ask for clarification","Ignore the task","Blame the speaker"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Asking for clarification reduces misunderstandings and helps ensure the task is done correctly."
-            }
-,
-
-            {
-                question: "What is a good way to show someone you are listening?",
-                answers: ["Pay attention and respond","Check your phone repeatedly","Interrupt every sentence","Change the subject immediately"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Focused attention and relevant responses are signs of active listening."
-            },
-
-            {
-                question: "What is assertive communication?",
-                answers: ["Clearly stating needs while respecting others","Getting your way by force","Never speaking up","Agreeing with everyone"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Assertive communication balances clear self-expression with respect for others."
-            },
-
-            {
-                question: "What is peer pressure?",
-                answers: ["Influence from your social group","A school exam","A financial investment","A medical treatment"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Peer pressure is influence from peers or a social group."
-            },
-
-            {
-                question: "What is a stereotype?",
-                answers: ["A generalized belief about a group","A verified fact about every individual","A personal budget","A communication skill"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "A stereotype is a generalized belief or assumption about a group."
-            },
-
-            {
-                question: "Why can asking open-ended questions improve a conversation?",
-                answers: ["They encourage fuller responses","They always end arguments","They prevent people from speaking","They guarantee agreement"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Open-ended questions often encourage people to explain their thoughts in more detail."
-            },
-
-            {
-                question: "What is digital citizenship?",
-                answers: ["Responsible participation online","Owning a smartphone","Using social media every day","Having many followers"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Digital citizenship involves responsible, safe, and respectful behavior online."
-            },
-
-            {
-                question: "What is consent in an interpersonal situation?",
-                answers: ["A clear and voluntary agreement","Silence in every situation","Pressure from friends","An assumption"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Consent should be clear, voluntary, and free from coercion."
-            },
-
-            {
-                question: "What is a rumor?",
-                answers: ["Unverified information that is circulated","A confirmed official announcement","A written contract","A scientific law"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "A rumor is information circulated without reliable verification."
-            },
-
-            {
-                question: "What is compromise?",
-                answers: ["A solution with shared concessions","One person always wins","Avoiding every discussion","Refusing to negotiate"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Compromise involves each side making concessions toward an acceptable solution."
-            },
-
-            {
-                question: "Why is it useful to pause before responding when angry?",
-                answers: ["It can reduce impulsive reactions","It guarantees you are right","It makes the other person agree","It ends every conflict"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Pausing can create space to respond thoughtfully rather than impulsively."
-            }
-,
-
-            {
-                question: "What is respect?",
-                answers: ["Treating people with dignity","Always agreeing","Avoiding communication","Winning arguments"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Respect involves treating others with consideration and dignity."
-            },
-
-            {
-                question: "What is an assumption?",
-                answers: ["Something assumed without enough evidence","A confirmed measurement","A legal contract","A scientific law"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "An assumption is something accepted as true without sufficient evidence or verification."
-            },
-
-            {
-                question: "What is active empathy?",
-                answers: ["Understanding another person's experience","Giving advice immediately","Ignoring emotions","Agreeing with everything"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Empathy involves understanding another person's experience and responding with awareness."
-            },
-
-            {
-                question: "What is a healthy way to handle criticism?",
-                answers: ["Listen and consider what you can learn","Insult the person","Reject every point automatically","Spread rumors"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Constructive reflection can turn useful criticism into learning."
-            },
-
-            {
-                question: "What is collaboration?",
-                answers: ["Working toward a shared goal","Working alone","Avoiding responsibility","Competing on every task"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Collaboration means working together toward a shared objective."
-            },
-
-            {
-                question: "What is a misunderstanding?",
-                answers: ["Information interpreted differently","A confirmed agreement","A planned celebration","A legal judgment"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "A misunderstanding occurs when communication is interpreted differently from the intended meaning."
-            },
-
-            {
-                question: "Why is tone important in communication?",
-                answers: ["It can change how a message is perceived","It always makes facts true","It removes the need for words","It guarantees agreement"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Tone can strongly influence how the receiver interprets a message."
-            },
-
-            {
-                question: "What is mediation?",
-                answers: ["A neutral process for resolving disputes","A punishment","A public argument","A social media post"],
-                correct: 0,
-                difficulty: "hard",
-                explanation: "Mediation uses a neutral third party to help disputing people work toward a resolution."
-            },
-
-            {
-                question: "What is confidentiality?",
-                answers: ["Keeping appropriate information private","Sharing everything publicly","Ignoring a promise","Changing someone's password"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Confidentiality means protecting information from unauthorized disclosure."
-            },
-
-            {
-                question: "What is a constructive conversation?",
-                answers: ["A discussion aimed at solving something","A conversation designed to humiliate","An argument where nobody listens","A rumor session"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Constructive conversations focus on understanding, problem-solving, or improvement."
-            }
-
-        ]
-    }
-};
-
-
-
-// ==========================================
-// QUESTION BANK PREPARATION
-// Gives every question a stable id and checks the data for mistakes.
-// Problems are reported in the browser console (F12) for whoever maintains the game.
-// ==========================================
-
-const questionById = Object.create(null);
-
-function hashText(text) {
-
-    let hash = 5381;
-
-    for (const character of String(text)) {
-        hash = ((hash << 5) + hash) ^ character.codePointAt(0);
-    }
-
-    return (hash >>> 0).toString(36);
-}
-
-
-function prepareQuestionBank() {
-
-    Object.keys(categories).forEach(key => {
-
-        categories[key].questions.forEach((q, index) => {
-
-            q.category = key;
-            q.id = key + "-" + hashText(q.question);
-
-            const problems = [];
-
-            if (!q.question) problems.push("missing question text");
-
-            if (!Array.isArray(q.answers) || q.answers.length < 2) {
-                problems.push("needs at least 2 answers");
-            } else {
-                if (!Number.isInteger(q.correct) || q.correct < 0 || q.correct >= q.answers.length) {
-                    problems.push("'correct' does not point at an answer");
-                }
-                if (new Set(q.answers).size !== q.answers.length) {
-                    problems.push("has duplicate answers");
-                }
-            }
-
-            if (!["easy", "medium", "hard"].includes(q.difficulty)) {
-                problems.push("difficulty must be easy, medium or hard");
-            }
-
-            if (!q.explanation) problems.push("missing explanation");
-
-            if (questionById[q.id]) problems.push("duplicate question");
-
-            if (problems.length) {
-                console.warn(
-                    "[Life Quest] " + key + " question " + (index + 1) +
-                    " (" + q.question + "): " + problems.join(", ")
-                );
-            }
-
-            questionById[q.id] = q;
-        });
-    });
-}
-
-prepareQuestionBank();
 
 
 // ==========================================
@@ -2763,7 +30,8 @@ const STORAGE_KEYS = {
     legacyPlayer: "lifeQuestPlayer",        // V1/V2 single-player save (migrated automatically)
     profiles: "lifeQuestProfiles",
     activePlayer: "lifeQuestActivePlayer",
-    settings: "lifeQuestSettings"
+    settings: "lifeQuestSettings",
+    classroom: "lifeQuestClassroom"
 };
 
 const MAX_NAME_LENGTH = 24;
@@ -3009,7 +277,8 @@ function defaultSettings() {
         readableFont: false,
         reduceMotion: prefersReducedMotion(),
         sound: false,          // off by default: sudden sounds can be stressful
-                secondChances: true
+        secondChances: true,
+        autoRead: false        // read each new question aloud
     };
 }
 
@@ -3028,7 +297,7 @@ function loadSettings() {
 
         if (isPlainObject(saved)) {
             if (TEXT_SIZES.includes(saved.textSize)) merged.textSize = saved.textSize;
-            ["highContrast", "readableFont", "reduceMotion", "sound", "secondChances"]
+            ["highContrast", "readableFont", "reduceMotion", "sound", "secondChances", "autoRead"]
                 .forEach(key => {
                     if (typeof saved[key] === "boolean") merged[key] = saved[key];
                 });
@@ -3154,6 +423,11 @@ body.lq-high-contrast #game-card .lq-seg[aria-pressed="true"] { background: #ffe
 body.lq-high-contrast #game-card .lq-switch[aria-checked="true"] *,
 body.lq-high-contrast #game-card .lq-seg[aria-pressed="true"] * { color: #000 !important; }
 body.lq-high-contrast #game-card input { background: #000 !important; color: #fff !important; border: 3px solid #fff !important; }
+body.lq-high-contrast #game-card .lq-answer-modal.is-correct { border: 5px solid #00ff66 !important; }
+body.lq-high-contrast #game-card .lq-answer-modal.is-wrong { border: 5px dashed #ff5c5c !important; }
+body.lq-high-contrast #game-card .lq-clue-timer { border-color: #fff !important; }
+body.lq-high-contrast #game-card .lq-clue-timer.is-danger { border-color: #ff5c5c !important; }
+body.lq-high-contrast #game-card .lq-clue.is-used { color: #999 !important; border-color: #666 !important; }
 body.lq-high-contrast .lq-fab { background: #000; color: #ffeb3b; border-color: #ffeb3b; }
 body.lq-high-contrast .lq-toast { background: #000 !important; border: 3px solid #ffeb3b; }
 body.lq-high-contrast .lq-toast * { color: #fff !important; }
@@ -3346,7 +620,8 @@ function createDefaultPlayer(name = "") {
         categoryStats: categoryStats,
         achievements: [],
         bestStars: {},
-        missed: []
+        missed: [],
+        history: QuestionEngine.createHistory()   // what this player has seen (engine.js)
     };
 }
 
@@ -3392,9 +667,12 @@ function normalizePlayer(saved) {
         ? saved.achievements.filter(id => typeof id === "string")
         : [];
 
+    // Only questions that still exist in the bank can be practised
     p.missed = Array.isArray(saved.missed)
-        ? saved.missed.filter(id => typeof id === "string")
+        ? saved.missed.filter(id => typeof id === "string" && QuestionEngine.byId(id))
         : [];
+
+    p.history = QuestionEngine.normalizeHistory(saved.history);
 
     p.bestStars = {};
     if (isPlainObject(saved.bestStars)) {
@@ -3786,6 +1064,10 @@ function render(html) {
 
     stopSpeaking();
 
+    // Safety net: a countdown never keeps running behind another screen.
+    // (Settings only pauses it; see openSettings.)
+    if (screen !== "clue" && screen !== "settings") QuestionTimer.stop();
+
     card.innerHTML = html;
 
     const target = card.querySelector("[data-autofocus]") || card;
@@ -3921,6 +1203,7 @@ function showWelcome() {
     if (!card) return;
 
     stopSpeaking();
+    QuestionTimer.stop();
 
     card.innerHTML = welcomeHTML;
 }
@@ -3999,6 +1282,9 @@ function showPlayerPicker() {
 function switchPlayer() {
 
     savePlayer();
+
+    // A solo board belongs to the player who dealt it
+    if (questBoard && questBoard.mode === "solo") endBoard();
 
     activeKey = "";
     persistProfiles();
@@ -4133,11 +1419,21 @@ function showProfile() {
         <br>
 
         <button id="play-quest">
-            🚀 PLAY A QUEST
+            ⚡ PLAY QUEST BOARD
         </button>
 
-        <button id="classroom-jeopardy">
-            🎓 CLASSROOM JEOPARDY
+        ${player.missed.length ? `
+            <button id="practice-button">
+                🔁 PRACTICE MISTAKES (${player.missed.length})
+            </button>
+        ` : `
+            <p class="lq-note">
+                🔁 Questions you miss are saved for Practice Mistakes.
+            </p>
+        `}
+
+        <button id="classroom-mode">
+            🎓 CLASSROOM MODE
         </button>
 
         <button id="achievements-button">
@@ -4155,7 +1451,8 @@ function showProfile() {
     `);
 
     on("play-quest", showCategories);
-    on("classroom-jeopardy", startClassroomJeopardy);
+    on("practice-button", startPractice);
+    on("classroom-mode", showClassroomSetup);
     on("achievements-button", showAchievements);
     on("report-button", showReport);
     on("switch-player", switchPlayer);
@@ -4163,22 +1460,98 @@ function showProfile() {
 
 
 // ==========================================
-// JEOPARDY GAME HUB
+// QUEST BOARD (solo) + CLASSROOM MODE
+// Pick a category, pick a value, answer the clue, clear the board.
+// Questions come from QuestionEngine (engine.js).
+// Classroom play never changes the signed-in student's XP, streaks,
+// achievements or statistics. It keeps its own history and missed list.
 // ==========================================
 
+// Row difficulty, top to bottom. Works for both point scales.
+const BOARD_ROW_DIFFICULTY = ["easy", "easy", "medium", "medium", "hard"];
+const CLASSROOM_SESSION = "classroom";
+const MAX_CLASSROOM_MISSED = 200;
 
-let jeopardyBoard = null;
+let questBoard = null;
+let activeClue = null;        // the clue on screen: answers, result, timing
+let classroomData = null;     // loaded the first time Classroom Mode is used
 
-function startClassroomJeopardy() {
-    screen = "jeopardy-setup";
+
+function playerSession() {
+    return "player:" + (activeKey || "guest");
+}
+
+function getClassroom() {
+
+    if (classroomData) return classroomData;
+
+    classroomData = { history: QuestionEngine.createHistory(), missed: [] };
+
+    const raw = storage.get(STORAGE_KEYS.classroom);
+
+    if (raw) {
+        try {
+            const saved = JSON.parse(raw);
+            if (isPlainObject(saved)) {
+                classroomData.history = QuestionEngine.normalizeHistory(saved.history);
+                classroomData.missed = Array.isArray(saved.missed)
+                    ? saved.missed.filter(id => typeof id === "string").slice(-MAX_CLASSROOM_MISSED)
+                    : [];
+            }
+        } catch (error) {
+            console.error("Could not load classroom data:", error);
+        }
+    }
+
+    return classroomData;
+}
+
+function saveClassroom() {
+    storage.set(STORAGE_KEYS.classroom, JSON.stringify(getClassroom()));
+}
+
+// Time spent in Settings or on a break doesn't count as answer time
+function newTiming() {
+    return { startedAt: Date.now(), awayMs: 0, awaySince: null };
+}
+
+function timingAway(timing) {
+    if (timing && !timing.awaySince) timing.awaySince = Date.now();
+}
+
+function timingBack(timing) {
+    if (timing && timing.awaySince) {
+        timing.awayMs += Date.now() - timing.awaySince;
+        timing.awaySince = null;
+    }
+}
+
+function elapsedMs(timing) {
+    return timing ? Date.now() - timing.startedAt - timing.awayMs : 0;
+}
+
+
+function showClassroomSetup() {
+    screen = "classroom-setup";
+
+    const inProgress = questBoard && questBoard.mode === "teams" && !questBoard.finished;
 
     render(`
         <div class="lq-classroom-setup">
             <div class="lq-result-kicker">🎓 CLASSROOM MODE</div>
-            <h2 tabindex="-1" data-autofocus>SET UP YOUR JEOPARDY GAME</h2>
+            <h2 tabindex="-1" data-autofocus>SET UP YOUR CLASSROOM GAME</h2>
             <p class="lq-result-subtitle">
                 The class plays in teams. Pick a category, pick a value, then beat the clock.
             </p>
+            <p class="lq-board-caption">
+                Classroom scores are kept separate. They don't change anyone's personal XP or progress.
+            </p>
+
+            ${inProgress ? `
+                <div class="lq-result-actions">
+                    <button id="classroom-continue">▶️ CONTINUE CURRENT GAME</button>
+                </div>
+            ` : ""}
 
             <div class="lq-team-setup-grid">
                 <label>Team 1 <input class="lq-team-name" value="Team 1" maxlength="24"></label>
@@ -4190,24 +1563,24 @@ function startClassroomJeopardy() {
             </div>
 
             <div class="lq-board-options">
-                <div class="lq-option-group">
+                <div class="lq-option-group" role="group" aria-label="Board size">
                     <strong>Board size</strong>
-                    <button class="lq-board-size is-selected" data-count="6">6 topics</button>
-                    <button class="lq-board-size" data-count="5">5 topics</button>
+                    <button class="lq-board-size is-selected" data-count="6" aria-pressed="true">6 topics</button>
+                    <button class="lq-board-size" data-count="5" aria-pressed="false">5 topics</button>
                 </div>
 
-                <div class="lq-option-group">
+                <div class="lq-option-group" role="group" aria-label="Point scale">
                     <strong>Point scale</strong>
-                    <button class="lq-value-scale is-selected" data-scale="100">100–500</button>
-                    <button class="lq-value-scale" data-scale="200">200–1,000</button>
+                    <button class="lq-value-scale is-selected" data-scale="100" aria-pressed="true">100–500</button>
+                    <button class="lq-value-scale" data-scale="200" aria-pressed="false">200–1,000</button>
                 </div>
             </div>
 
-            <div class="lq-time-options">
+            <div class="lq-time-options" role="group" aria-label="Answer time">
                 <strong>Answer time</strong>
-                <button class="lq-time-choice is-selected" data-time="10">10 seconds</button>
-                <button class="lq-time-choice" data-time="15">15 seconds</button>
-                <button class="lq-time-choice" data-time="20">20 seconds</button>
+                <button class="lq-time-choice is-selected" data-time="10" aria-pressed="true">10 seconds</button>
+                <button class="lq-time-choice" data-time="15" aria-pressed="false">15 seconds</button>
+                <button class="lq-time-choice" data-time="20" aria-pressed="false">20 seconds</button>
             </div>
 
             <p class="lq-board-caption">
@@ -4215,8 +1588,10 @@ function startClassroomJeopardy() {
                 The turn then moves to the next team.
             </p>
 
+            <p class="lq-message" id="lq-message" role="alert"></p>
+
             <div class="lq-result-actions">
-                <button id="launch-classroom-jeopardy">🎮 START GAME</button>
+                <button id="launch-classroom">🎮 START NEW GAME</button>
                 <button id="classroom-back">🏠 BACK TO MENU</button>
             </div>
         </div>
@@ -4226,41 +1601,47 @@ function startClassroomJeopardy() {
     let selectedCategoryCount = 6;
     let selectedValueScale = 100;
 
+    // One selected button per group, announced to screen readers with aria-pressed
+    const choose = (selector, button) => {
+        document.querySelectorAll(selector).forEach(item => {
+            item.classList.toggle("is-selected", item === button);
+            item.setAttribute("aria-pressed", item === button ? "true" : "false");
+        });
+    };
+
     document.querySelectorAll(".lq-board-size").forEach(button => {
         button.addEventListener("click", () => {
             selectedCategoryCount = Number(button.dataset.count);
-            document.querySelectorAll(".lq-board-size").forEach(item => item.classList.remove("is-selected"));
-            button.classList.add("is-selected");
+            choose(".lq-board-size", button);
         });
     });
 
     document.querySelectorAll(".lq-value-scale").forEach(button => {
         button.addEventListener("click", () => {
             selectedValueScale = Number(button.dataset.scale);
-            document.querySelectorAll(".lq-value-scale").forEach(item => item.classList.remove("is-selected"));
-            button.classList.add("is-selected");
+            choose(".lq-value-scale", button);
         });
     });
 
     document.querySelectorAll(".lq-time-choice").forEach(button => {
         button.addEventListener("click", () => {
             selectedTime = Number(button.dataset.time);
-            document.querySelectorAll(".lq-time-choice").forEach(item => item.classList.remove("is-selected"));
-            button.classList.add("is-selected");
+            choose(".lq-time-choice", button);
         });
     });
 
-    on("launch-classroom-jeopardy", () => {
+    on("launch-classroom", () => {
         const names = [...document.querySelectorAll(".lq-team-name")]
             .map(input => input.value.trim().replace(/\s+/g, " ").slice(0, 24))
             .filter(Boolean);
 
         if (names.length < 2) {
-            announce("Enter at least two team names.");
+            const message = document.getElementById("lq-message");
+            if (message) message.textContent = "Enter at least two team names.";
             return;
         }
 
-        startJeopardyGame({
+        startQuestBoard({
             mode: "teams",
             teams: names,
             timeLimit: selectedTime,
@@ -4269,32 +1650,55 @@ function startClassroomJeopardy() {
         });
     });
 
+    on("classroom-continue", renderQuestBoard);
     on("classroom-back", showProfile);
 }
 
-function startJeopardyGame(options = {}) {
-    screen = "jeopardy-board";
+// Questions set aside for a board but never opened go back into the pool
+function releaseUnusedClues() {
 
-    const sourceCategories = Object.keys(categories).filter(
-        key => categories[key] && Array.isArray(categories[key].questions)
-    );
+    if (!questBoard) return;
+
+    const unused = Object.values(questBoard.cells)
+        .filter(cell => !cell.used && cell.question)
+        .map(cell => cell.question.id);
+
+    QuestionEngine.release(questBoard.sessionKey, unused);
+}
+
+function boardOptions(board) {
+    return board.mode === "teams"
+        ? {
+            mode: "teams",
+            teams: board.teams.map(team => team.name),
+            timeLimit: board.timeLimit,
+            categoryCount: board.categoryCount,
+            valueScale: board.valueScale
+        }
+        : { categoryCount: board.categoryCount, valueScale: board.valueScale };
+}
+
+function startQuestBoard(options = {}) {
+
+    QuestionTimer.stop();
+    releaseUnusedClues();
+    activeClue = null;
 
     const teamMode = options.mode === "teams";
+    const history = teamMode ? getClassroom().history : player.history;
+    const sessionKey = teamMode ? CLASSROOM_SESSION : playerSession();
+
     const categoryCount = Math.min(
-        Number(options.categoryCount || (teamMode ? 6 : 6)),
-        sourceCategories.length
+        Number(options.categoryCount) || 6,
+        QuestionEngine.categoryKeys().length
     );
-    const valueScale = Number(options.valueScale || 100);
-    const values = valueScale === 200
-        ? [200, 400, 600, 800, 1000]
-        : [100, 200, 300, 400, 500];
+    const valueScale = Number(options.valueScale) === 200 ? 200 : 100;
+    const values = BOARD_ROW_DIFFICULTY.map((_, row) => (row + 1) * valueScale);
 
-    const chosen = shuffle([...sourceCategories]).slice(0, categoryCount);
-    const teams = teamMode
-        ? options.teams.map(name => ({ name, score: 0 }))
-        : [];
+    // Least recently played categories first, then shown in a random order
+    const chosen = shuffle(QuestionEngine.pickCategories(categoryCount, history));
 
-    jeopardyBoard = {
+    questBoard = {
         categories: chosen,
         values,
         categoryCount,
@@ -4306,79 +1710,56 @@ function startJeopardyGame(options = {}) {
         streak: 0,
         bestBoardStreak: 0,
         mode: teamMode ? "teams" : "solo",
-        teams,
+        owner: teamMode ? "" : activeKey,
+        sessionKey,
+        teams: teamMode ? options.teams.map(name => ({ name, score: 0 })) : [],
         currentTeam: 0,
-        timeLimit: teamMode ? Number(options.timeLimit || 10) : 0
+        timeLimit: teamMode ? Number(options.timeLimit || 10) : 0,
+        finished: false
     };
 
     chosen.forEach(key => {
-        const pool = shuffle([...categories[key].questions]);
-        const usedQuestions = new Set();
+        const column = QuestionEngine.pickColumn(key, BOARD_ROW_DIFFICULTY, {
+            history,
+            session: sessionKey
+        });
 
-        const difficultyForValue = {
-            100: "easy",
-            200: "easy",
-            300: "medium",
-            400: "hard",
-            500: "hard"
-        };
-
-        jeopardyBoard.values.forEach(value => {
-            const wanted = difficultyForValue[value];
-
-            let candidates = pool.filter(q =>
-                q.difficulty === wanted && !usedQuestions.has(q)
-            );
-
-            if (!candidates.length) {
-                const fallbackOrder = wanted === "easy"
-                    ? ["medium", "hard"]
-                    : wanted === "medium"
-                        ? ["easy", "hard"]
-                        : ["medium", "easy"];
-
-                for (const tier of fallbackOrder) {
-                    candidates = pool.filter(q =>
-                        q.difficulty === tier && !usedQuestions.has(q)
-                    );
-                    if (candidates.length) break;
-                }
-            }
-
-            if (!candidates.length) {
-                candidates = pool.filter(q => !usedQuestions.has(q));
-            }
-
-            const question = shuffle(candidates)[0] || pool[0];
-            if (question) usedQuestions.add(question);
-
-            jeopardyBoard.cells[key + ":" + value] = {
-                question,
+        values.forEach((value, row) => {
+            questBoard.cells[key + ":" + value] = {
+                question: column[row],
                 used: false,
+                correct: false,
                 earned: 0
             };
         });
     });
 
-    renderJeopardyBoard();
+    renderQuestBoard();
 }
 
-function renderJeopardyBoard() {
-    if (!jeopardyBoard) {
-        startJeopardyGame();
+function boardTotal() {
+    return Object.values(questBoard.cells).filter(cell => cell.question).length;
+}
+
+function renderQuestBoard() {
+    if (!questBoard) {
+        startQuestBoard();
         return;
     }
 
-    const keys = jeopardyBoard.categories;
-    const total = keys.length * jeopardyBoard.values.length;
-    const used = Object.values(jeopardyBoard.cells).filter(cell => cell.used).length;
-    const teamMode = jeopardyBoard.mode === "teams";
-    const currentTeam = teamMode ? jeopardyBoard.teams[jeopardyBoard.currentTeam] : null;
+    screen = "board";
+
+    const keys = questBoard.categories;
+    const total = boardTotal();
+    const teamMode = questBoard.mode === "teams";
+    const currentTeam = teamMode ? questBoard.teams[questBoard.currentTeam] : null;
 
     render(`
-        <div class="lq-jeopardy-head">
+        <div class="lq-board-head">
             <div>
-                <div class="lq-jeopardy-title">⚡ LIFE QUEST JEOPARDY</div>
+                <h2 class="lq-board-title" tabindex="-1" data-autofocus>
+                    ${teamMode ? "🎓 CLASSROOM QUEST BOARD" : "⚡ QUEST BOARD"}
+                </h2>
                 <div class="lq-board-caption">
                     ${teamMode
                         ? "Pick a category and value. Answer before the clock hits zero."
@@ -4386,52 +1767,56 @@ function renderJeopardyBoard() {
                 </div>
             </div>
 
-            <div class="lq-jeopardy-meta">
+            <div class="lq-board-meta">
                 ${teamMode ? `
                     <span class="lq-pill lq-turn-pill">🎤 ${escapeHTML(currentTeam.name)}'s turn</span>
-                    <span class="lq-pill">⏱️ ${jeopardyBoard.timeLimit}s</span>
-                    ${jeopardyBoard.teams.map(team => `
+                    <span class="lq-pill">⏱️ ${questBoard.timeLimit}s</span>
+                    ${questBoard.teams.map(team => `
                         <span class="lq-pill">🏆 ${escapeHTML(team.name)}: ${team.score}</span>
                     `).join("")}
                 ` : `
                     <span class="lq-pill">👤 ${escapeHTML(player.name)}</span>
                     <span class="lq-pill">⭐ ${player.xp} XP</span>
-                    <span class="lq-pill">🏆 Board score: ${jeopardyBoard.score}</span>
+                    <span class="lq-pill">🏆 Board score: ${questBoard.score}</span>
                 `}
             </div>
         </div>
 
-        <div class="lq-board">
-            ${keys.map(key => `
-                <div class="lq-category">
-                    ${escapeHTML(splitLabel(categories[key].name).text)}
-                </div>
-            `).join("")}
+        <div class="lq-board" style="--lq-cols:${keys.length}">
+            ${keys.map(key => {
+                const name = splitLabel(categories[key].name).text;
 
-            ${jeopardyBoard.values.map(value =>
-                keys.map(key => {
-                    const id = key + ":" + value;
-                    const cell = jeopardyBoard.cells[id];
+                return `
+                    <div class="lq-board-col" role="group" aria-label="${escapeHTML(name)}">
+                        <div class="lq-category">${escapeHTML(name)}</div>
 
-                    return `
-                        <button
-                            class="lq-clue ${cell.used ? "is-used" : ""}"
-                            data-clue="${escapeHTML(id)}"
-                            ${cell.used ? "disabled" : ""}
-                        >
-                            ${cell.used ? "✓" : "$" + value}
-                        </button>
-                    `;
-                }).join("")
-            ).join("")}
+                        ${questBoard.values.map(value => {
+                            const id = key + ":" + value;
+                            const cell = questBoard.cells[id];
+                            const done = cell.used || !cell.question;
+                            const label = name + ", " + value + " points" +
+                                (done ? (cell.correct ? ", answered correctly" : ", already played") : "");
+
+                            return `
+                                <button
+                                    class="lq-clue ${done ? "is-used" : ""}"
+                                    data-clue="${escapeHTML(id)}"
+                                    aria-label="${escapeHTML(label)}"
+                                    ${done ? "disabled" : ""}
+                                >${done ? (cell.correct ? "✓" : "–") : value}</button>
+                            `;
+                        }).join("")}
+                    </div>
+                `;
+            }).join("")}
         </div>
 
         <p class="lq-board-caption">
-            Cleared: ${used} / ${total}
+            Cleared: ${questBoard.answered} / ${total}
             ${teamMode ? " • Next team takes the next clue." : ""}
         </p>
 
-        <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px">
+        <div class="lq-result-actions">
             <button id="lq-board-reset">🔄 NEW BOARD</button>
             ${teamMode ? '<button id="lq-board-fullscreen">⛶ FULL SCREEN</button>' : ""}
             <button id="lq-board-menu">🏠 BACK TO MENU</button>
@@ -4439,22 +1824,10 @@ function renderJeopardyBoard() {
     `);
 
     document.querySelectorAll("[data-clue]").forEach(button => {
-        button.addEventListener("click", () => openJeopardyClue(button.dataset.clue));
+        button.addEventListener("click", () => openBoardClue(button.dataset.clue));
     });
 
-    on("lq-board-reset", () => {
-        if (teamMode) {
-            startJeopardyGame({
-                mode: "teams",
-                teams: jeopardyBoard.teams.map(team => team.name),
-                timeLimit: jeopardyBoard.timeLimit,
-                categoryCount: jeopardyBoard.categoryCount,
-                valueScale: jeopardyBoard.valueScale
-            });
-        } else {
-            startJeopardyGame();
-        }
-    });
+    on("lq-board-reset", () => startQuestBoard(boardOptions(questBoard)));
 
     on("lq-board-menu", showProfile);
 
@@ -4471,218 +1844,378 @@ function renderJeopardyBoard() {
     });
 }
 
-function openJeopardyClue(id) {
-    const cell = jeopardyBoard && jeopardyBoard.cells[id];
+function openBoardClue(id) {
+    const cell = questBoard && questBoard.cells[id];
 
-    if (!cell || cell.used) return;
+    if (!cell || cell.used || !cell.question) return;
 
-    const value = Number(id.split(":").pop());
+    const teamMode = questBoard.mode === "teams";
     const q = cell.question;
-    const categoryKey = id.split(":")[0];
-    const teamMode = jeopardyBoard.mode === "teams";
-    const activeTeam = teamMode ? jeopardyBoard.teams[jeopardyBoard.currentTeam] : null;
 
-    const shuffledAnswers = shuffle(
-        q.answers.map((answer, originalIndex) => ({
-            answer,
-            originalIndex
-        }))
-    );
-
-    const modal = document.createElement("div");
-    modal.className = "lq-clue-modal";
-    modal.id = "lq-clue-modal";
-
-    modal.innerHTML = `
-        <div class="lq-clue-panel">
-            <div class="lq-clue-value">
-                ${escapeHTML(splitLabel(categories[categoryKey].name).text)} • ${value}
-            </div>
-
-            ${teamMode ? `
-                <div class="lq-active-team">
-                    🎤 ${escapeHTML(activeTeam.name)}
-                    <span>• ${activeTeam.score} points</span>
-                </div>
-                <div id="lq-clue-timer" class="lq-clue-timer">${jeopardyBoard.timeLimit}</div>
-            ` : ""}
-
-            <div class="lq-clue-question">${escapeHTML(q.question)}</div>
-
-            <div class="lq-clue-controls">
-                ${shuffledAnswers.map(option => `
-                    <button class="lq-answer-modal" data-choice="${option.originalIndex}">
-                        ${escapeHTML(option.answer)}
-                    </button>
-                `).join("")}
-            </div>
-
-            <div id="lq-clue-feedback" class="lq-clue-feedback"></div>
-            <div id="lq-clue-correct" class="lq-clue-answer" style="display:none"></div>
-            <div id="lq-clue-explanation" class="lq-clue-explanation" style="display:none"></div>
-
-            <button id="lq-clue-close" style="display:none">
-                BACK TO BOARD
-            </button>
-        </div>
-    `;
-
-    document.body.appendChild(modal);
-
-    let timerId = null;
-    let answered = false;
-
-    const finishClue = (picked, timedOut = false) => {
-        if (answered) return;
-        answered = true;
-
-        if (timerId) {
-            clearInterval(timerId);
-            timerId = null;
-        }
-
-        const isCorrect = !timedOut && picked === q.correct;
-
-        modal.querySelectorAll("[data-choice]").forEach(item => {
-            item.disabled = true;
-            if (Number(item.dataset.choice) === q.correct) {
-                item.classList.add("is-correct");
-            }
-        });
-
-        if (!isCorrect && !timedOut) {
-            const selected = modal.querySelector(`[data-choice="${picked}"]`);
-            if (selected) selected.classList.add("is-wrong");
-        }
-
-        cell.used = true;
-        cell.earned = isCorrect ? value : 0;
-
-        player.questionsAnswered++;
-
-        const stats = ensureStats(categoryKey);
-        stats.answered++;
-
-        let streakBonus = 0;
-
-        if (isCorrect) {
-            player.correctAnswers++;
-            stats.correct++;
-            jeopardyBoard.correct++;
-            jeopardyBoard.streak++;
-            jeopardyBoard.bestBoardStreak = Math.max(
-                jeopardyBoard.bestBoardStreak,
-                jeopardyBoard.streak
-            );
-
-            player.currentStreak++;
-            player.bestStreak = Math.max(player.bestStreak, player.currentStreak);
-
-            streakBonus = jeopardyBoard.streak >= 3
-                ? Math.min(100, (jeopardyBoard.streak - 2) * 25)
-                : 0;
-
-            cell.earned = value + streakBonus;
-
-            if (teamMode) {
-                activeTeam.score += value;
-            } else {
-                jeopardyBoard.score += cell.earned;
-            }
-
-            player.xp += value;
-            player.categoryXP[categoryKey] = (player.categoryXP[categoryKey] || 0) + value;
-
-            modal.querySelector("#lq-clue-feedback").textContent =
-                teamMode
-                    ? "✅ Correct! " + activeTeam.name + " +" + value + " points"
-                    : "✅ Correct! +" + value + (streakBonus ? " + " + streakBonus + " streak bonus" : "");
-
-            modal.querySelector("#lq-clue-feedback").className =
-                "lq-clue-feedback is-success";
-        } else {
-            player.currentStreak = 0;
-            jeopardyBoard.streak = 0;
-
-            modal.querySelector("#lq-clue-feedback").textContent =
-                timedOut
-                    ? "⏰ Time's up! No points."
-                    : "❌ Not quite. No points.";
-
-            modal.querySelector("#lq-clue-feedback").className =
-                "lq-clue-feedback is-wrong";
-        }
-
-        jeopardyBoard.answered++;
-
-        player.level = getLevel(player.xp);
-        savePlayer();
-
-        const reveal = modal.querySelector("#lq-clue-correct");
-        reveal.textContent = "Correct answer: " + q.answers[q.correct];
-        reveal.style.display = "block";
-
-        const explanation = modal.querySelector("#lq-clue-explanation");
-        if (q.explanation) {
-            explanation.innerHTML =
-                "<strong>Why:</strong> " + escapeHTML(q.explanation);
-            explanation.style.display = "block";
-        }
-
-        modal.querySelector("#lq-clue-close").style.display = "inline-block";
+    activeClue = {
+        id,
+        cell,
+        q,
+        value: Number(id.split(":").pop()),
+        categoryKey: id.split(":")[0],
+        answers: buildAnswers(q),
+        teamIndex: questBoard.currentTeam,
+        answered: false,
+        picked: -1,
+        correct: false,
+        timedOut: false,
+        streakBonus: 0,
+        timing: newTiming()
     };
 
-    modal.querySelectorAll("[data-choice]").forEach(button => {
-        button.addEventListener("click", () => {
-            finishClue(Number(button.dataset.choice));
-        });
-    });
-
     if (teamMode) {
-        let remaining = jeopardyBoard.timeLimit;
-        const timer = modal.querySelector("#lq-clue-timer");
-
-        timerId = setInterval(() => {
-            remaining -= 1;
-            timer.textContent = remaining;
-
-            if (remaining <= 3) {
-                timer.classList.add("is-danger");
-            }
-
-            if (remaining <= 0) {
-                finishClue(-1, true);
-            }
-        }, 1000);
+        QuestionEngine.noteShown(getClassroom().history, q);
+        saveClassroom();
+    } else {
+        QuestionEngine.noteShown(player.history, q);
+        savePlayer();
     }
 
-    modal.querySelector("#lq-clue-close").addEventListener("click", () => {
-        modal.remove();
+    renderClue();
 
-        if (teamMode) {
-            jeopardyBoard.currentTeam =
-                (jeopardyBoard.currentTeam + 1) % jeopardyBoard.teams.length;
-        }
+    if (teamMode && questBoard.timeLimit) startClueTimer(questBoard.timeLimit);
 
-        const total = jeopardyBoard.categories.length * jeopardyBoard.values.length;
+    if (settings.autoRead) readClueAloud();
+}
 
-        if (jeopardyBoard.answered >= total) {
-            showJeopardyResult();
-        } else {
-            renderJeopardyBoard();
+function startClueTimer(seconds) {
+
+    QuestionTimer.start(seconds, {
+
+        onTick(left) {
+            const timer = document.getElementById("lq-clue-timer");
+            if (timer) {
+                timer.textContent = left;
+                timer.classList.toggle("is-danger", left <= 3);
+                timer.setAttribute("aria-label", left + " seconds left");
+            }
+            if (left === 5) announce("5 seconds left.");
+        },
+
+        onExpire() {
+            answerClue(-1, true);
         }
     });
 }
 
-function showJeopardyResult() {
-    screen = "jeopardy-result";
+function clueFeedbackText(c) {
 
-    const total = jeopardyBoard.categories.length * jeopardyBoard.values.length;
-    const accuracy = total ? Math.round((jeopardyBoard.correct / total) * 100) : 0;
-    const teamMode = jeopardyBoard.mode === "teams";
+    const teamMode = questBoard.mode === "teams";
+    const team = teamMode ? questBoard.teams[c.teamIndex] : null;
+
+    if (c.timedOut) return "⏰ TIME'S UP! No points this time.";
+
+    if (!c.correct) return "❌ Not quite. No points this time.";
+
+    return teamMode
+        ? "✅ Correct! " + team.name + " +" + c.value + " points"
+        : "✅ Correct! +" + c.value + (c.streakBonus ? " + " + c.streakBonus + " streak bonus" : "");
+}
+
+function renderClue() {
+
+    const c = activeClue;
+
+    if (!c || !questBoard) {
+        renderQuestBoard();
+        return;
+    }
+
+    screen = "clue";
+    timingBack(c.timing);
+
+    const teamMode = questBoard.mode === "teams";
+    const team = teamMode ? questBoard.teams[c.teamIndex] : null;
+    const correctText = c.answers.find(answer => answer.correct).text;
+    const secondsLeft = QuestionTimer.isRunning() || QuestionTimer.isPaused()
+        ? QuestionTimer.secondsLeft()
+        : questBoard.timeLimit;
+
+    render(`
+        <div class="lq-clue-panel">
+            <div class="lq-clue-value">
+                ${escapeHTML(splitLabel(categories[c.categoryKey].name).text)} • ${c.value} points
+            </div>
+
+            ${teamMode ? `
+                <div class="lq-active-team">
+                    🎤 ${escapeHTML(team.name)}
+                    <span>• ${team.score} points</span>
+                </div>
+                ${c.answered ? "" : `
+                    <div
+                        id="lq-clue-timer"
+                        class="lq-clue-timer ${secondsLeft <= 3 ? "is-danger" : ""}"
+                        role="timer"
+                        aria-label="${secondsLeft} seconds left"
+                    >${secondsLeft}</div>
+                `}
+            ` : ""}
+
+            <h2
+                class="lq-clue-question"
+                id="lq-clue-question"
+                tabindex="-1"
+                ${c.answered ? "" : "data-autofocus"}
+            >${escapeHTML(c.q.question)}</h2>
+
+            <div class="lq-clue-controls" role="group" aria-labelledby="lq-clue-question">
+                ${c.answers.map((answer, index) => {
+                    const isRight = c.answered && answer.correct;
+                    const isWrongPick = c.answered && !answer.correct && index === c.picked;
+
+                    return `
+                        <button
+                            class="lq-answer-modal ${isRight ? "is-correct" : ""} ${isWrongPick ? "is-wrong" : ""}"
+                            data-choice="${index}"
+                            ${c.answered ? "disabled" : ""}
+                        >
+                            <span class="lq-key" aria-hidden="true">${index + 1}</span>
+                            <span class="lq-answer-text">${escapeHTML(answer.text)}</span>
+                            ${isRight ? '<span class="lq-mark">✅ Correct answer</span>' : ""}
+                            ${isWrongPick ? '<span class="lq-mark">❌ Your answer</span>' : ""}
+                        </button>
+                    `;
+                }).join("")}
+            </div>
+
+            ${c.answered ? `
+                <div
+                    id="lq-clue-feedback"
+                    class="lq-clue-feedback ${c.correct ? "is-success" : c.timedOut ? "is-timeout" : "is-wrong"}"
+                    tabindex="-1"
+                    data-autofocus
+                >${escapeHTML(clueFeedbackText(c))}</div>
+
+                <div class="lq-clue-answer">Correct answer: ${escapeHTML(correctText)}</div>
+
+                ${c.q.explanation ? `
+                    <div class="lq-clue-explanation">
+                        <strong>Why:</strong> ${escapeHTML(c.q.explanation)}
+                    </div>
+                ` : ""}
+
+                <div class="lq-result-actions">
+                    <button class="lq-tool" id="lq-read">🔊 Read aloud</button>
+                    <button id="lq-clue-close">BACK TO BOARD ➡️</button>
+                </div>
+            ` : `
+                <div class="lq-tools">
+                    <button class="lq-tool" id="lq-read">🔊 Read aloud</button>
+                </div>
+
+                <p class="lq-note">
+                    Tip: press 1–${c.answers.length} to answer, or R to hear it read aloud.
+                </p>
+            `}
+        </div>
+    `);
+
+    document.querySelectorAll("[data-choice]").forEach(button => {
+        button.addEventListener("click", () => answerClue(Number(button.dataset.choice)));
+    });
+
+    on("lq-read", readClueAloud);
+    on("lq-clue-close", closeClue);
+
+    // Coming back from Settings: the clock carries on from where it stopped
+    if (!c.answered) QuestionTimer.resume();
+}
+
+function readClueAloud() {
+
+    const c = activeClue;
+
+    if (!c) return;
+
+    if (c.answered) {
+        const correctText = c.answers.find(answer => answer.correct).text;
+        speak(
+            clueFeedbackText(c).replace(/^[^A-Za-z]+/, "") +
+            " The correct answer is " + correctText + ". " + (c.q.explanation || "")
+        );
+        return;
+    }
+
+    const choices = c.answers
+        .map((answer, index) => "Choice " + (index + 1) + ": " + answer.text + ".")
+        .join(" ");
+
+    speak(
+        splitLabel(categories[c.categoryKey].name).text + ", for " + c.value + " points. " +
+        c.q.question + " " + choices
+    );
+}
+
+function answerClue(index, timedOut = false) {
+
+    const c = activeClue;
+
+    if (!c || c.answered) return;
+    if (!timedOut && !c.answers[index]) return;
+
+    QuestionTimer.stop();
+    stopSpeaking();
+
+    const teamMode = questBoard.mode === "teams";
+    const q = c.q;
+    const ms = elapsedMs(c.timing);
+
+    c.answered = true;
+    c.timedOut = timedOut;
+    c.picked = timedOut ? -1 : index;
+    c.correct = !timedOut && c.answers[index].correct;
+
+    c.cell.used = true;
+    c.cell.correct = c.correct;
+    c.cell.earned = 0;
+
+    questBoard.answered++;
+
+    if (c.correct) {
+        questBoard.correct++;
+        questBoard.streak++;
+        questBoard.bestBoardStreak = Math.max(questBoard.bestBoardStreak, questBoard.streak);
+    } else {
+        questBoard.streak = 0;
+    }
+
+    if (teamMode) {
+
+        // Classroom: team score and the classroom's own records only
+        const classroom = getClassroom();
+
+        if (c.correct) {
+            questBoard.teams[c.teamIndex].score += c.value;
+            c.cell.earned = c.value;
+            classroom.missed = classroom.missed.filter(id => id !== q.id);
+        } else if (!classroom.missed.includes(q.id)) {
+            classroom.missed.push(q.id);
+            classroom.missed = classroom.missed.slice(-MAX_CLASSROOM_MISSED);
+        }
+
+        QuestionEngine.recordAnswer(classroom.history, q, { correct: c.correct, ms, timedOut });
+        saveClassroom();
+
+    } else {
+
+        const levelBefore = getLevel(player.xp);
+        const stats = ensureStats(c.categoryKey);
+
+        player.questionsAnswered++;
+        stats.answered++;
+
+        if (c.correct) {
+            player.correctAnswers++;
+            stats.correct++;
+            player.currentStreak++;
+            player.bestStreak = Math.max(player.bestStreak, player.currentStreak);
+
+            c.streakBonus = questBoard.streak >= 3
+                ? Math.min(100, (questBoard.streak - 2) * 25)
+                : 0;
+
+            c.cell.earned = c.value + c.streakBonus;
+            questBoard.score += c.cell.earned;
+
+            player.xp += c.value;
+            player.categoryXP[c.categoryKey] = (player.categoryXP[c.categoryKey] || 0) + c.value;
+
+            // Answered it right, so it no longer needs practice
+            player.missed = player.missed.filter(id => id !== q.id);
+        } else {
+            player.currentStreak = 0;
+            if (!player.missed.includes(q.id)) player.missed.push(q.id);
+        }
+
+        QuestionEngine.recordAnswer(player.history, q, { correct: c.correct, ms, timedOut });
+
+        player.level = getLevel(player.xp);
+        savePlayer();
+        checkAchievements({});
+
+        if (player.level > levelBefore) {
+            showToast("⬆️ LEVEL UP!", "Level " + player.level, getRank(player.level));
+            playSound("levelup");
+        }
+    }
+
+    playSound(c.correct ? "correct" : "miss");
+
+    renderClue();
+
+    announce(clueFeedbackText(c));
+}
+
+function closeClue() {
+
+    const c = activeClue;
+
+    if (!c || !c.answered) return;
+
+    stopSpeaking();
+
+    if (questBoard.mode === "teams") {
+        questBoard.currentTeam = (c.teamIndex + 1) % questBoard.teams.length;
+    }
+
+    activeClue = null;
+
+    if (questBoard.answered >= boardTotal()) {
+        finishBoard();
+    } else {
+        renderQuestBoard();
+    }
+}
+
+// Runs once when the last clue is answered
+function finishBoard() {
+
+    const total = boardTotal();
+
+    if (!questBoard.finished) {
+
+        questBoard.finished = true;
+
+        if (questBoard.mode === "solo") {
+
+            player.questsCompleted++;
+            savePlayer();
+
+            // Clearing a board counts as completing a quest in each of its worlds
+            questBoard.categories.forEach(key => {
+                checkAchievements({ questCompleted: true, category: key, perfect: false });
+            });
+            checkAchievements({
+                questCompleted: true,
+                category: "board",
+                perfect: total > 0 && questBoard.correct === total
+            });
+        }
+
+        playSound("complete");
+        if (total > 0 && questBoard.correct / total >= 0.6) launchConfetti();
+    }
+
+    showBoardResult();
+}
+
+function showBoardResult() {
+    screen = "board-result";
+
+    const total = boardTotal();
+    const accuracy = percent(questBoard.correct, total);
+    const teamMode = questBoard.mode === "teams";
+
+    const missedCells = Object.values(questBoard.cells).filter(cell => cell.used && !cell.correct);
 
     const teamRows = teamMode
-        ? [...jeopardyBoard.teams]
+        ? [...questBoard.teams]
             .sort((a, b) => b.score - a.score)
             .map((team, index) => `
                 <div class="lq-team-result-row">
@@ -4693,7 +2226,7 @@ function showJeopardyResult() {
         : "";
 
     render(`
-        <div class="lq-jeopardy-result">
+        <div class="lq-board-result">
             <div class="lq-result-kicker">${teamMode ? "🎓 CLASSROOM COMPLETE" : "⚡ BOARD COMPLETE"}</div>
             <h2 tabindex="-1" data-autofocus>${teamMode ? "THE BOARD IS CLEARED!" : "YOU CLEARED THE BOARD!"}</h2>
             <p class="lq-result-subtitle">
@@ -4709,57 +2242,75 @@ function showJeopardyResult() {
             ` : `
                 <div class="lq-result-score">
                     <span>BOARD SCORE</span>
-                    <strong>${jeopardyBoard.score.toLocaleString("en-US")}</strong>
+                    <strong>${questBoard.score.toLocaleString("en-US")}</strong>
                 </div>
             `}
 
             <div class="lq-result-grid">
-                <div><strong>${jeopardyBoard.correct}/${total}</strong><span>Correct</span></div>
+                <div><strong>${questBoard.correct}/${total}</strong><span>Correct</span></div>
                 <div><strong>${accuracy}%</strong><span>Accuracy</span></div>
-                <div><strong>${jeopardyBoard.bestBoardStreak}</strong><span>Best streak</span></div>
-                <div><strong>${player.xp}</strong><span>Total XP</span></div>
+                <div><strong>${questBoard.bestBoardStreak}</strong><span>Best streak</span></div>
+                ${teamMode
+                    ? `<div><strong>${questBoard.teams.length}</strong><span>Teams</span></div>`
+                    : `<div><strong>${player.xp}</strong><span>Total XP</span></div>`}
             </div>
 
+            ${teamMode && missedCells.length ? `
+                <details class="lq-review">
+                    <summary>🔁 Review the ${missedCells.length} clue${missedCells.length === 1 ? "" : "s"} we missed</summary>
+                    <ol>
+                        ${missedCells.map(cell => `
+                            <li>
+                                <strong>${escapeHTML(cell.question.question)}</strong><br>
+                                Answer: ${escapeHTML(cell.question.answers[cell.question.correct])}
+                            </li>
+                        `).join("")}
+                    </ol>
+                </details>
+            ` : ""}
+
             <div class="lq-result-actions">
-                <button id="jeopardy-play-again">🎮 PLAY AGAIN</button>
-                <button id="jeopardy-menu">🏠 BACK TO MENU</button>
+                <button id="board-play-again">🎮 PLAY AGAIN</button>
+                ${!teamMode && player.missed.length ? `
+                    <button id="board-practice">🔁 PRACTICE MISTAKES (${player.missed.length})</button>
+                ` : ""}
+                <button id="board-menu">🏠 BACK TO MENU</button>
             </div>
         </div>
     `);
 
-    on("jeopardy-play-again", () => {
-        if (teamMode) {
-            startJeopardyGame({
-                mode: "teams",
-                teams: jeopardyBoard.teams.map(team => team.name),
-                timeLimit: jeopardyBoard.timeLimit,
-                categoryCount: jeopardyBoard.categoryCount,
-                valueScale: jeopardyBoard.valueScale
-            });
-        } else {
-            startJeopardyGame();
-        }
-    });
-
-    on("jeopardy-menu", showProfile);
+    on("board-play-again", () => startQuestBoard(boardOptions(questBoard)));
+    on("board-practice", startPractice);
+    on("board-menu", showProfile);
 }
 
+// "Play" from the menu: carry on with this player's own board, or deal a new one
 function showCategories() {
-    // The old Worlds/category page has been removed.
-    // This route now goes directly to the Jeopardy board.
-    screen = "jeopardy-board";
 
-    if (!jeopardyBoard) {
-        startJeopardyGame();
+    const ownBoard = questBoard &&
+        questBoard.mode === "solo" &&
+        questBoard.owner === activeKey &&
+        !questBoard.finished;
+
+    if (ownBoard) {
+        renderQuestBoard();
     } else {
-        renderJeopardyBoard();
+        startQuestBoard();
     }
 }
 
 function chooseCategory(category) {
     if (!categories[category]) return;
     currentCategory = category;
-    startJeopardyGame();
+    startQuestBoard();
+}
+
+// Leaves any board that is in progress (switching player, resetting progress)
+function endBoard() {
+    QuestionTimer.stop();
+    releaseUnusedClues();
+    questBoard = null;
+    activeClue = null;
 }
 
 
@@ -4885,37 +2436,6 @@ function showQuestModes() {
 // STARTING A QUEST
 // ==========================================
 
-function pickQuestions(pool, modeKey, count) {
-
-    const tier = difficulty => shuffle(pool.filter(q => q.difficulty === difficulty));
-
-    const easy = tier("easy");
-    const medium = tier("medium");
-    const hard = tier("hard");
-
-    let ordered;
-
-    if (modeKey === "rookie") {
-
-        ordered = easy;
-
-    } else if (modeKey === "challenge") {
-
-        // "Mixed": up to 40% medium questions, the rest easy
-        const someMedium = medium.splice(0, Math.ceil(count * 0.4));
-
-        ordered = [...someMedium, ...easy, ...medium];
-
-    } else {
-
-        // Championship: hardest questions first, then fill up
-        ordered = [...hard, ...medium, ...easy];
-    }
-
-    return shuffle(ordered.slice(0, count));
-}
-
-
 function beginQuest(questions) {
 
     questScore = 0;
@@ -4937,21 +2457,29 @@ function startQuestMode(mode) {
 
     currentQuestMode = mode;
 
-    const pool = questPool(mode);
-
-    beginQuest(pickQuestions(pool, mode, questModes[mode].questions));
+    // Hardest allowed difficulty first; the engine falls back to easier ones
+    beginQuest(QuestionEngine.pickMany(questModes[mode].questions, {
+        categories: [currentCategory],
+        difficulties: [...questModes[mode].difficulties].reverse(),
+        history: player.history,
+        session: playerSession()
+    }));
 }
 
 
+// Practice Mistakes repeats missed questions on purpose. No timer.
 function startPractice() {
 
-    const pool = player.missed
-        .map(id => questionById[id])
-        .filter(Boolean);
+    // Tidy the list: questions that were removed from the bank can't be practised
+    player.missed = player.missed.filter(id => QuestionEngine.byId(id));
 
-    if (pool.length === 0) {
+    const questions = QuestionEngine.pickPractice(player.missed, PRACTICE_SIZE, player.history);
 
-        showCategories();
+    if (questions.length === 0) {
+
+        savePlayer();
+        showProfile();
+        announce("No mistakes to practice right now. Great job!");
 
         return;
     }
@@ -4959,7 +2487,7 @@ function startPractice() {
     currentCategory = "practice";
     currentQuestMode = "practice";
 
-    beginQuest(shuffle([...pool]).slice(0, PRACTICE_SIZE));
+    beginQuest(questions);
 }
 
 
@@ -4977,7 +2505,8 @@ function newQuestionState(question) {
         hintUsed: false,
         wrongCount: 0,
         locked: false,
-        firstShow: true
+        firstShow: true,
+        timing: newTiming()      // answer time, not counting Settings or breaks
     };
 }
 
@@ -4997,6 +2526,17 @@ function showQuestion() {
 
     if (!qState || qState.question !== currentQuestion) {
         qState = newQuestionState(currentQuestion);
+    }
+
+    // Coming back from Settings or a break
+    timingBack(qState.timing);
+
+    const firstShow = qState.firstShow;
+
+    if (firstShow) {
+        qState.firstShow = false;
+        QuestionEngine.noteShown(player.history, currentQuestion);
+        savePlayer();
     }
 
     const total = questQuestions.length;
@@ -5053,6 +2593,7 @@ function showQuestion() {
 
         <div class="lq-tools">
 
+            <button class="lq-tool" id="lq-read">🔊 Read aloud</button>
 
             <button
                 class="lq-tool"
@@ -5071,7 +2612,7 @@ function showQuestion() {
         <p class="lq-note">
             Tip: press the number keys ${
                 qState.answers.length > 1 ? "1–" + qState.answers.length : "1"
-            } to answer.
+            } to answer, R to hear it read aloud, H for a hint.
         </p>
 
     `);
@@ -5084,8 +2625,11 @@ function showQuestion() {
         });
     });
 
+    on("lq-read", readQuestionAloud);
     on("lq-hint", useHint);
     on("lq-break", showBreak);
+
+    if (firstShow && settings.autoRead) readQuestionAloud();
 
     refreshAnswerButtons();
 
@@ -5270,6 +2814,11 @@ function resolveQuestion(correct) {
         questMissedIds.push(q.id);
     }
 
+    QuestionEngine.recordAnswer(player.history, q, {
+        correct: correct,
+        ms: elapsedMs(qState.timing)
+    });
+
     const levelAfter = getLevel(player.xp);
 
     player.level = levelAfter;
@@ -5314,6 +2863,8 @@ function showFeedback() {
         ? qState.answers.find(answer => answer.correct).text
         : q.answers[q.correct];
 
+    const readButton = '<button class="lq-tool" id="lq-read-feedback">🔊 Read aloud</button>';
+
 
     if (f.correct) {
 
@@ -5349,6 +2900,7 @@ function showFeedback() {
                     ${escapeHTML(q.explanation)}
                 </p>
 
+                ${readButton}
 
                 <button id="continue-button" data-autofocus>
                     ➡️ CONTINUE
@@ -5401,9 +2953,29 @@ function showFeedback() {
 
 
     on("continue-button", nextQuestion);
+    on("lq-read-feedback", readFeedbackAloud);
 
 
 
+}
+
+
+function readFeedbackAloud() {
+
+    const f = lastFeedback;
+    const q = currentQuestion;
+
+    if (!f || !q) return;
+
+    const correctText = qState
+        ? qState.answers.find(answer => answer.correct).text
+        : q.answers[q.correct];
+
+    speak(
+        f.title + " " +
+        (f.correct ? "" : "The correct answer was " + correctText + ". ") +
+        q.explanation
+    );
 }
 
 
@@ -5479,7 +3051,7 @@ function showQuestResult() {
             </div>
 
             <h2 tabindex="-1" data-autofocus>
-                QUEST COMPLETE!
+                ${currentCategory === "practice" ? "PRACTICE COMPLETE!" : "QUEST COMPLETE!"}
             </h2>
 
             <p>
@@ -5519,15 +3091,15 @@ function showQuestResult() {
                 ${player.currentStreak}
             </p>
 
-            <button id="another-quest">
-                🎮 ANOTHER QUEST
-            </button>
-
-            ${r.missedCount > 0 ? `
+            ${player.missed.length > 0 ? `
                 <button id="practice-missed">
-                    🔁 PRACTICE THE ONES I MISSED
+                    🔁 PRACTICE MISTAKES (${player.missed.length})
                 </button>
             ` : ""}
+
+            <button id="another-quest">
+                ⚡ PLAY QUEST BOARD
+            </button>
 
             <button id="view-profile">
                 👤 VIEW PROFILE
@@ -5558,6 +3130,8 @@ function showQuestResult() {
 
 function showBreak() {
 
+    if (qState) timingAway(qState.timing);
+
     screen = "break";
 
     render(`
@@ -5574,7 +3148,7 @@ function showBreak() {
 
             <button id="resume-quest">▶️ I'M READY</button>
 
-            <button id="leave-quest">🗺️ LEAVE THIS QUEST</button>
+            <button id="leave-quest">🏠 LEAVE AND GO TO MENU</button>
 
         </div>
 
@@ -5586,7 +3160,7 @@ function showBreak() {
 
         qState = null;
 
-        showCategories();
+        showProfile();
     });
 }
 
@@ -5717,6 +3291,10 @@ function showReport() {
 
     const trackedAnswers = keys.reduce((sum, key) => sum + getStats(key).answered, 0);
 
+    // Answer times and difficulty results from the question history (engine.js)
+    const insights = QuestionEngine.summarize(player.history);
+    const seconds = ms => ms === null ? "–" : (ms / 1000).toFixed(1) + "s";
+
     render(`
 
         <h2 tabindex="-1" data-autofocus>📈 ${escapeHTML(player.name)}'s Progress</h2>
@@ -5729,6 +3307,8 @@ function showReport() {
             <div class="lq-stat"><b>${accuracy}%</b>Accuracy</div>
             <div class="lq-stat"><b>${player.bestStreak}</b>Best streak</div>
             <div class="lq-stat"><b>${player.questsCompleted}</b>Quests done</div>
+            <div class="lq-stat"><b>${seconds(insights.overall.avgMs)}</b>Avg answer time</div>
+            <div class="lq-stat"><b>${player.missed.length}</b>To practice</div>
 
         </div>
 
@@ -5767,6 +3347,31 @@ function showReport() {
 
             }).join("")}
 
+        </div>
+
+        <h3>By difficulty</h3>
+
+        <div>
+            ${QuestionEngine.DIFFICULTIES.map(d => {
+
+                const stats = insights.byDifficulty[d];
+                const pct = stats.accuracy || 0;
+                const name = d.charAt(0).toUpperCase() + d.slice(1);
+
+                return `
+                    <div class="lq-report-row">
+                        <div>${name}</div>
+                        <div class="lq-report-bar" role="img" aria-label="${name}: ${pct}% correct">
+                            <span style="width:${pct}%"></span>
+                        </div>
+                        <div>
+                            ${stats.answered > 0
+                                ? stats.correct + "/" + stats.answered + " • " + pct + "% • " + seconds(stats.avgMs)
+                                : "Not played yet"}
+                        </div>
+                    </div>
+                `;
+            }).join("")}
         </div>
 
         ${needsPractice ? `
@@ -5834,8 +3439,12 @@ function downloadReport() {
     const date = new Date().toISOString().slice(0, 10);
 
     const rows = [[
-        "Report date", "Player", "World", "Questions answered", "Correct", "Accuracy (%)", "XP earned"
+        "Report date", "Player", "World", "Questions answered", "Correct", "Accuracy (%)", "XP earned",
+        "Avg answer time (s)"
     ]];
+
+    const insights = QuestionEngine.summarize(player.history);
+    const seconds = ms => ms === null ? "" : Math.round(ms / 100) / 10;
 
     Object.keys(categories).forEach(key => {
 
@@ -5848,7 +3457,8 @@ function downloadReport() {
             stats.answered,
             stats.correct,
             stats.answered > 0 ? percent(stats.correct, stats.answered) : "",
-            player.categoryXP[key] || 0
+            player.categoryXP[key] || 0,
+            seconds(insights.byCategory[key].avgMs)
         ]);
     });
 
@@ -5859,7 +3469,8 @@ function downloadReport() {
         player.questionsAnswered,
         player.correctAnswers,
         player.questionsAnswered > 0 ? percent(player.correctAnswers, player.questionsAnswered) : "",
-        player.xp
+        player.xp,
+        seconds(insights.overall.avgMs)
     ]);
 
     const csv = "\uFEFF" + rows.map(row => row.map(csvCell).join(",")).join("\r\n");
@@ -5884,6 +3495,14 @@ function openSettings() {
     }
 
     settingsReturnScreen = screen;
+
+    // Pause the question: the clock stops and answer time stops counting
+    if (screen === "clue" && activeClue && !activeClue.answered) {
+        timingAway(activeClue.timing);
+        QuestionTimer.pause();
+    }
+
+    if (screen === "question" && qState && !qState.locked) timingAway(qState.timing);
 
     showSettings();
 }
@@ -5974,6 +3593,13 @@ function showSettings() {
 
         ${switchRow("secondChances", "Second chances", "Get one more try on a question for half XP")}
 
+        ${switchRow(
+            "autoRead",
+            "Read questions aloud automatically",
+            speechSupported() ? "Each new question is read out loud. Press R to hear it again." : "Not available in this browser",
+            !speechSupported()
+        )}
+
         <div class="lq-tools">
 
 
@@ -6030,8 +3656,11 @@ function showSettings() {
 
         if (!sure) return;
 
+        endBoard();
+
         player = createDefaultPlayer(player.name);
         profiles[activeKey] = player;
+        QuestionEngine.resetSession(playerSession());
 
         savePlayer();
 
@@ -6061,16 +3690,20 @@ function restoreScreen(name) {
             hasPlayer ? showCategories() : showWelcome();
             break;
 
-        case "jeopardy-board":
-            hasPlayer ? renderJeopardyBoard() : showWelcome();
+        case "board":
+            !hasPlayer ? showWelcome() : questBoard ? renderQuestBoard() : showCategories();
             break;
 
-        case "jeopardy-setup":
-            hasPlayer ? startClassroomJeopardy() : showWelcome();
+        case "classroom-setup":
+            hasPlayer ? showClassroomSetup() : showWelcome();
             break;
 
-        case "jeopardy-result":
-            hasPlayer ? showJeopardyResult() : showWelcome();
+        case "clue":
+            activeClue && questBoard ? renderClue() : showCategories();
+            break;
+
+        case "board-result":
+            questBoard ? showBoardResult() : showProfile();
             break;
 
         case "modes":
@@ -6138,9 +3771,36 @@ function handleKeydown(event) {
         return;
     }
 
+    const key = String(event.key || "").toLowerCase();
+
+    // Quest Board clue: 1-4 answer, R reads the clue (or the result) aloud
+    if (screen === "clue" && activeClue) {
+
+        if (key === "r") {
+            event.preventDefault();
+            readClueAloud();
+        } else if (!activeClue.answered && /^[1-9]$/.test(key) && activeClue.answers[Number(key) - 1]) {
+            event.preventDefault();
+            answerClue(Number(key) - 1);
+        }
+
+        return;
+    }
+
+    if (screen === "feedback" && key === "r") {
+        event.preventDefault();
+        readFeedbackAloud();
+        return;
+    }
+
     if (screen !== "question" || !qState || qState.locked) return;
 
-    if (/^[1-9]$/.test(event.key)) {
+    if (key === "r") {
+
+        event.preventDefault();
+        readQuestionAloud();
+
+    } else if (/^[1-9]$/.test(event.key)) {
 
         const index = Number(event.key) - 1;
 
