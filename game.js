@@ -6,6 +6,9 @@
 //   questions.js  the question bank (see the top of that file to add questions)
 //   engine.js     QuestionEngine: picks questions, stops repeats, keeps history
 //   timer.js      QuestionTimer: the one countdown used by the game
+//   voice-config.js / voice.js
+//                 optional natural (ElevenLabs) reading voice, through the
+//                 school's own voice server in voice-proxy/ (no key in the game)
 //   game.js       screens, scoring, profiles, settings (this file)
 //
 // Modes:
@@ -15,7 +18,8 @@
 //   🔁 Practice Mistakes revisits missed questions, no timer
 //
 // Accessibility: text size, high contrast, easy-to-read font, less movement,
-// read-aloud (button or R key, optional auto-read), keyboard play (keys 1-4),
+// read-aloud (button or R key, optional auto-read, built-in or natural voice),
+// keyboard play (keys 1-4), question timer (Standard / Extra time / Off),
 // screen-reader support, gentle optional sounds.
 // ==========================================
 
@@ -71,13 +75,22 @@ const questModes = {
     }
 };
 
-// XP for a correct answer, by quest type and question difficulty
+// XP for a correct answer, by game type and question difficulty.
+// Board points (100-500) are the game-show score; XP is personal progress and
+// grows more slowly. A full 6-topic board is worth at most 840 XP plus the
+// clearing bonus, so reaching Level 10 (10,000 XP) takes many boards.
 const XP_TABLE = {
-    rookie:       { easy: 100, medium: 100, hard: 100 },
-    challenge:    { easy: 100, medium: 150, hard: 150 },
-    championship: { easy: 150, medium: 200, hard: 250 },
-    practice:     { easy: 75,  medium: 100, hard: 125 }
+    board:        { easy: 20,  medium: 30,  hard: 40 },
+    final:        { easy: 60,  medium: 90,  hard: 120 },   // Final Challenge: worth three times as much
+    practice:     { easy: 10,  medium: 15,  hard: 20 },    // missed questions, repeated on purpose
+    rookie:       { easy: 20,  medium: 20,  hard: 20 },
+    challenge:    { easy: 20,  medium: 30,  hard: 30 },
+    championship: { easy: 25,  medium: 35,  hard: 45 }
 };
+
+// Extra XP for clearing a whole Quest Board, and more for a perfect one
+const BOARD_CLEAR_XP = 100;
+const BOARD_PERFECT_XP = 50;
 
 const LEVEL_XP = [0, 500, 1000, 1500, 2000, 3000, 4000, 5500, 7500, 10000];
 
@@ -267,6 +280,8 @@ const TEXT_SIZES = ["normal", "large", "xlarge"];
 
 // Question timer: normal time, 50% extra time, or no timer (see timer.js)
 const TIMER_MODES = ["standard", "extra", "off"];
+const VOICES = ["browser", "natural"];
+
 const TIMER_MODE_LABELS = {
     standard: "Standard timer",
     extra: "Extra time (+50%)",
@@ -287,7 +302,8 @@ function defaultSettings() {
         sound: false,          // off by default: sudden sounds can be stressful
         secondChances: true,
         autoRead: false,       // read each new question aloud
-        timerMode: "standard"  // "standard", "extra" (+50%) or "off"
+        timerMode: "standard", // "standard", "extra" (+50%) or "off"
+        voice: "browser"       // reading voice: "browser" (built-in) or "natural" (ElevenLabs, optional)
     };
 }
 
@@ -307,6 +323,7 @@ function loadSettings() {
         if (isPlainObject(saved)) {
             if (TEXT_SIZES.includes(saved.textSize)) merged.textSize = saved.textSize;
             if (TIMER_MODES.includes(saved.timerMode)) merged.timerMode = saved.timerMode;
+            if (VOICES.includes(saved.voice)) merged.voice = saved.voice;
             ["highContrast", "readableFont", "reduceMotion", "sound", "secondChances", "autoRead"]
                 .forEach(key => {
                     if (typeof saved[key] === "boolean") merged[key] = saved[key];
@@ -439,6 +456,7 @@ body.lq-high-contrast #game-card .lq-timer-ring { background: conic-gradient(#ff
 body.lq-high-contrast #game-card .lq-timer.is-warning .lq-timer-ring { background: conic-gradient(#ffeb3b calc(var(--lq-timer-p, 1) * 360deg), #444 0) !important; }
 body.lq-high-contrast #game-card .lq-timer.is-urgent .lq-timer-ring { background: conic-gradient(#ff5c5c calc(var(--lq-timer-p, 1) * 360deg), #444 0) !important; }
 body.lq-high-contrast #game-card .lq-timer-num { background: #000 !important; }
+body.lq-high-contrast #game-card .lq-clue-head { background: #000 !important; border-bottom: 2px solid #fff !important; }
 body.lq-high-contrast #game-card .lq-timer.is-urgent .lq-timer-num { border: 3px solid #ff5c5c !important; }
 body.lq-high-contrast #game-card .lq-clue.is-used { color: #999 !important; border-color: #666 !important; }
 body.lq-high-contrast .lq-fab { background: #000; color: #ffeb3b; border-color: #ffeb3b; }
@@ -472,11 +490,15 @@ body.lq-high-contrast .lq-toast * { color: #fff !important; }
     display: flex; align-items: center; justify-content: flex-start;
     gap: 0.7em; text-align: left;
 }
+/* Keyboard shortcut numbers: small and quiet, and only shown to keyboard users */
 .lq-key {
     flex: none; display: inline-grid; place-items: center;
-    width: 1.9em; height: 1.9em;
-    border: 2px solid currentColor; border-radius: 8px;
-    font-weight: 800; font-size: 0.9em;
+    width: 1.6em; height: 1.6em;
+    border: 1.5px solid currentColor; border-radius: 6px;
+    font-weight: 700; font-size: 0.75em; opacity: 0.6;
+}
+@media (hover: none), (pointer: coarse) {
+    .lq-key, .lq-key-tip { display: none !important; }
 }
 #game-card .lq-answer.lq-eliminated { opacity: 0.35; text-decoration: line-through; }
 #game-card .lq-answer.lq-tried { opacity: 0.55; }
@@ -957,7 +979,7 @@ function pick(list) {
 
 function getQuestionXP(question, mode = currentQuestMode) {
 
-    const table = XP_TABLE[mode] || XP_TABLE.rookie;
+    const table = XP_TABLE[mode] || XP_TABLE.board;
 
     return table[question.difficulty] || 100;
 }
@@ -1038,24 +1060,85 @@ function speechSupported() {
 }
 
 
-function stopSpeaking() {
-
-    if (speechSupported()) window.speechSynthesis.cancel();
+// Any reading voice at all?
+function readAloudSupported() {
+    return speechSupported() || LifeQuestVoice.isConfigured();
 }
 
 
-function speak(text) {
+function stopSpeaking() {
 
-    if (!speechSupported() || !text) return;
+    if (speechSupported()) window.speechSynthesis.cancel();
 
-    stopSpeaking();
+    LifeQuestVoice.stop();
+}
+
+
+// A clear US English voice from the ones this computer has, if possible
+let browserVoice = null;
+
+function pickBrowserVoice() {
+
+    if (!speechSupported()) return null;
+
+    const voices = window.speechSynthesis.getVoices().filter(v => /^en[-_]US/i.test(v.lang));
+    const preferred = /natural|neural|google us english|samantha|aria|jenny|guy/i;
+
+    browserVoice = voices.find(v => preferred.test(v.name)) || voices[0] || null;
+
+    return browserVoice;
+}
+
+
+function speakWithBrowser(text) {
+
+    if (!speechSupported()) return;
 
     const utterance = new window.SpeechSynthesisUtterance(text);
 
     utterance.lang = "en-US";
-    utterance.rate = 0.9;
+    utterance.rate = 0.95;      // calm and clear, not slow
+    utterance.voice = browserVoice || pickBrowserVoice();
 
     window.speechSynthesis.speak(utterance);
+}
+
+
+let voiceFallbackTold = false;
+
+// Reads game text aloud. Callers only pass questions, answers and explanations,
+// never names, so nothing personal goes to the natural-voice service.
+// Reading never touches the question timer.
+function speak(text) {
+
+    if (!text) return;
+
+    stopSpeaking();
+
+    if (!readAloudSupported()) {
+        announce("Read aloud isn't available in this browser.");
+        return;
+    }
+
+    if (settings.voice === "natural" && LifeQuestVoice.isAvailable()) {
+
+        LifeQuestVoice.speak(text).then(playing => {
+
+            if (playing) return;
+
+            // The natural voice couldn't play: use the built-in one, and say so once
+            if (!voiceFallbackTold) {
+                voiceFallbackTold = true;
+                showToast("🔊 READ ALOUD", "Using the built-in voice", "The natural voice isn't available right now.");
+            }
+
+            speakWithBrowser(text);
+        });
+
+        return;
+    }
+
+    speakWithBrowser(text);
 }
 
 
@@ -1095,7 +1178,19 @@ function render(html) {
     const target = card.querySelector("[data-autofocus]") || card;
 
     target.focus({ preventScroll: true });
+
+    // A new screen starts at the top. Questions start at the top of the game card,
+    // so on a phone the question and answers get the whole screen.
+    if (screen !== lastRenderedScreen) {
+        const questionScreen = screen === "clue" || screen === "question";
+        const top = questionScreen ? card.getBoundingClientRect().top + window.scrollY - 8 : 0;
+        window.scrollTo(0, Math.max(0, top));
+    }
+
+    lastRenderedScreen = screen;
 }
+
+let lastRenderedScreen = "";
 
 
 function announce(message) {
@@ -1754,6 +1849,8 @@ function startQuestBoard(options = {}) {
         sessionKey,
         teams: teamMode ? options.teams.map(name => ({ name, score: 0 })) : [],
         currentTeam: 0,
+        xp: 0,                 // personal XP earned on this board (solo only)
+        bonusXP: 0,
         // Classroom: the teacher's choice. Solo: the player's own setting, read per question.
         timerMode: teamMode && TIMER_MODES.includes(options.timerMode) ? options.timerMode : "standard",
         finished: false
@@ -1907,6 +2004,7 @@ function openBoardClue(id) {
         correct: false,
         timedOut: false,
         streakBonus: 0,
+        xp: 0,
         timing: newTiming(),
         seconds: questionSeconds(q, boardTimerMode())   // 0 = no timer
     };
@@ -2016,7 +2114,8 @@ function clueFeedbackText(c) {
 
     return teamMode
         ? "✅ Correct! " + team.name + " +" + c.value + " points"
-        : "✅ Correct! +" + c.value + (c.streakBonus ? " + " + c.streakBonus + " streak bonus" : "");
+        : "✅ Correct! +" + c.value + " points" + (c.streakBonus ? " + " + c.streakBonus + " streak bonus" : "") +
+          " • +" + c.xp + " XP";
 }
 
 function renderClue() {
@@ -2040,18 +2139,23 @@ function renderClue() {
 
     render(`
         <div class="lq-clue-panel">
-            <div class="lq-clue-value">
-                ${escapeHTML(splitLabel(categories[c.categoryKey].name).text)} • ${c.value} points
-            </div>
+            <!-- On phones this bar stays pinned at the top so the timer is always visible -->
+            <div class="lq-clue-head">
+                ${!c.answered && c.seconds ? timerHTML(secondsLeft, c.seconds) : ""}
 
-            ${teamMode ? `
-                <div class="lq-active-team">
-                    🎤 ${escapeHTML(team.name)}
-                    <span>• ${team.score} points</span>
+                <div class="lq-clue-info">
+                    <div class="lq-clue-value">
+                        ${escapeHTML(splitLabel(categories[c.categoryKey].name).text)} • ${c.value} points
+                    </div>
+
+                    ${teamMode ? `
+                        <div class="lq-active-team">
+                            🎤 ${escapeHTML(team.name)}
+                            <span>• ${team.score} points</span>
+                        </div>
+                    ` : ""}
                 </div>
-            ` : ""}
-
-            ${!c.answered && c.seconds ? timerHTML(secondsLeft, c.seconds) : ""}
+            </div>
 
             <h2
                 class="lq-clue-question"
@@ -2105,7 +2209,7 @@ function renderClue() {
                     <button class="lq-tool" id="lq-read">🔊 Read aloud</button>
                 </div>
 
-                <p class="lq-note">
+                <p class="lq-note lq-key-tip">
                     Tip: press 1–${c.answers.length} to answer, or R to hear it read aloud.
                 </p>
             `}
@@ -2130,11 +2234,10 @@ function readClueAloud() {
     if (!c) return;
 
     if (c.answered) {
+        // Spoken result without team or player names (see speak)
         const correctText = c.answers.find(answer => answer.correct).text;
-        speak(
-            clueFeedbackText(c).replace(/^[^A-Za-z]+/, "") +
-            " The correct answer is " + correctText + ". " + (c.q.explanation || "")
-        );
+        const result = c.timedOut ? "Time's up." : c.correct ? "Correct!" : "Not quite.";
+        speak(result + " The correct answer is " + correctText + ". " + (c.q.explanation || ""));
         return;
     }
 
@@ -2226,8 +2329,11 @@ function answerClue(index, timedOut = false) {
             c.cell.earned = c.value + c.streakBonus;
             questBoard.score += c.cell.earned;
 
-            player.xp += c.value;
-            player.categoryXP[c.categoryKey] = (player.categoryXP[c.categoryKey] || 0) + c.value;
+            c.xp = getQuestionXP(q, "board");
+            questBoard.xp += c.xp;
+
+            player.xp += c.xp;
+            player.categoryXP[c.categoryKey] = (player.categoryXP[c.categoryKey] || 0) + c.xp;
 
             // Answered it right, so it no longer needs practice
             player.missed = player.missed.filter(id => id !== q.id);
@@ -2251,6 +2357,9 @@ function answerClue(index, timedOut = false) {
     playSound(c.correct ? "correct" : timedOut ? "timeup" : "miss");
 
     renderClue();
+
+    const feedback = document.getElementById("lq-clue-feedback");
+    if (feedback && feedback.scrollIntoView) feedback.scrollIntoView({ block: "center" });
 
     announce(timedOut
         ? "Time's up. The correct answer is " + c.answers.find(answer => answer.correct).text + "."
@@ -2289,8 +2398,21 @@ function finishBoard() {
 
         if (questBoard.mode === "solo") {
 
+            const levelBefore = getLevel(player.xp);
+            const perfect = total > 0 && questBoard.correct === total;
+
+            questBoard.bonusXP = BOARD_CLEAR_XP + (perfect ? BOARD_PERFECT_XP : 0);
+            questBoard.xp += questBoard.bonusXP;
+            player.xp += questBoard.bonusXP;
+            player.level = getLevel(player.xp);
+
             player.questsCompleted++;
             savePlayer();
+
+            if (player.level > levelBefore) {
+                showToast("⬆️ LEVEL UP!", "Level " + player.level, getRank(player.level));
+                playSound("levelup");
+            }
 
             // Clearing a board counts as completing a quest in each of its worlds
             questBoard.categories.forEach(key => {
@@ -2357,8 +2479,15 @@ function showBoardResult() {
                 <div><strong>${questBoard.bestBoardStreak}</strong><span>Best streak</span></div>
                 ${teamMode
                     ? `<div><strong>${questBoard.teams.length}</strong><span>Teams</span></div>`
-                    : `<div><strong>${player.xp}</strong><span>Total XP</span></div>`}
+                    : `<div><strong>+${questBoard.xp}</strong><span>XP earned</span></div>`}
             </div>
+
+            ${teamMode ? "" : `
+                <p class="lq-board-caption lq-center">
+                    Includes +${questBoard.bonusXP} XP for clearing the board${questBoard.bonusXP > BOARD_CLEAR_XP ? " perfectly" : ""}.
+                    You're Level ${getLevel(player.xp)} with ${player.xp.toLocaleString("en-US")} XP.
+                </p>
+            `}
 
             ${teamMode && missedCells.length ? `
                 <details class="lq-review">
@@ -2718,7 +2847,7 @@ function showQuestion() {
             <p class="lq-note">⏱️ No timer in Practice Mistakes. Take your time.</p>
         ` : ""}
 
-        <p class="lq-note">
+        <p class="lq-note lq-key-tip">
             Tip: press the number keys ${
                 qState.answers.length > 1 ? "1–" + qState.answers.length : "1"
             } to answer, R to hear it read aloud, H for a hint.
@@ -3655,6 +3784,11 @@ function showSettings() {
 
     screen = "settings";
 
+    // Settings opened from Classroom Mode: keep personal-progress controls out of reach
+    const classroomInUse = settingsReturnScreen === "classroom-setup" ||
+        (questBoard && questBoard.mode === "teams" &&
+            ["board", "clue", "board-result"].includes(settingsReturnScreen));
+
     const sizes = [
         ["normal", "Normal"],
         ["large", "Large"],
@@ -3729,15 +3863,50 @@ function showSettings() {
         ${switchRow(
             "autoRead",
             "Read questions aloud automatically",
-            speechSupported() ? "Each new question is read out loud. Press R to hear it again." : "Not available in this browser",
-            !speechSupported()
+            readAloudSupported() ? "Each new question is read out loud. Press R to hear it again." : "Not available in this browser",
+            !readAloudSupported()
         )}
+
+        <div class="lq-setting lq-setting-wide">
+
+            <div>
+                <div class="lq-setting-label" id="lq-label-voice">Reading voice</div>
+                <div class="lq-setting-help">
+                    ${LifeQuestVoice.isConfigured()
+                        ? "The natural voice sounds more like a real person. If it can't play, the built-in voice reads instead."
+                        : "The natural voice isn't set up on this computer. Ask your teacher. The built-in voice works now."}
+                </div>
+            </div>
+
+            <div class="lq-segment" role="group" aria-labelledby="lq-label-voice">
+                <button
+                    type="button"
+                    class="lq-seg"
+                    data-voice="browser"
+                    aria-pressed="${settings.voice !== "natural" || !LifeQuestVoice.isConfigured() ? "true" : "false"}"
+                    ${speechSupported() ? "" : "disabled"}
+                >Built-in voice</button>
+                <button
+                    type="button"
+                    class="lq-seg"
+                    data-voice="natural"
+                    aria-pressed="${settings.voice === "natural" && LifeQuestVoice.isConfigured() ? "true" : "false"}"
+                    ${LifeQuestVoice.isConfigured() ? "" : "disabled"}
+                >Natural voice</button>
+                <button type="button" class="lq-seg" id="lq-voice-test">🔊 Try it</button>
+            </div>
+
+        </div>
 
         <div class="lq-tools">
 
 
-            ${player.name ? `
+            ${player.name && !classroomInUse ? `
                 <button class="lq-tool" id="reset-progress">🗑️ Reset my progress</button>
+            ` : ""}
+
+            ${player.name && classroomInUse ? `
+                <p class="lq-note">🎓 "Reset my progress" is hidden during Classroom Mode.</p>
             ` : ""}
 
         </div>
@@ -3779,6 +3948,23 @@ function showSettings() {
             });
         });
     });
+
+    document.querySelectorAll("[data-voice]").forEach(button => {
+
+        button.addEventListener("click", function () {
+
+            settings.voice = this.dataset.voice;
+            voiceFallbackTold = false;
+
+            saveSettings();
+
+            document.querySelectorAll("[data-voice]").forEach(other => {
+                other.setAttribute("aria-pressed", other === this ? "true" : "false");
+            });
+        });
+    });
+
+    on("lq-voice-test", () => speak("Welcome to Life Quest. Here is your next question."));
 
     document.querySelectorAll("[data-timer-mode]").forEach(button => {
 
@@ -4026,6 +4212,10 @@ function startGame() {
     document.addEventListener("keydown", handleKeydown);
 
     window.addEventListener("pagehide", stopSpeaking);
+
+    if (speechSupported() && "onvoiceschanged" in window.speechSynthesis) {
+        window.speechSynthesis.addEventListener("voiceschanged", pickBrowserVoice);
+    }
 
     loadProfiles();
 

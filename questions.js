@@ -427,7 +427,7 @@ const categories = {
 
             {
                 question: "Which fictional school does Harry Potter attend?",
-                answers: ["Hogwarts", "Ravenclaw", "Wakanda", "Nevermore"],
+                answers: ["Hogwarts", "Xavier's School", "Starfleet Academy", "Nevermore"],
                 correct: 0,
                 difficulty: "easy",
                 explanation: "Harry Potter attends Hogwarts School of Witchcraft and Wizardry."
@@ -466,13 +466,7 @@ const categories = {
                 explanation: "'Let It Go' is from Disney's Frozen."
             },
 
-            {
-                question: "Which superhero is associated with the fictional country of Wakanda?",
-                answers: ["Black Panther","Aquaman","Flash","Doctor Strange"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Black Panther is the superhero identity of Wakanda's king, T'Challa."
-            },
+            
 
             {
                 question: "Which band released the song 'Bohemian Rhapsody'?",
@@ -516,8 +510,8 @@ const categories = {
 ,
 
             {
-                question: "Which film series features the fictional archaeologist Indiana Jones?",
-                answers: ["Indiana Jones","The Matrix","Jurassic Park","Rocky"],
+                question: "Which actor played the archaeologist Indiana Jones in the original films?",
+                answers: ["Harrison Ford","Tom Hanks","Tom Cruise","Keanu Reeves"],
                 correct: 0,
                 difficulty: "easy",
                 explanation: "Indiana Jones is the archaeologist and adventurer at the center of the franchise."
@@ -548,11 +542,11 @@ const categories = {
             },
 
             {
-                question: "Which fictional city is Batman primarily associated with?",
+                question: "Which fictional city does the Dark Knight protect?",
                 answers: ["Metropolis","Gotham City","Central City","Star City"],
                 correct: 1,
                 difficulty: "easy",
-                explanation: "Batman is primarily associated with Gotham City."
+                explanation: "The Dark Knight protects the fictional Gotham City."
             },
 
             {
@@ -636,13 +630,7 @@ const categories = {
                 explanation: "Beyoncé released Lemonade in 2016."
             },
 
-            {
-                question: "Which film features the character Forrest Gump?",
-                answers: ["Forrest Gump","The Green Mile","Cast Away","Apollo 13"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Forrest Gump is the title character of the film."
-            },
+            
 
             {
                 question: "Which fictional detective lives at 221B Baker Street?",
@@ -653,11 +641,11 @@ const categories = {
             },
 
             {
-                question: "Which gaming console was produced by Nintendo and features the character Link?",
-                answers: ["Nintendo systems","PlayStation","Xbox","Dreamcast"],
+                question: "Which video game series stars the hero Link?",
+                answers: ["The Legend of Zelda","Final Fantasy","Halo","Sonic the Hedgehog"],
                 correct: 0,
                 difficulty: "easy",
-                explanation: "Link is a Nintendo character from The Legend of Zelda series."
+                explanation: "Link is the hero of Nintendo's The Legend of Zelda series."
             },
 
             {
@@ -780,13 +768,7 @@ const categories = {
             }
 ,
 
-            {
-                question: "What gas do humans need to breathe to survive?",
-                answers: ["Oxygen","Helium","Hydrogen","Neon"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Humans need oxygen for cellular respiration."
-            },
+            
 
             {
                 question: "What is the process by which plants use light to make food?",
@@ -804,13 +786,7 @@ const categories = {
                 explanation: "A typical adult human skeleton has 206 bones."
             },
 
-            {
-                question: "Which organ pumps blood around the human body?",
-                answers: ["Lungs","Liver","Heart","Kidneys"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "The heart pumps blood through the circulatory system."
-            },
+            
 
             {
                 question: "What is the chemical symbol for gold?",
@@ -841,7 +817,7 @@ const categories = {
                 answers: ["300,000 km/s","30,000 km/s","3,000 km/s","3,000,000 km/s"],
                 correct: 0,
                 difficulty: "hard",
-                explanation: "Light travels through a vacuum at about 300,000 kilometres per second."
+                explanation: "Light travels through a vacuum at about 300,000 kilometers per second."
             }
 ,
 
@@ -877,13 +853,7 @@ const categories = {
                 explanation: "The skin is the body's largest organ by surface area and weight."
             },
 
-            {
-                question: "Which planet is closest to the Sun?",
-                answers: ["Venus","Mercury","Earth","Mars"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Mercury is the planet closest to the Sun."
-            },
+            
 
             {
                 question: "What type of energy is stored in food?",
@@ -935,7 +905,7 @@ const categories = {
             },
 
             {
-                question: "Which gas do plants absorb from the atmosphere during photosynthesis?",
+                question: "Which gas do plants take in from the air to make their food?",
                 answers: ["Oxygen","Carbon dioxide","Nitrogen","Hydrogen"],
                 correct: 1,
                 difficulty: "easy",
@@ -952,7 +922,7 @@ const categories = {
 
             {
                 question: "Which metal is liquid at room temperature?",
-                answers: ["Iron","Mercury","Copper","Aluminium"],
+                answers: ["Iron","Mercury","Copper","Aluminum"],
                 correct: 1,
                 difficulty: "medium",
                 explanation: "Mercury is liquid at typical room temperature."
@@ -1055,8 +1025,8 @@ const categories = {
             {
                 question: "You are running late for school. What should you do?",
                 answers: [
-                    "Ignore it",
-                    "Tell a trusted adult",
+                    "Stay home without telling anyone",
+                    "Let the school know and get there safely",
                     "Skip school forever",
                     "Blame another student"
                 ],
@@ -1139,13 +1109,7 @@ const categories = {
             }
 ,
 
-            {
-                question: "What is a budget mainly used for?",
-                answers: ["Planning income and spending","Choosing a career","Measuring height","Tracking the weather"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "A budget helps plan how money will be earned, saved, and spent."
-            },
+            
 
             {
                 question: "Which habit can help build an emergency fund?",
@@ -1163,13 +1127,7 @@ const categories = {
                 explanation: "Interest is generally the cost paid for using borrowed money."
             },
 
-            {
-                question: "Which is generally a need rather than a want?",
-                answers: ["Designer shoes","Basic food","A luxury watch","A new game"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Basic food is a necessity, while the other choices are generally discretionary wants."
-            },
+            
 
             {
                 question: "What is compound interest?",
@@ -1438,13 +1396,7 @@ const categories = {
                 explanation: "The Constitution establishes the framework and powers of the U.S. government."
             },
 
-            {
-                question: "Which punctuation mark ends most questions?",
-                answers: [".", ",", "?", "!"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "A question mark is normally used at the end of a question."
-            },
+            
 
             {
                 question: "What is 9 × 9?",
@@ -1528,13 +1480,7 @@ const categories = {
             }
 ,
 
-            {
-                question: "What is the value of 9²?",
-                answers: ["18","72","81","99"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "9 squared is 9 × 9, which equals 81."
-            },
+            
 
             {
                 question: "Which planet is known as the Red Planet?",
@@ -1705,7 +1651,7 @@ const categories = {
             },
 
             {
-                question: "How many points is a touchdown worth in American football before the extra point?",
+                question: "In the NFL, how many points is a touchdown worth before the extra point?",
                 answers: ["3", "6", "7", "10"],
                 correct: 1,
                 difficulty: "easy",
@@ -1798,21 +1744,9 @@ const categories = {
             }
 ,
 
-            {
-                question: "How many players from one basketball team are on the court at one time?",
-                answers: ["4","5","6","7"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "In standard basketball, five players from each team are on the court."
-            },
+            
 
-            {
-                question: "How many players are on the field for one soccer team during normal play?",
-                answers: ["9","10","11","12"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "A soccer team has 11 players on the field during normal play."
-            },
+            
 
             {
                 question: "How many Grand Slam tournaments are there in tennis each year?",
@@ -1832,10 +1766,10 @@ const categories = {
 
             {
                 question: "How long is an Olympic swimming pool?",
-                answers: ["25 metres","50 metres","75 metres","100 metres"],
+                answers: ["25 meters","50 meters","75 meters","100 meters"],
                 correct: 1,
                 difficulty: "medium",
-                explanation: "The standard Olympic long-course swimming pool is 50 metres long."
+                explanation: "The standard Olympic long-course swimming pool is 50 meters long."
             },
 
             {
@@ -1879,45 +1813,27 @@ const categories = {
                 explanation: "Indoor volleyball teams have six players on court."
             },
 
-            {
-                question: "In football/soccer, what color card means a player is sent off?",
-                answers: ["Yellow","Green","Red","Blue"],
-                correct: 2,
-                difficulty: "easy",
-                explanation: "A red card results in a player's dismissal."
-            },
+            
 
             {
-                question: "How many minutes are in a standard football/soccer match, excluding added time?",
+                question: "How many minutes are in a standard soccer match, not counting added time?",
                 answers: ["60","75","90","120"],
                 correct: 2,
                 difficulty: "easy",
                 explanation: "A regulation football match has two 45-minute halves."
             },
 
-            {
-                question: "Which sport uses a shuttlecock?",
-                answers: ["Tennis","Badminton","Squash","Table tennis"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Badminton is played with a shuttlecock."
-            },
+            
 
             {
                 question: "In Formula 1, what flag traditionally signals the end of a race?",
-                answers: ["Red","Yellow","Green","Chequered"],
+                answers: ["Red","Yellow","Green","Checkered"],
                 correct: 3,
                 difficulty: "medium",
                 explanation: "The chequered flag signals the end of a race."
             },
 
-            {
-                question: "How many bases are there on a standard baseball diamond?",
-                answers: ["3","4","5","6"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "A baseball diamond has four bases, including home plate."
-            },
+            
 
             {
                 question: "In rugby union, how many points is a try worth?",
@@ -1944,13 +1860,7 @@ const categories = {
             }
 ,
 
-            {
-                question: "How many players are on a basketball team on court at one time?",
-                answers: ["4","5","6","7"],
-                correct: 1,
-                difficulty: "easy",
-                explanation: "Five players from each team are on court in standard basketball."
-            },
+            
 
             {
                 question: "How many sets must a player generally win to win a best-of-three tennis match?",
@@ -2329,14 +2239,6 @@ const categories = {
                 correct: 0,
                 difficulty: "easy",
                 explanation: "Business expenses are costs associated with operating the business."
-            },
-
-            {
-                question: "What is a deadline in project management?",
-                answers: ["A date when work is due","A marketing slogan","A salary grade","A company logo"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "A deadline is the expected latest date for completing a task or deliverable."
             }
 
         ]
@@ -2502,13 +2404,7 @@ const categories = {
             }
 ,
 
-            {
-                question: "What is a good way to show someone you are listening?",
-                answers: ["Pay attention and respond","Check your phone repeatedly","Interrupt every sentence","Change the subject immediately"],
-                correct: 0,
-                difficulty: "easy",
-                explanation: "Focused attention and relevant responses are signs of active listening."
-            },
+            
 
             {
                 question: "What is assertive communication?",
@@ -2593,19 +2489,13 @@ const categories = {
 
             {
                 question: "What is an assumption?",
-                answers: ["Something assumed without enough evidence","A confirmed measurement","A legal contract","A scientific law"],
+                answers: ["Something believed without enough evidence","A confirmed measurement","A legal contract","A scientific law"],
                 correct: 0,
                 difficulty: "medium",
                 explanation: "An assumption is something accepted as true without sufficient evidence or verification."
             },
 
-            {
-                question: "What is active empathy?",
-                answers: ["Understanding another person's experience","Giving advice immediately","Ignoring emotions","Agreeing with everything"],
-                correct: 0,
-                difficulty: "medium",
-                explanation: "Empathy involves understanding another person's experience and responding with awareness."
-            },
+            
 
             {
                 question: "What is a healthy way to handle criticism?",

@@ -115,7 +115,7 @@ console.log("\n2. No repeats within a session (one player, many boards)");
     check("first 8 boards of every session (240 clues) have zero repeats", earliestRepeat > 8,
         "earliest repeat on board " + earliestRepeat);
     console.log("     earliest repeat in any run: board " + earliestRepeat +
-        " (the bank has 317 questions, a board uses 30)");
+        " (the bank has " + E.categoryKeys().reduce((n, k) => n + categories[k].questions.length, 0) + " questions, a board uses 30)");
 }
 
 

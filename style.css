@@ -998,6 +998,13 @@ body {
 .card .final-result h2 { color:#c7d2fe; }
 .card .xp-animation { color:#c4b5fd; }
 .card .question-text { color:#fff !important; }
+.lq-board-caption.lq-center { text-align:center; }
+
+/* Phones: keep the title clear of the round Settings button */
+@media (max-width:560px) {
+    h1 { font-size:34px; letter-spacing:-1px; padding:0 58px; }
+    .subtitle { font-size:15px; }
+}
 .card {
     background:rgba(6,15,34,.92);
     color:#fff;
@@ -1047,9 +1054,39 @@ body {
 .lq-mark { flex-basis:100%;font-size:.85em;font-weight:900; }
 .lq-clue-panel .lq-note { color:#a8b7d4; }
 .lq-clue-panel .lq-tools { margin-top:16px; }
+.lq-clue-head { display:flex;flex-direction:column;align-items:center; }
+.lq-clue-info { order:-1; }
 #game-card .lq-answer-modal:hover:not(:disabled) { background:rgba(255,216,77,.16);border-color:#ffd84d; }
 .lq-clue-answer { color:#86efac;font-weight:900;font-size:24px; }
 @media(max-width:900px){.lq-board{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:18px}.lq-category{min-height:64px;}}
+/* Phones: the clue fits the screen, even with Extra large text.
+   The category and timer share a slim bar that stays pinned at the top while
+   scrolling; text keeps its size, only the spacing gets tighter. */
+@media(max-width:560px){
+    .lq-clue-head {
+        position:sticky;top:0;z-index:5;
+        flex-direction:row;gap:12px;justify-content:flex-start;
+        margin:-18px -14px 0;padding:8px 52px 8px 12px;
+        background:#0c1b3f;border-bottom:1px solid rgba(255,255,255,.12);
+        border-radius:18px 18px 0 0;
+    }
+    .lq-clue-info { order:0;text-align:left;min-width:0; }
+    .lq-clue-value { font-size:14px;line-height:1.3; }
+    .lq-active-team { margin:2px 0 0;font-size:14px;line-height:1.3; }
+    .lq-active-team span { display:none; }      /* team scores stay on the board */
+    .lq-clue-head .lq-timer { margin:0;flex-direction:row;gap:8px; }
+    .lq-clue-head .lq-timer-ring { width:50px;height:50px; }
+    .lq-clue-head .lq-timer-num { width:39px;height:39px;font-size:19px; }
+    .lq-clue-head .lq-timer.is-urgent .lq-timer-num { border-width:2px; }
+    .lq-clue-head .lq-timer-label { font-size:13px;max-width:5.5em;line-height:1.2; }
+    .lq-clue-head .lq-timer.is-normal .lq-timer-label { display:none; }
+    .card .lq-clue-question { font-size:22px;line-height:1.25;margin:14px 0; }
+    #game-card .lq-answer-modal { min-height:48px;padding:10px 12px;border-radius:12px; }
+    .lq-clue-controls { gap:8px; }
+    .lq-clue-panel .lq-tools { margin-top:10px; }
+    .lq-clue-panel .lq-tools button { margin-top:0; }
+}
+
 /* Phones: each category is a row, its values side by side */
 @media(max-width:560px){
     .card{padding:18px}
