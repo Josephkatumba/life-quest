@@ -80,9 +80,9 @@ const questModes = {
 // grows more slowly. A full 6-topic board is worth at most 840 XP plus the
 // clearing bonus, so reaching Level 10 (10,000 XP) takes many boards.
 const XP_TABLE = {
-    board:        { easy: 20,  medium: 30,  hard: 40 },
-    final:        { easy: 60,  medium: 90,  hard: 120 },   // Final Challenge: worth three times as much
-    practice:     { easy: 10,  medium: 15,  hard: 20 },    // missed questions, repeated on purpose
+    board:        { starter: 10, easy: 20,  medium: 30,  hard: 40 },
+    final:        { starter: 30, easy: 60,  medium: 90,  hard: 120 },   // Final Challenge: worth three times as much
+    practice:     { starter: 5,  easy: 10,  medium: 15,  hard: 20 },    // missed questions, repeated on purpose
     rookie:       { easy: 20,  medium: 20,  hard: 20 },
     challenge:    { easy: 20,  medium: 30,  hard: 30 },
     championship: { easy: 25,  medium: 35,  hard: 45 }
@@ -660,7 +660,8 @@ function createDefaultPlayer(name = "") {
         achievements: [],
         bestStars: {},
         missed: [],
-        history: QuestionEngine.createHistory()   // what this player has seen (engine.js)
+        history: QuestionEngine.createHistory(),  // what this player has seen (engine.js)
+        lastLevel: "challenge"                    // Quest Board level chosen last time
     };
 }
 
@@ -712,6 +713,8 @@ function normalizePlayer(saved) {
         : [];
 
     p.history = QuestionEngine.normalizeHistory(saved.history);
+
+    p.lastLevel = LEVEL_KEYS.includes(saved.lastLevel) ? saved.lastLevel : "challenge";
 
     p.bestStars = {};
     if (isPlainObject(saved.bestStars)) {
@@ -1662,8 +1665,48 @@ function showProfile() {
 // achievements or statistics. It keeps its own history and missed list.
 // ==========================================
 
-// Row difficulty, top to bottom. Works for both point scales.
-const BOARD_ROW_DIFFICULTY = ["easy", "easy", "medium", "medium", "hard"];
+// Quest Board levels. Rows run top to bottom and work for both point scales.
+//   Starter:   2-choice questions only, a smaller board, 45 seconds each
+//   Challenge: the standard board (easy, easy, medium, medium, hard)
+//   Expert:    leans on medium and hard questions
+// XP comes from each question's own difficulty; the clearing bonus is by level.
+const BOARD_LEVELS = {
+    starter: {
+        name: "STARTER",
+        icon: "🟢",
+        tagline: "Simple questions • 2 choices • Take your time",
+        rows: ["starter", "starter", "starter"],
+        topics: 4,
+        clearXP: 50,
+        perfectXP: 25
+    },
+    challenge: {
+        name: "CHALLENGE",
+        icon: "🟡",
+        tagline: "4 choices • Easy to hard • More thinking",
+        rows: ["easy", "easy", "medium", "medium", "hard"],
+        topics: 6,
+        clearXP: 100,
+        perfectXP: 50
+    },
+    expert: {
+        name: "EXPERT",
+        icon: "🔴",
+        tagline: "Harder questions • Bigger challenge",
+        rows: ["medium", "medium", "hard", "hard", "hard"],
+        topics: 6,
+        clearXP: 100,
+        perfectXP: 50
+    }
+};
+const LEVEL_KEYS = Object.keys(BOARD_LEVELS);
+
+// The standard (Challenge) board, kept by name for anything that relies on it
+const BOARD_ROW_DIFFICULTY = BOARD_LEVELS.challenge.rows;
+
+function boardLevel(key) {
+    return BOARD_LEVELS[key] || BOARD_LEVELS.challenge;
+}
 const CLASSROOM_SESSION = "classroom";
 const MAX_CLASSROOM_MISSED = 200;
 
@@ -1680,7 +1723,7 @@ function getClassroom() {
 
     if (classroomData) return classroomData;
 
-    classroomData = { history: QuestionEngine.createHistory(), missed: [], timerMode: "standard" };
+    classroomData = { history: QuestionEngine.createHistory(), missed: [], timerMode: "standard", level: "challenge" };
 
     const raw = storage.get(STORAGE_KEYS.classroom);
 
@@ -1693,6 +1736,7 @@ function getClassroom() {
                     ? saved.missed.filter(id => typeof id === "string").slice(-MAX_CLASSROOM_MISSED)
                     : [];
                 if (TIMER_MODES.includes(saved.timerMode)) classroomData.timerMode = saved.timerMode;
+                if (LEVEL_KEYS.includes(saved.level)) classroomData.level = saved.level;
             }
         } catch (error) {
             console.error("Could not load classroom data:", error);
@@ -1732,6 +1776,7 @@ function showClassroomSetup() {
 
     const inProgress = questBoard && questBoard.mode === "teams" && !questBoard.finished;
     const lastTimerMode = getClassroom().timerMode;
+    const lastLevel = getClassroom().level;
 
     render(`
         <div class="lq-classroom-setup">
@@ -1757,6 +1802,18 @@ function showClassroomSetup() {
                 <label>Team 4 <input class="lq-team-name" placeholder="Optional" maxlength="24"></label>
                 <label>Team 5 <input class="lq-team-name" placeholder="Optional" maxlength="24"></label>
                 <label>Team 6 <input class="lq-team-name" placeholder="Optional" maxlength="24"></label>
+            </div>
+
+            <div class="lq-option-group lq-level-options" role="group" aria-label="Level">
+                <strong>Level</strong>
+                ${LEVEL_KEYS.map(key => `
+                    <button
+                        class="lq-level-choice ${key === lastLevel ? "is-selected" : ""}"
+                        data-class-level="${key}"
+                        aria-pressed="${key === lastLevel ? "true" : "false"}"
+                    >${BOARD_LEVELS[key].icon} ${BOARD_LEVELS[key].name}</button>
+                `).join("")}
+                <span class="lq-level-hint">Starter: 2 choices per question, 3 values per topic.</span>
             </div>
 
             <div class="lq-board-options">
@@ -1807,6 +1864,7 @@ function showClassroomSetup() {
     `);
 
     let selectedTimerMode = lastTimerMode;
+    let selectedLevel = lastLevel;
     let selectedCategoryCount = 6;
     let selectedValueScale = 100;
 
@@ -1817,6 +1875,13 @@ function showClassroomSetup() {
             item.setAttribute("aria-pressed", item === button ? "true" : "false");
         });
     };
+
+    document.querySelectorAll(".lq-level-choice").forEach(button => {
+        button.addEventListener("click", () => {
+            selectedLevel = button.dataset.classLevel;
+            choose(".lq-level-choice", button);
+        });
+    });
 
     document.querySelectorAll(".lq-board-size").forEach(button => {
         button.addEventListener("click", () => {
@@ -1852,12 +1917,14 @@ function showClassroomSetup() {
 
         // Remember the teacher's timing choice for next time
         getClassroom().timerMode = selectedTimerMode;
+        getClassroom().level = selectedLevel;
         saveClassroom();
 
         startQuestBoard({
             mode: "teams",
             teams: names,
             timerMode: selectedTimerMode,
+            level: selectedLevel,
             categoryCount: selectedCategoryCount,
             valueScale: selectedValueScale
         });
@@ -1885,10 +1952,11 @@ function boardOptions(board) {
             mode: "teams",
             teams: board.teams.map(team => team.name),
             timerMode: board.timerMode,
+            level: board.level,
             categoryCount: board.categoryCount,
             valueScale: board.valueScale
         }
-        : { categoryCount: board.categoryCount, valueScale: board.valueScale };
+        : { level: board.level, categoryCount: board.categoryCount, valueScale: board.valueScale };
 }
 
 function startQuestBoard(options = {}) {
@@ -1901,12 +1969,16 @@ function startQuestBoard(options = {}) {
     const history = teamMode ? getClassroom().history : player.history;
     const sessionKey = teamMode ? CLASSROOM_SESSION : playerSession();
 
+    const levelKey = LEVEL_KEYS.includes(options.level) ? options.level : "challenge";
+    const level = boardLevel(levelKey);
+
+    // Classroom: the teacher picks the number of topics. Solo: set by the level.
     const categoryCount = Math.min(
-        Number(options.categoryCount) || 6,
+        Number(options.categoryCount) || level.topics,
         QuestionEngine.categoryKeys().length
     );
     const valueScale = Number(options.valueScale) === 200 ? 200 : 100;
-    const values = BOARD_ROW_DIFFICULTY.map((_, row) => (row + 1) * valueScale);
+    const values = level.rows.map((_, row) => (row + 1) * valueScale);
 
     // Least recently played categories first, then shown in a random order
     const chosen = shuffle(QuestionEngine.pickCategories(categoryCount, history));
@@ -1923,6 +1995,7 @@ function startQuestBoard(options = {}) {
         streak: 0,
         bestBoardStreak: 0,
         mode: teamMode ? "teams" : "solo",
+        level: levelKey,
         owner: teamMode ? "" : activeKey,
         sessionKey,
         teams: teamMode ? options.teams.map(name => ({ name, score: 0 })) : [],
@@ -1935,7 +2008,7 @@ function startQuestBoard(options = {}) {
     };
 
     chosen.forEach(key => {
-        const column = QuestionEngine.pickColumn(key, BOARD_ROW_DIFFICULTY, {
+        const column = QuestionEngine.pickColumn(key, level.rows, {
             history,
             session: sessionKey
         });
@@ -1975,6 +2048,9 @@ function renderQuestBoard() {
             <div>
                 <h2 class="lq-board-title" tabindex="-1" data-autofocus>
                     ${teamMode ? "🎓 CLASSROOM QUEST BOARD" : "⚡ QUEST BOARD"}
+                    <span class="lq-level-tag lq-level-${questBoard.level}">
+                        ${boardLevel(questBoard.level).icon} ${boardLevel(questBoard.level).name}
+                    </span>
                 </h2>
                 <div class="lq-board-caption">
                     ${teamMode
@@ -2216,7 +2292,7 @@ function renderClue() {
         : c.seconds;
 
     render(`
-        <div class="lq-clue-panel">
+        <div class="lq-clue-panel${c.answers.length === 2 ? " is-two-choice" : ""}">
             <!-- On phones this bar stays pinned at the top so the timer is always visible -->
             <div class="lq-clue-head">
                 ${!c.answered && c.seconds ? timerHTML(secondsLeft, c.seconds) : ""}
@@ -2224,6 +2300,7 @@ function renderClue() {
                 <div class="lq-clue-info">
                     <div class="lq-clue-value">
                         ${escapeHTML(splitLabel(categories[c.categoryKey].name).text)} • ${c.value} points
+                        ${questBoard.level === "starter" ? '<span class="lq-level-tag lq-level-starter">🟢 STARTER</span>' : ""}
                     </div>
 
                     ${teamMode ? `
@@ -2479,7 +2556,9 @@ function finishBoard() {
             const levelBefore = getLevel(player.xp);
             const perfect = total > 0 && questBoard.correct === total;
 
-            questBoard.bonusXP = BOARD_CLEAR_XP + (perfect ? BOARD_PERFECT_XP : 0);
+            const level = boardLevel(questBoard.level);
+            questBoard.perfect = perfect;
+            questBoard.bonusXP = level.clearXP + (perfect ? level.perfectXP : 0);
             questBoard.xp += questBoard.bonusXP;
             player.xp += questBoard.bonusXP;
             player.level = getLevel(player.xp);
@@ -2562,7 +2641,7 @@ function showBoardResult() {
 
             ${teamMode ? "" : `
                 <p class="lq-board-caption lq-center">
-                    Includes +${questBoard.bonusXP} XP for clearing the board${questBoard.bonusXP > BOARD_CLEAR_XP ? " perfectly" : ""}.
+                    Includes +${questBoard.bonusXP} XP for clearing the board${questBoard.perfect ? " perfectly" : ""}.
                     You're Level ${getLevel(player.xp)} with ${player.xp.toLocaleString("en-US")} XP.
                 </p>
             `}
@@ -2596,19 +2675,71 @@ function showBoardResult() {
     on("board-menu", showProfile);
 }
 
-// "Play" from the menu: carry on with this player's own board, or deal a new one
+// "Play" from the menu: choose a level (or carry on with an unfinished board)
 function showCategories() {
+    showLevelPicker();
+}
 
-    const ownBoard = questBoard &&
+function ownUnfinishedBoard() {
+    return questBoard &&
         questBoard.mode === "solo" &&
         questBoard.owner === activeKey &&
         !questBoard.finished;
+}
 
-    if (ownBoard) {
-        renderQuestBoard();
-    } else {
-        startQuestBoard();
-    }
+function showLevelPicker() {
+
+    screen = "levels";
+
+    const current = ownUnfinishedBoard() ? questBoard : null;
+    const left = current ? boardTotal() - current.answered : 0;
+
+    render(`
+        <div class="lq-levels">
+            <div class="lq-result-kicker">⚡ QUEST BOARD</div>
+            <h2 tabindex="-1" data-autofocus>START YOUR QUEST</h2>
+            <p class="lq-result-subtitle">Pick your level. You can change it any time.</p>
+
+            ${current ? `
+                <div class="lq-result-actions">
+                    <button id="levels-continue">
+                        ▶️ CONTINUE YOUR ${boardLevel(current.level).name} BOARD (${left} left)
+                    </button>
+                </div>
+            ` : ""}
+
+            <div class="lq-level-list">
+                ${LEVEL_KEYS.map(key => {
+                    const level = BOARD_LEVELS[key];
+                    return `
+                        <button class="lq-level-card lq-level-${key}" data-level="${key}">
+                            <span class="lq-level-icon" aria-hidden="true">${level.icon}</span>
+                            <span class="lq-level-text">
+                                <strong>${level.name}</strong>
+                                <span>${level.tagline}</span>
+                            </span>
+                            ${key === player.lastLevel && player.history.clock > 0 ? '<span class="lq-level-last">Last played</span>' : ""}
+                        </button>
+                    `;
+                }).join("")}
+            </div>
+
+            <div class="lq-result-actions">
+                <button id="levels-back">🏠 BACK TO MENU</button>
+            </div>
+        </div>
+    `);
+
+    document.querySelectorAll("[data-level]").forEach(button => {
+        button.addEventListener("click", () => {
+            player.lastLevel = button.dataset.level;
+            savePlayer();
+            startQuestBoard({ level: button.dataset.level });
+        });
+    });
+
+    on("levels-continue", renderQuestBoard);
+    on("levels-back", showProfile);
 }
 
 function chooseCategory(category) {
@@ -2885,7 +3016,7 @@ function showQuestion() {
         </h2>
 
         <div
-            class="answers"
+            class="answers${qState.answers.length === 2 ? " is-two-choice" : ""}"
             role="group"
             aria-labelledby="lq-question-text"
         >
@@ -3050,8 +3181,9 @@ function handleAnswer(index) {
     qState.wrongCount++;
     qState.tried.add(index);
 
-    // First mistake: offer another try (unless a hint already helped)
-    if (settings.secondChances && qState.wrongCount === 1 && !qState.hintUsed) {
+    // First mistake: offer another try (unless a hint already helped).
+    // Not on 2-choice questions: the second try would always be a free win.
+    if (settings.secondChances && qState.wrongCount === 1 && !qState.hintUsed && qState.answers.length > 2) {
 
         playSound("retry");
         refreshAnswerButtons();
@@ -4108,6 +4240,10 @@ function restoreScreen(name) {
 
         case "classroom-setup":
             hasPlayer ? showClassroomSetup() : showWelcome();
+            break;
+
+        case "levels":
+            hasPlayer ? showLevelPicker() : showWelcome();
             break;
 
         case "clue":

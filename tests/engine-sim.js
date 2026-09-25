@@ -19,7 +19,7 @@ const context = vm.createContext({
     performance, setInterval, clearInterval, setTimeout, clearTimeout, Date, Math
 });
 
-["questions.js", "engine.js", "timer.js"].forEach(file => {
+["questions.js", "starter-questions.js", "engine.js", "timer.js"].forEach(file => {
     vm.runInContext(fs.readFileSync(path.join(root, file), "utf8"), context, { filename: file });
 });
 

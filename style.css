@@ -1423,3 +1423,84 @@ body:not(.lq-reduce-motion) .lq-timer.is-urgent .lq-timer-ring {
 @media(max-width:650px) {
     .lq-board-options { grid-template-columns:1fr; }
 }
+
+
+/* ==========================================
+   QUEST LEVELS: Starter / Challenge / Expert
+========================================== */
+.lq-levels { text-align:center; padding:6px 0 4px; }
+.lq-level-list { display:grid; gap:14px; max-width:640px; margin:22px auto 8px; }
+.card .lq-level-card {
+    display:flex; align-items:center; gap:16px;
+    width:100%; margin:0; min-height:88px; padding:18px 22px;
+    text-align:left; color:#fff;
+    background:rgba(255,255,255,.06);
+    border:2px solid rgba(255,255,255,.16); border-left-width:8px;
+    border-radius:18px; box-shadow:none;
+}
+.card .lq-level-card:hover { background:rgba(255,255,255,.11); }
+.lq-level-starter.lq-level-card { border-left-color:#4ade80; }
+.lq-level-challenge.lq-level-card { border-left-color:#facc15; }
+.lq-level-expert.lq-level-card { border-left-color:#f87171; }
+.lq-level-icon { flex:none; font-size:34px; line-height:1; }
+.lq-level-text { display:flex; flex-direction:column; gap:4px; min-width:0; }
+.lq-level-text strong { font-size:22px; letter-spacing:.08em; }
+.lq-level-text span { color:#cbd5e1; font-size:16px; font-weight:700; line-height:1.4; }
+.lq-level-last {
+    margin-left:auto; flex:none; padding:4px 10px; border-radius:999px;
+    background:rgba(255,255,255,.1); color:#dbeafe; font-size:12px; font-weight:800;
+}
+
+/* Level badge on the board title and the clue header */
+.lq-level-tag {
+    display:inline-block; margin-left:10px; padding:4px 12px;
+    border-radius:999px; vertical-align:middle;
+    font-size:14px; font-weight:900; letter-spacing:.08em;
+    border:1px solid currentColor;
+}
+.lq-level-tag.lq-level-starter { color:#86efac; background:rgba(34,197,94,.14); }
+.lq-level-tag.lq-level-challenge { color:#fde68a; background:rgba(250,204,21,.12); }
+.lq-level-tag.lq-level-expert { color:#fecaca; background:rgba(248,113,113,.14); }
+.lq-clue-value .lq-level-tag { font-size:12px; padding:2px 8px; margin-left:6px; }
+
+/* Classroom setup: level choice */
+.lq-level-options { max-width:760px; margin:10px auto 0; }
+.lq-level-choice {
+    margin:3px; padding:8px 14px; border-radius:999px;
+    background:rgba(255,255,255,.07); color:#dbeafe;
+    border:1px solid rgba(255,255,255,.12);
+}
+.lq-level-choice.is-selected { background:#ffd84d; color:#101827; border-color:#ffd84d; }
+.lq-level-hint { display:block; margin-top:8px; color:#94a3b8; font-size:13px; font-weight:700; }
+
+/* ----- Two-choice questions (Starter) -----
+   Two big, clearly separate buttons. Each has its own accent so the choices
+   are easy to tell apart; the correct / wrong colors always take over. */
+.lq-clue-panel.is-two-choice .lq-clue-controls { grid-template-columns:1fr 1fr; gap:18px; }
+#game-card .is-two-choice .lq-answer-modal,
+#game-card .answers.is-two-choice button {
+    min-height:110px; padding:18px 20px;
+    justify-content:center; text-align:center;
+    font-size:1.3em; border-width:3px;
+}
+#game-card .is-two-choice .lq-answer-modal:not(.is-correct):not(.is-wrong):nth-child(1) {
+    border-color:#38bdf8; background:rgba(56,189,248,.10);
+}
+#game-card .is-two-choice .lq-answer-modal:not(.is-correct):not(.is-wrong):nth-child(2) {
+    border-color:#c084fc; background:rgba(192,132,252,.10);
+}
+#game-card .is-two-choice .lq-answer-modal .lq-answer-text { flex:0 1 auto; }
+#game-card .is-two-choice .lq-mark { text-align:center; }
+
+@media (max-width:560px) {
+    .card .lq-level-card { padding:12px 14px; gap:10px; min-height:76px; border-left-width:6px; }
+    .lq-level-icon { font-size:22px; }
+    .lq-clue-value .lq-level-tag { display:none; }     /* the board title already shows the level */
+    .lq-level-text strong { font-size:19px; }
+    .lq-level-text span { font-size:14px; }
+    .lq-level-last { display:none; }
+    .lq-board-title .lq-level-tag { display:table; margin:8px 0 0; }
+    .lq-clue-panel.is-two-choice .lq-clue-controls { grid-template-columns:1fr; gap:14px; }
+    #game-card .is-two-choice .lq-answer-modal,
+    #game-card .answers.is-two-choice button { min-height:72px; font-size:1.15em; padding:14px; }
+}

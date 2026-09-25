@@ -49,7 +49,7 @@ function load(files, globals) {
             SpeechSynthesisUtterance: function () {}
         };
         const game = load(
-            ["questions.js", "engine.js", "timer.js", "voice-config.js", "voice.js", "game.js"],
+            ["questions.js", "starter-questions.js", "engine.js", "timer.js", "voice-config.js", "voice.js", "game.js"],
             {
                 console: { ...console, warn: noop },
                 window: windowStub,

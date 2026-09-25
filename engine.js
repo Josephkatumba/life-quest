@@ -21,7 +21,11 @@
 
 const QuestionEngine = (function () {
 
-    const DIFFICULTIES = ["easy", "medium", "hard"];
+    // Easiest first. "starter" questions always have exactly 2 choices and are
+    // kept apart: they are only used when Starter is asked for, and Starter
+    // never falls back to the 4-choice levels.
+    const DIFFICULTIES = ["starter", "easy", "medium", "hard"];
+    const STANDARD = ["easy", "medium", "hard"];
 
     // A question counts as "fresh" again after this many other questions
     const FRESH_AFTER = 150;
@@ -69,7 +73,7 @@ const QuestionEngine = (function () {
 
         categoryKeys.forEach(key => {
 
-            byCategory[key] = { easy: [], medium: [], hard: [] };
+            byCategory[key] = { starter: [], easy: [], medium: [], hard: [] };
 
             // Walk a copy so duplicates can be removed from the real list
             [...categories[key].questions].forEach((q, index) => {
@@ -95,7 +99,11 @@ const QuestionEngine = (function () {
                 }
 
                 if (!DIFFICULTIES.includes(q.difficulty)) {
-                    problems.push("difficulty must be easy, medium or hard");
+                    problems.push("difficulty must be starter, easy, medium or hard");
+                }
+
+                if (q.difficulty === "starter" && Array.isArray(q.answers) && q.answers.length !== 2) {
+                    problems.push("starter questions need exactly 2 answers");
                 }
 
                 if (!q.explanation) problems.push("missing explanation");
@@ -297,12 +305,13 @@ const QuestionEngine = (function () {
     }
 
     function difficultyList(value) {
-        const list = Array.isArray(value) ? value : value ? [value] : DIFFICULTIES;
+        const list = Array.isArray(value) ? value : value ? [value] : STANDARD;
         return list.filter(d => DIFFICULTIES.includes(d));
     }
 
     // Fallback order when a board row's difficulty has run out
     function preferenceFor(difficulty) {
+        if (difficulty === "starter") return ["starter"];      // never a 4-choice question
         if (difficulty === "hard") return ["hard", "medium", "easy"];
         if (difficulty === "medium") return ["medium", "easy", "hard"];
         return ["easy", "medium", "hard"];
@@ -545,6 +554,7 @@ const QuestionEngine = (function () {
 
     return {
         DIFFICULTIES,
+        STANDARD,
         FRESH_AFTER,
         init,
         byId: id => byId[id] || null,

@@ -12,6 +12,7 @@
 //   • Warnings (10 and 5 seconds left) fire once each, never every second.
 //
 // How long a question gets:
+//   QuestionTimer.secondsFor("starter", "standard") → 45 (Starter level)
 //   QuestionTimer.secondsFor("medium", "standard")  → 40
 //   QuestionTimer.secondsFor("medium", "extra")     → 60
 //   QuestionTimer.secondsFor("final", "standard")   → 60 (Final Challenge)
@@ -23,7 +24,7 @@
 const QuestionTimer = (function () {
 
     // Seconds per question, by difficulty
-    const DURATIONS = { easy: 45, medium: 40, hard: 35, final: 60 };
+    const DURATIONS = { starter: 45, easy: 45, medium: 40, hard: 35, final: 60 };
 
     // Timer settings: how much of the normal time a question gets (0 = no timer)
     const MODES = { standard: 1, extra: 1.5, off: 0 };
