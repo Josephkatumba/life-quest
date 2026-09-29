@@ -50,7 +50,7 @@ function loadGame(files) {
     return expression => vm.runInContext(expression, context);
 }
 
-const g = loadGame(["questions.js", "starter-questions.js", "engine.js", "timer.js", "voice-config.js", "voice.js", "game.js"]);
+const g = loadGame(["questions.js", "starter-questions.js", "weekly-pack.js", "engine.js", "timer.js", "voice-config.js", "voice.js", "game.js"]);
 const E = g("QuestionEngine");
 const T = g("QuestionTimer");
 const categories = g("categories");
@@ -80,8 +80,9 @@ const content = text => words(text).filter(w => !FILLER.has(w));
         check("every Starter question has exactly one valid correct answer",
             starter.every(q => (q.correct === 0 || q.correct === 1) && q.answers[0] !== q.answers[1] && q.answers.every(a => String(a).trim())));
         const ids = starter.map(q => q.id);
-        check("Starter ids are unique and permanent-style ('starter-...')",
-            new Set(ids).size === ids.length && ids.every(id => /^starter-[a-z]+-\d{2}$/.test(id)));
+        check("Starter ids are unique and permanent-style ('starter-...', or the weekly pack's own ids)",
+            new Set(ids).size === ids.length &&
+            starter.every(q => q.pack ? q.id.startsWith(q.pack + "-") : /^starter-[a-z]+-\d{2}$/.test(q.id)));
         check("no id clashes with the rest of the bank", new Set(all.map(q => q.id)).size === all.length);
         check("the bank loaded with no data warnings", warnings.length === 0, warnings.join(" | "));
 
@@ -186,13 +187,15 @@ const content = text => words(text).filter(w => !FILLER.has(w));
     {
         const base = loadGame(["questions.js", "engine.js"]);
         const B = base("QuestionEngine");
-        const countsNow = keys.map(k => ["easy", "medium", "hard"].map(d => E.count(k, d)).join("/")).join(" ");
+        // The main bank itself is unchanged (the weekly pack adds to it and is checked on its own)
+        const baseCount = (k, d) => categories[k].questions.filter(q => q.difficulty === d && !q.pack).length;
+        const countsNow = keys.map(k => ["easy", "medium", "hard"].map(d => baseCount(k, d)).join("/")).join(" ");
         const countsBefore = keys.map(k => ["easy", "medium", "hard"].map(d => B.count(k, d)).join("/")).join(" ");
-        check("easy/medium/hard question counts are exactly the same as before", countsNow === countsBefore, countsNow);
+        check("main bank easy/medium/hard counts are exactly the same as before", countsNow === countsBefore, countsNow);
         check("Challenge board rows unchanged (easy, easy, medium, medium, hard)",
             g("BOARD_LEVELS.challenge.rows.join()") === "easy,easy,medium,medium,hard" && g("BOARD_ROW_DIFFICULTY.join()") === "easy,easy,medium,medium,hard");
         check("medium and hard timers unchanged (40s / 35s)", T.secondsFor("medium") === 40 && T.secondsFor("hard") === 35);
-        check("every Challenge question still has 4 choices", standard.every(q => q.answers.length === 4));
+        check("every main-bank Challenge question still has 4 choices", standard.filter(q => !q.pack).every(q => q.answers.length === 4));
     }
 
 
