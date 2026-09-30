@@ -301,13 +301,13 @@ console.log("\n11. Timer");
     check("resumed timer expires after the time left", expired === 1, expired);
 
     // Question lengths (Phase 2)
-    check("easy 45s, medium 40s, hard 35s, Final Challenge 60s",
-        [T.secondsFor("easy"), T.secondsFor("medium"), T.secondsFor("hard"), T.secondsFor("final")].join() === "45,40,35,60");
-    check("Extra time (+50%): 68s / 60s / 53s / 90s",
-        ["easy", "medium", "hard", "final"].map(d => T.secondsFor(d, "extra")).join() === "68,60,53,90",
+    check("easy, medium and hard 45s each; Starter no timer; Final Challenge 60s",
+        [T.secondsFor("easy"), T.secondsFor("medium"), T.secondsFor("hard"), T.secondsFor("starter"), T.secondsFor("final")].join() === "45,45,45,0,60");
+    check("Extra time (+50%): 68s / 68s / 68s / 90s; Starter still no timer",
+        ["easy", "medium", "hard", "final", "starter"].map(d => T.secondsFor(d, "extra")).join() === "68,68,68,90,0",
         ["easy", "medium", "hard", "final"].map(d => T.secondsFor(d, "extra")).join());
     check("Off: 0 seconds (no timer)", ["easy", "medium", "hard", "final"].every(d => T.secondsFor(d, "off") === 0));
-    check("unknown mode falls back to standard", T.secondsFor("hard", "banana") === 35);
+    check("unknown mode falls back to standard", T.secondsFor("hard", "banana") === 45);
     check("states: normal above 10, warning at 10-6, urgent at 5-1",
         [T.stateFor(11), T.stateFor(10), T.stateFor(6), T.stateFor(5), T.stateFor(1)].join() === "normal,warning,warning,urgent,urgent");
 

@@ -194,17 +194,17 @@ const content = text => words(text).filter(w => !FILLER.has(w));
         check("main bank easy/medium/hard counts are exactly the same as before", countsNow === countsBefore, countsNow);
         check("Challenge board rows unchanged (easy, easy, medium, medium, hard)",
             g("BOARD_LEVELS.challenge.rows.join()") === "easy,easy,medium,medium,hard" && g("BOARD_ROW_DIFFICULTY.join()") === "easy,easy,medium,medium,hard");
-        check("medium and hard timers unchanged (40s / 35s)", T.secondsFor("medium") === 40 && T.secondsFor("hard") === 35);
+        check("medium and hard questions get 45 seconds", T.secondsFor("medium") === 45 && T.secondsFor("hard") === 45);
         check("every main-bank Challenge question still has 4 choices", standard.filter(q => !q.pack).every(q => q.answers.length === 4));
     }
 
 
     console.log("\n4. Timer");
     {
-        check("Starter questions get 45 seconds", T.secondsFor("starter") === 45);
-        check("Extra time: 68 seconds; Off: no timer", T.secondsFor("starter", "extra") === 68 && T.secondsFor("starter", "off") === 0);
+        check("Starter questions have no timer", T.secondsFor("starter") === 0);
+        check("Starter stays untimed with Extra time and Off too", T.secondsFor("starter", "extra") === 0 && T.secondsFor("starter", "off") === 0);
         const q = starter[0];
-        check("the game gives a Starter clue 45 seconds", g("questionSeconds(" + JSON.stringify(q) + ", 'standard')") === 45);
+        check("the game gives a Starter clue no timer", g("questionSeconds(" + JSON.stringify(q) + ", 'standard')") === 0);
 
         let expired = 0;
         T.start(45, { onExpire: () => expired++ });

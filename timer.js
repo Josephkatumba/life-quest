@@ -12,9 +12,9 @@
 //   • Warnings (10 and 5 seconds left) fire once each, never every second.
 //
 // How long a question gets:
-//   QuestionTimer.secondsFor("starter", "standard") → 45 (Starter level)
-//   QuestionTimer.secondsFor("medium", "standard")  → 40
-//   QuestionTimer.secondsFor("medium", "extra")     → 60
+//   QuestionTimer.secondsFor("starter", "standard") → 0  (Starter: no timer)
+//   QuestionTimer.secondsFor("medium", "standard")  → 45
+//   QuestionTimer.secondsFor("medium", "extra")     → 68
 //   QuestionTimer.secondsFor("final", "standard")   → 60 (Final Challenge)
 //   QuestionTimer.secondsFor(anything, "off")       → 0  (no timer)
 // ==========================================
@@ -24,7 +24,8 @@
 const QuestionTimer = (function () {
 
     // Seconds per question, by difficulty
-    const DURATIONS = { starter: 45, easy: 45, medium: 40, hard: 35, final: 60 };
+    // Starter (Easy mode) has no timer. Every Challenge / Expert question gets 45 seconds.
+    const DURATIONS = { starter: 0, easy: 45, medium: 45, hard: 45, final: 60 };
 
     // Timer settings: how much of the normal time a question gets (0 = no timer)
     const MODES = { standard: 1, extra: 1.5, off: 0 };
@@ -43,7 +44,7 @@ const QuestionTimer = (function () {
 
     function secondsFor(difficulty, mode = "standard") {
         const factor = Object.prototype.hasOwnProperty.call(MODES, mode) ? MODES[mode] : MODES.standard;
-        const base = DURATIONS[difficulty] || DURATIONS.easy;
+        const base = Object.prototype.hasOwnProperty.call(DURATIONS, difficulty) ? DURATIONS[difficulty] : DURATIONS.easy;
         return Math.round(base * factor);
     }
 

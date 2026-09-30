@@ -1674,7 +1674,7 @@ const BOARD_LEVELS = {
     starter: {
         name: "STARTER",
         icon: "🟢",
-        tagline: "Simple questions • 2 choices • Take your time",
+        tagline: "Simple questions • 2 choices • No timer",
         rows: ["starter", "starter", "starter"],
         topics: 4,
         clearXP: 50,
@@ -1833,7 +1833,7 @@ function showClassroomSetup() {
             <div class="lq-time-options" role="group" aria-labelledby="lq-time-label">
                 <strong id="lq-time-label">Answer time</strong>
                 ${[
-                    ["standard", "Standard (45 / 40 / 35s)"],
+                    ["standard", "Standard (45 seconds)"],
                     ["extra", "Extra time (+50%)"],
                     ["off", "No timer"]
                 ].map(([mode, label]) => `
@@ -1845,7 +1845,7 @@ function showClassroomSetup() {
                 `).join("")}
             </div>
             <p class="lq-board-caption">
-                Time depends on the question: 45 seconds for easy, 40 for medium, 35 for hard.
+                Each question gets 45 seconds. Starter questions have no timer.
                 Extra time gives everyone 50% longer. Pick what suits your class.
             </p>
 
@@ -4035,7 +4035,7 @@ function showSettings() {
             <div>
                 <div class="lq-setting-label" id="lq-label-timer">Question timer</div>
                 <div class="lq-setting-help">
-                    Standard: 45 / 40 / 35 seconds for easy / medium / hard questions.
+                    Standard: 45 seconds per question. Starter (easy mode) has no timer.
                     Off also stops the timer on the current question.
                     Practice Mistakes has no timer. Classroom Mode uses the teacher's choice.
                 </div>
