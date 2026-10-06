@@ -19,7 +19,11 @@
 
 "use strict";
 
-const QuestionEngine = (function () {
+// createQuestionEngine() makes an independent engine with its own bank,
+// history rules and sessions. Life Quest uses one (QuestionEngine, below);
+// other game modes with their own question bank can make their own with
+// QuestionEngine.create(), so their questions never mix into Life Quest.
+function createQuestionEngine() {
 
     // Easiest first. "starter" questions always have exactly 2 choices and are
     // kept apart: they are only used when Starter is asked for, and Starter
@@ -580,9 +584,13 @@ const QuestionEngine = (function () {
 
         summarize,
         recentAccuracy,
-        suggestDifficulty
+        suggestDifficulty,
+
+        create: createQuestionEngine
     };
 
-})();
+}
+
+const QuestionEngine = createQuestionEngine();
 
 QuestionEngine.init(categories);

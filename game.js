@@ -1252,7 +1252,7 @@ function render(html) {
 
     // Safety net: a countdown never keeps running behind another screen.
     // (Settings only pauses it; see openSettings.)
-    if (screen !== "clue" && screen !== "settings") QuestionTimer.stop();
+    if (screen !== "clue" && screen !== "settings" && screen !== "grade-question") QuestionTimer.stop();
 
     card.innerHTML = html;
 
@@ -1634,6 +1634,10 @@ function showProfile() {
             🎓 CLASSROOM MODE
         </button>
 
+        <button id="grade-show-mode" class="lq-grade-show-button">
+            🍎 ${escapeHTML(GradeShow.TITLE.toUpperCase())}
+        </button>
+
         <button id="achievements-button">
             🏆 ACHIEVEMENTS
         </button>
@@ -1651,6 +1655,7 @@ function showProfile() {
     on("play-quest", showCategories);
     on("practice-button", startPractice);
     on("classroom-mode", showClassroomSetup);
+    on("grade-show-mode", () => GradeShow.showSetup());
     on("achievements-button", showAchievements);
     on("report-button", showReport);
     on("switch-player", switchPlayer);
@@ -3952,6 +3957,9 @@ function openSettings() {
 
     if (screen === "question" && qState && !qState.locked) timingAway(qState.timing);
 
+    // 5th-grade game show question: the clock pauses too
+    if (screen === "grade-question") QuestionTimer.pause();
+
     showSettings();
 }
 
@@ -4246,6 +4254,13 @@ function restoreScreen(name) {
             hasPlayer ? showLevelPicker() : showWelcome();
             break;
 
+        case "grade-setup":
+        case "grade-question":
+        case "grade-final-intro":
+        case "grade-results":
+            hasPlayer ? GradeShow.restore(name) : showWelcome();
+            break;
+
         case "clue":
             if (activeClue && questBoard) {
                 applyTimerOffToClue();
@@ -4325,6 +4340,9 @@ function handleKeydown(event) {
     }
 
     const key = String(event.key || "").toLowerCase();
+
+    // 5th-grade game show: A-D or 1-4 answer, R reads aloud
+    if (screen === "grade-question" && GradeShow.handleKey(event)) return;
 
     // Quest Board clue: 1-4 answer, R reads the clue (or the result) aloud
     if (screen === "clue" && activeClue) {

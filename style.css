@@ -1504,3 +1504,175 @@ body:not(.lq-reduce-motion) .lq-timer.is-urgent .lq-timer-ring {
     #game-card .is-two-choice .lq-answer-modal,
     #game-card .answers.is-two-choice button { min-height:72px; font-size:1.15em; padding:14px; }
 }
+
+
+/* ==========================================
+   5TH GRADE GAME SHOW (grade-show.js)
+   Chalkboard + notebook classroom look, inside the Life Quest card.
+   Big type for a classroom projector.
+========================================== */
+.card .lq-grade-show-button { background:linear-gradient(135deg,#16a34a,#0d9488); }
+
+.gs-kicker { color:#fde047; font-weight:1000; letter-spacing:.12em; font-size:15px; }
+.gs-chalk-title, .gs-board, .gs-final-intro {
+    background:
+        radial-gradient(circle at 20% 10%, rgba(255,255,255,.06), transparent 40%),
+        linear-gradient(160deg,#1f4d3a,#163a2c);
+    border:10px solid #8b5a2b;
+    border-radius:18px;
+    box-shadow:inset 0 0 40px rgba(0,0,0,.35), 0 12px 30px rgba(0,0,0,.35);
+    color:#f8fafc;
+}
+.gs-chalk-title { padding:22px; text-align:center; margin-bottom:18px; }
+.card .gs-chalk-title h2 { color:#fff; font-size:clamp(26px,4.4vw,42px); margin:8px 0; }
+.card .gs-chalk-title p { color:#e2e8f0; margin:0; }
+
+/* ----- setup ----- */
+.gs-setup-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.gs-setup-box {
+    display:grid; gap:14px; align-content:start; text-align:left;
+    padding:18px; border-radius:16px;
+    background:#fffdf4; color:#1e293b;
+    background-image:repeating-linear-gradient(transparent 0 31px, #cbd5e1 31px 32px);
+    border-left:6px solid #ef4444;
+}
+.gs-setup-box strong { color:#1e293b; font-size:17px; }
+.gs-label { display:grid; gap:6px; font-weight:800; color:#334155; font-size:15px; }
+.gs-input { padding:12px 14px; border-radius:10px; border:2px solid #94a3b8; font:inherit; font-size:17px; background:#fff; color:#0f172a; }
+.gs-team-names { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px; }
+.gs-choice-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+.card .gs-choice, .card .gs-chip {
+    margin:0; min-height:48px; padding:10px 16px; border-radius:12px;
+    background:#e2e8f0; color:#0f172a; border:2px solid #94a3b8; box-shadow:none; font-size:16px;
+}
+.card .gs-small { min-width:56px; }
+.card .gs-choice.is-selected, .card .gs-chip.is-selected { background:#2563eb; color:#fff; border-color:#1d4ed8; }
+.gs-rules { display:flex; flex-wrap:wrap; justify-content:center; gap:8px 18px; margin:16px 0 4px; color:#fde68a; font-weight:800; font-size:15px; }
+.card .gs-go { background:linear-gradient(135deg,#f59e0b,#ef4444); color:#fff; font-size:20px; }
+
+/* ----- playing ----- */
+.gs-stage { display:grid; gap:14px; }
+.gs-topbar { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; padding-right:58px; }
+.gs-ladder { display:flex; gap:6px; list-style:none; margin:0; padding:0; }
+.gs-rung {
+    min-width:46px; padding:8px 10px; border-radius:10px; text-align:center;
+    font-weight:1000; color:#fff; opacity:.45; border:2px solid transparent;
+}
+.gs-rung.is-done { opacity:.8; }
+.gs-rung.is-current { opacity:1; border-color:#fff; box-shadow:0 0 0 3px rgba(255,255,255,.25); }
+.gs-g1 { background:#dc2626; } .gs-g2 { background:#ea580c; } .gs-g3 { background:#a16207; }
+.gs-g4 { background:#15803d; } .gs-g5 { background:#2563eb; }
+.gs-final, .gs-gfinal { background:linear-gradient(135deg,#d97706,#9333ea); }
+.gs-progress { color:#cbd5e1; font-weight:800; }
+.gs-scores { display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+.gs-score { padding:6px 12px; border-radius:999px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); font-weight:800; color:#e2e8f0; }
+.gs-score.is-up { background:#fde047; color:#1e293b; border-color:#fde047; }
+
+.gs-board { padding:20px 22px 18px; text-align:center; }
+.gs-board-head { display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:10px; }
+.gs-grade-badge { padding:6px 14px; border-radius:999px; color:#fff; font-weight:1000; letter-spacing:.06em; border:2px solid rgba(255,255,255,.6); }
+.gs-subject, .gs-up { font-weight:900; color:#fef9c3; }
+.gs-welcome { margin:12px auto 0; display:inline-block; padding:6px 14px; border-radius:999px; background:rgba(253,224,71,.18); color:#fde047; font-weight:900; }
+.card .gs-question {
+    color:#fff; font-size:clamp(26px,4.6vw,46px); line-height:1.25; margin:18px 0 8px;
+    font-family:"Chalkboard SE","Comic Neue","Segoe Print","Trebuchet MS",sans-serif;
+    text-shadow:0 1px 0 rgba(0,0,0,.4);
+}
+.gs-worth { color:#fde68a; font-weight:900; }
+.gs-board .lq-timer { margin-top:10px; }
+
+.gs-answers { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.card .gs-answer {
+    display:flex; align-items:center; gap:14px; margin:0; min-height:84px; padding:14px 18px;
+    text-align:left; font-size:clamp(19px,2.4vw,26px); font-weight:900;
+    background:#fffdf4; color:#0f172a; border:3px solid #cbd5e1; border-radius:16px;
+    background-image:repeating-linear-gradient(transparent 0 27px, #e2e8f0 27px 28px);
+    box-shadow:0 6px 0 #94a3b8;
+}
+.card .gs-answer:hover:not(:disabled) { border-color:#2563eb; }
+.card .gs-answer:disabled { cursor:default; transform:none; }
+.gs-letter {
+    flex:none; display:grid; place-items:center; width:46px; height:46px; border-radius:50%;
+    background:#2563eb; color:#fff; font-size:22px;
+}
+.gs-answer-text { flex:1 1 0; min-width:0; }
+.gs-mark { flex:none; font-size:16px; }
+.card .gs-answer.is-correct { background:#dcfce7; border-color:#16a34a; box-shadow:0 6px 0 #15803d; }
+.card .gs-answer.is-correct .gs-letter { background:#16a34a; }
+.card .gs-answer.is-wrong { background:#fee2e2; border-color:#dc2626; box-shadow:0 6px 0 #b91c1c; }
+.card .gs-answer.is-wrong .gs-letter { background:#dc2626; }
+.card .gs-answer.is-crossed { opacity:.35; text-decoration:line-through; }
+
+.gs-note { padding:12px 16px; border-radius:14px; background:#fef9c3; color:#422006; font-size:18px; text-align:left; }
+.gs-note strong { color:#422006; }
+.gs-feedback { padding:18px; border-radius:16px; text-align:center; display:grid; gap:8px; }
+.gs-feedback:focus { outline:none; }
+.gs-feedback.is-correct { background:rgba(34,197,94,.16); border:2px solid #4ade80; }
+.gs-feedback.is-wrong { background:rgba(248,113,113,.14); border:2px solid #f87171; }
+.gs-feedback-title { font-size:clamp(22px,3.4vw,32px); font-weight:1000; color:#fff; }
+.gs-right-answer, .gs-explain, .gs-save-hint { color:#e2e8f0; font-size:18px; }
+.gs-right-answer strong { color:#bbf7d0; }
+.gs-save-hint { color:#fde68a; font-weight:900; }
+
+.gs-tools { display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
+.card .gs-lifeline {
+    margin:0; min-height:52px; padding:10px 18px; border-radius:999px;
+    background:linear-gradient(135deg,#7c3aed,#2563eb); color:#fff; font-weight:1000; letter-spacing:.06em;
+}
+.card .gs-lifeline.is-spent { background:#334155; color:#94a3b8; text-decoration:line-through; }
+.card .gs-lifeline:disabled { opacity:.55; cursor:not-allowed; transform:none; }
+
+/* Final Challenge: gold and starry, a bit of drama */
+.gs-stage.is-final .gs-board, .gs-final-intro {
+    border-color:#d4a017;
+    background:
+        radial-gradient(circle at 50% 0%, rgba(253,224,71,.25), transparent 55%),
+        linear-gradient(160deg,#3b0764,#1e1b4b);
+}
+.gs-final-note { background:rgba(168,85,247,.25); color:#f5d0fe; }
+.gs-final-intro { padding:28px; text-align:center; display:grid; gap:12px; justify-items:center; }
+.card .gs-final-intro h2 { color:#fde047; font-size:clamp(28px,5vw,48px); margin:0; letter-spacing:.04em; }
+.card .gs-final-intro p { color:#f1f5f9; margin:0; font-size:19px; }
+.card .gs-final-big strong { color:#fde047; }
+.gs-stars { font-size:40px; }
+body:not(.lq-reduce-motion) .gs-stars { animation:gsTwinkle 1.6s ease-in-out infinite alternate; }
+body:not(.lq-reduce-motion) .gs-welcome { animation:gsPop .45s ease-out; }
+@keyframes gsTwinkle { from { opacity:.6; transform:scale(.96); } to { opacity:1; transform:scale(1.04); } }
+@keyframes gsPop { from { transform:scale(.8); opacity:0; } to { transform:none; opacity:1; } }
+
+/* ----- results ----- */
+.gs-results { text-align:center; display:grid; gap:14px; }
+.card .gs-results h2 { color:#fde047; font-size:clamp(26px,4.4vw,42px); margin:0; }
+.gs-verdict { font-size:clamp(22px,3.4vw,32px); font-weight:1000; color:#fff; }
+.gs-result-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:14px; }
+.gs-result-card { padding:16px; border-radius:16px; background:#fffdf4; color:#0f172a; text-align:left; border:3px solid #cbd5e1; }
+.gs-result-card.is-winner { border-color:#f59e0b; box-shadow:0 0 0 4px rgba(245,158,11,.25); }
+.gs-result-name { font-size:22px; font-weight:1000; color:#0f172a; }
+.gs-result-score { font-size:34px; font-weight:1000; color:#2563eb; }
+.gs-result-score span { font-size:16px; color:#475569; }
+.gs-result-stats { display:grid; grid-template-columns:1fr; gap:4px; margin:8px 0 0; }
+.gs-result-stats div { display:flex; justify-content:space-between; gap:8px; border-bottom:1px dashed #cbd5e1; padding:3px 0; }
+.gs-result-stats dt { color:#475569; font-weight:700; }
+.gs-result-stats dd { margin:0; font-weight:900; color:#0f172a; text-align:right; }
+
+/* High contrast: keep the paper and chalkboard readable */
+body.lq-high-contrast #game-card .gs-setup-box,
+body.lq-high-contrast #game-card .gs-result-card,
+body.lq-high-contrast #game-card .gs-note { border:2px solid #fff !important; }
+body.lq-high-contrast #game-card .gs-setup-box *,
+body.lq-high-contrast #game-card .gs-result-card *,
+body.lq-high-contrast #game-card .gs-note * { color:#fff !important; }
+body.lq-high-contrast #game-card .gs-answer.is-correct { border:5px solid #00ff66 !important; }
+body.lq-high-contrast #game-card .gs-answer.is-wrong { border:5px dashed #ff5c5c !important; }
+
+@media (max-width:700px) {
+    .gs-setup-grid, .gs-answers, .gs-team-names { grid-template-columns:1fr; }
+}
+@media (max-width:560px) {
+    .gs-board, .gs-chalk-title { border-width:6px; padding:14px 12px; }
+    .gs-rung { min-width:34px; padding:6px; font-size:13px; }
+    .card .gs-answer { min-height:64px; padding:10px 12px; gap:10px; flex-wrap:wrap; }
+    .gs-mark { flex-basis:100%; padding-left:46px; }
+    .gs-letter { width:36px; height:36px; font-size:18px; }
+    .card .gs-lifeline { padding:8px 12px; }
+}
