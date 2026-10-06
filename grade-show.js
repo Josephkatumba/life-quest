@@ -24,7 +24,7 @@
 const GradeShow = (function () {
 
     // The name shown everywhere. Change it here to rename the mode.
-    const TITLE = "Are You Smarter Than a 5th Grader?";
+    const TITLE = "5th Grade Showdown";
 
     const GRADE_POINTS = { 1: 100, 2: 200, 3: 300, 4: 400, 5: 500 };
     const FINAL_BONUS = 1000;
@@ -924,7 +924,7 @@ const GradeShow = (function () {
         const top = r.players[0];
 
         const verdict = solo
-            ? (top.finalCorrect ? "YES! You're smarter than a 5th grader! 🎓" : "Not this time, but every question makes you smarter! 📚")
+            ? (top.finalCorrect ? "YES! You conquered the 5th Grade Final Challenge! 🎓" : "Not this time, but every question makes you smarter! 📚")
             : r.tie ? "It's a tie! 🤝" : "🏆 " + r.winners[0] + " wins!";
 
         render(`
