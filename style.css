@@ -1676,3 +1676,42 @@ body.lq-high-contrast #game-card .gs-answer.is-wrong { border:5px dashed #ff5c5c
     .gs-letter { width:36px; height:36px; font-size:18px; }
     .card .gs-lifeline { padding:8px 12px; }
 }
+
+
+/* ==========================================
+   5TH GRADE SHOWDOWN: game-show polish
+   Light, CSS-only motion. Everything here is switched off by "Less movement".
+========================================== */
+.gs-cheer {
+    justify-self:center; padding:6px 16px; border-radius:999px;
+    background:rgba(253,224,71,.16); color:#fde047; font-weight:1000; font-size:clamp(18px,2.6vw,24px);
+}
+.gs-feedback.is-wrong .gs-cheer { background:rgba(147,197,253,.16); color:#bfdbfe; }
+.gs-streak {
+    justify-self:center; padding:6px 14px; border-radius:999px;
+    background:linear-gradient(135deg,#f97316,#ef4444); color:#fff; font-weight:1000;
+}
+.gs-result-card.is-winner .gs-result-name { color:#b45309; }
+
+body:not(.lq-reduce-motion) .gs-stage.is-new .gs-board { animation:gsCardIn .35s ease-out; }
+body:not(.lq-reduce-motion) .gs-stage.is-new .gs-answer { animation:gsAnswerIn .35s ease-out backwards; }
+body:not(.lq-reduce-motion) .gs-stage.is-new .gs-answer:nth-child(2) { animation-delay:.05s; }
+body:not(.lq-reduce-motion) .gs-stage.is-new .gs-answer:nth-child(3) { animation-delay:.1s; }
+body:not(.lq-reduce-motion) .gs-stage.is-new .gs-answer:nth-child(4) { animation-delay:.15s; }
+body:not(.lq-reduce-motion) .gs-answer.is-correct,
+body:not(.lq-reduce-motion) .gs-answer.is-wrong { animation:gsPop .35s ease-out; }
+body:not(.lq-reduce-motion) .gs-cheer,
+body:not(.lq-reduce-motion) .gs-streak { animation:gsPop .4s ease-out; }
+body:not(.lq-reduce-motion) .gs-feedback.is-wrong { animation:gsNudge .35s ease-in-out; }
+body:not(.lq-reduce-motion) .gs-result-card.is-winner { animation:gsGlow 1.6s ease-in-out infinite alternate; }
+body:not(.lq-reduce-motion) .gs-verdict { animation:gsPop .5s ease-out; }
+
+@keyframes gsCardIn { from { opacity:0; transform:translateY(12px) scale(.98); } to { opacity:1; transform:none; } }
+@keyframes gsAnswerIn { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:none; } }
+@keyframes gsNudge { 0%,100% { transform:none; } 30% { transform:translateX(-6px); } 60% { transform:translateX(6px); } }
+@keyframes gsGlow { from { box-shadow:0 0 0 4px rgba(245,158,11,.2); } to { box-shadow:0 0 0 8px rgba(245,158,11,.45); } }
+
+/* True/False: two big buttons side by side, even on phones */
+@media (max-width:700px) {
+    .gs-answers:has(.gs-answer:nth-child(2):last-child) { grid-template-columns:1fr 1fr; }
+}

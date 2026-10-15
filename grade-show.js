@@ -38,9 +38,71 @@ const GradeShow = (function () {
 
     const SESSION = "grade-show";
     const STORAGE_KEY = "lifeQuestGradeShow";
-    const SUBJECTS = GRADE_SCHOOL_BANK.subjects;
+    const SUBJECTS = SHOWDOWN_BANK.categories;        // the 14 fun categories
     const SUBJECT_KEYS = Object.keys(SUBJECTS);
-    const DIFFS = ["easy", "medium", "hard"];
+    const GRADES = [1, 2, 3, 4, 5];
+
+    // The ladder gets harder as you climb: Grades 1–3 easy, Grades 4–5 medium,
+    // Final Challenge hard (about 55% / 36% / 9% in a game). If a category runs
+    // short, the nearest difficulty is used; an easy rung never jumps to hard.
+    const RUNG_DIFFICULTY = { 1: "easy", 2: "easy", 3: "easy", 4: "medium", 5: "medium", final: "hard" };
+    const FALLBACK = { easy: ["easy", "medium"], medium: ["medium", "easy", "hard"], hard: ["hard", "medium"] };
+
+    // Streak bonus: +50 for every correct answer from the 3rd in a row
+    // (not in the Final Challenge). The normal points are unchanged.
+    const STREAK_BONUS = 50;
+    const STREAK_FROM = 3;
+
+    const CHEERS = [
+        "Big brain energy! 🧠", "Nailed it! 🎯", "Too easy for you! 😎", "Absolute legend! 🏆",
+        "That's how it's done! 💪", "Genius move! 💡", "Smooth! 😏", "Somebody's been studying! 📚",
+        "Easy money! 💸", "The crowd goes wild! 🙌"
+    ];
+    const ENCOURAGEMENT = [
+        "So close! The next one's yours 💪", "Plot twist! 😅", "Not this time, champ! 🙌",
+        "Shake it off! 🎶", "Even legends miss sometimes 😉", "Now you know for next time! 🧠",
+        "Tough one! Keep going 🚀"
+    ];
+
+    // The best of the original Grades 1–5 bank, re-tagged for teens:
+    // [category, difficulty]. Grade 1–2 questions felt too young, and the
+    // U.S.-civics-heavy ones were too obscure, so they are retired.
+    const LEGACY = {
+        "g3-math-01": ["math", "easy"], "g3-math-02": ["math", "easy"], "g3-math-03": ["math", "easy"],
+        "g3-math-04": ["math", "easy"], "g3-math-05": ["math", "easy"],
+        "g3-science-01": ["science", "easy"], "g3-science-02": ["science", "easy"],
+        "g3-science-03": ["animals", "easy"], "g3-science-04": ["animals", "easy"],
+        "g3-geography-01": ["geography", "easy"], "g3-geography-02": ["geography", "easy"],
+        "g3-geography-03": ["geography", "easy"], "g3-geography-04": ["geography", "medium"],
+        "g3-geography-05": ["geography", "easy"],
+        "g3-history-02": ["history", "medium"], "g3-history-05": ["history", "easy"],
+        "g3-general-01": ["general", "easy"], "g3-general-03": ["general", "easy"],
+        "g3-general-04": ["animals", "easy"], "g3-general-05": ["geography", "easy"],
+        "g4-math-01": ["math", "medium"], "g4-math-02": ["math", "easy"], "g4-math-03": ["math", "easy"],
+        "g4-math-04": ["math", "easy"], "g4-math-05": ["math", "easy"],
+        "g4-science-01": ["science", "easy"], "g4-science-03": ["science", "medium"],
+        "g4-science-04": ["science", "medium"], "g4-science-05": ["animals", "medium"],
+        "g4-geography-01": ["geography", "medium"], "g4-geography-02": ["geography", "medium"],
+        "g4-geography-03": ["geography", "medium"], "g4-geography-05": ["geography", "medium"],
+        "g4-history-01": ["history", "medium"], "g4-history-02": ["history", "medium"],
+        "g4-history-03": ["history", "medium"], "g4-history-05": ["history", "easy"],
+        "g4-general-01": ["math", "easy"], "g4-general-03": ["science", "medium"],
+        "g4-general-04": ["math", "easy"], "g4-general-05": ["animals", "medium"],
+        "g5-math-01": ["math", "easy"], "g5-math-02": ["math", "easy"], "g5-math-03": ["math", "medium"],
+        "g5-math-04": ["math", "easy"], "g5-math-05": ["math", "medium"],
+        "g5-science-01": ["science", "medium"], "g5-science-02": ["science", "medium"],
+        "g5-science-03": ["science", "easy"], "g5-science-04": ["science", "easy"],
+        "g5-science-05": ["science", "easy"],
+        "g5-geography-01": ["geography", "medium"], "g5-geography-02": ["geography", "easy"],
+        "g5-history-01": ["history", "easy"], "g5-history-03": ["history", "medium"],
+        "g5-history-04": ["history", "easy"], "g5-history-05": ["history", "medium"],
+        "g5-general-01": ["general", "easy"], "g5-general-02": ["science", "medium"],
+        "g5-general-03": ["science", "medium"], "g5-general-04": ["math", "easy"],
+        "g5-general-05": ["funfacts", "medium"],
+        "final-math-01": ["math", "hard"], "final-math-02": ["math", "hard"],
+        "final-history-02": ["history", "hard"],
+        "final-general-01": ["math", "hard"]
+    };
 
 
     // ==========================================
@@ -49,13 +111,29 @@ const GradeShow = (function () {
 
     let engine = null;
 
-    // Its own QuestionEngine, so grade-school questions never mix into Life Quest
+    // Every question the Showdown can use: the teen bank plus the kept classics
+    function activeQuestions() {
+        const fresh = SHOWDOWN_BANK.questions.map(q => ({ ...q, subject: q.category }));
+        const classics = GRADE_SCHOOL_BANK.questions
+            .filter(q => LEGACY[q.id])
+            .map(q => ({
+                ...q,
+                subject: LEGACY[q.id][0],
+                category: LEGACY[q.id][0],
+                difficulty: LEGACY[q.id][1],
+                final: false,
+                classic: true
+            }));
+        return [...fresh, ...classics];
+    }
+
+    // Its own QuestionEngine, so these questions never mix into Life Quest
     function getEngine() {
         if (engine) return engine;
         const cats = {};
-        GRADE_SCHOOL_BANK.questions.forEach(question => {
-            const key = (question.final ? "final" : "g" + question.grade) + "-" + question.subject;
-            (cats[key] || (cats[key] = { name: key, questions: [] })).questions.push({ ...question });
+        activeQuestions().forEach(question => {
+            const key = question.subject;
+            (cats[key] || (cats[key] = { name: SUBJECTS[key].name, questions: [] })).questions.push(question);
         });
         engine = QuestionEngine.create();
         engine.init(cats);
@@ -71,8 +149,8 @@ const GradeShow = (function () {
         return copy;
     }
 
-    function poolSize(E, key) {
-        return DIFFS.reduce((n, d) => n + E.count(key, d), 0);
+    function pickOneOf(list, rng) {
+        return list[Math.floor(rng() * list.length)];
     }
 
     // Normalises what the facilitator chose on the setup screen
@@ -82,15 +160,17 @@ const GradeShow = (function () {
             .map(name => String(name || "").trim().replace(/\s+/g, " ").slice(0, 24))
             .filter(Boolean)
             .slice(0, mode === "teams" ? MAX_PLAYERS : 1);
-        const subjects = (Array.isArray(setup.subjects) ? setup.subjects : SUBJECT_KEYS)
-            .filter(key => SUBJECT_KEYS.includes(key));
+        // A setup saved by the older version (other category names) gets all categories
+        const chosen = Array.isArray(setup.subjects) ? setup.subjects : SUBJECT_KEYS;
+        const subjects = chosen.every(key => SUBJECT_KEYS.includes(key)) ? [...chosen] : [...SUBJECT_KEYS];
         const perGrade = PER_GRADE_CHOICES.includes(Number(setup.perGrade)) ? Number(setup.perGrade) : 2;
         const timerMode = ["off", "standard", "extra"].includes(setup.timerMode) ? setup.timerMode : "off";
         return { mode, names, subjects, perGrade, timerMode };
     }
 
-    // Builds a new game. Every question is chosen now, so a game can never
-    // contain the same question twice. Returns { game } or { error }.
+    // Builds a new game. Every question is chosen now, so a game never contains
+    // the same question twice. Categories take turns (each one before any
+    // repeats) and the difficulty follows the ladder. Returns { game } or { error }.
     function createGame(rawSetup, options = {}) {
 
         const setup = cleanSetup(rawSetup);
@@ -101,53 +181,51 @@ const GradeShow = (function () {
 
         if (!setup.names.length) return { error: "Type a name to start." };
         if (setup.mode === "teams" && setup.names.length < 2) return { error: "Team play needs at least two teams." };
-        if (!setup.subjects.length) return { error: "Pick at least one subject." };
+        if (!setup.subjects.length) return { error: "Pick at least one category." };
 
-        const reserved = [];
-        const undo = () => E.release(sessionKey, reserved.map(question => question.id));
         const count = setup.names.length;
+        const plan = [];
+        GRADES.forEach(grade => {
+            for (let round = 0; round < setup.perGrade; round++) {
+                for (let p = 0; p < count; p++) plan.push({ player: p, grade, final: false });
+            }
+        });
+        for (let p = 0; p < count; p++) plan.push({ player: p, grade: 5, final: true });
+
+        const inGame = new Set();
+        const picked = [];
+        let cycle = [];
+
+        // Next category in the rotation that still has a question at this difficulty.
+        // First without repeating anything from this session; only if every chosen
+        // category is used up does a question from an earlier game come back.
+        function pickFor(target) {
+            for (const allowRepeat of [false, true]) {
+                const skip = allowRepeat ? inGame : new Set([...inGame, ...E.session(sessionKey).used]);
+                for (let tries = 0; tries < setup.subjects.length; tries++) {
+                    if (!cycle.length) cycle = shuffled(setup.subjects, rng);
+                    const key = cycle.shift();
+                    const question = E.pickOne(key, { difficulties: FALLBACK[target], history, session: sessionKey, exclude: skip });
+                    if (question) return question;
+                }
+            }
+            return null;
+        }
+
         const turns = [];
-
-        for (const grade of GRADE_SCHOOL_BANK.grades) {
-
-            const keys = setup.subjects.map(s => "g" + grade + "-" + s).filter(key => poolSize(E, key) > 0);
-            const need = count * setup.perGrade;
-            const picks = E.pickMany(need, {
-                categories: keys,
-                difficulties: shuffled(DIFFS, rng),
-                history,
-                session: sessionKey
-            });
-
-            reserved.push(...picks);
-
-            if (picks.length < need) {
-                undo();
+        for (const slot of plan) {
+            const question = pickFor(RUNG_DIFFICULTY[slot.final ? "final" : slot.grade]);
+            if (!question) {
+                E.release(sessionKey, picked.map(q => q.id));
                 return {
-                    error: "There aren't enough Grade " + grade + " questions for this setup. " +
-                        "Pick more subjects, fewer questions per grade, or fewer " + (setup.mode === "teams" ? "teams." : "players.")
+                    error: "There aren't enough questions in the chosen categories for this setup. " +
+                        "Pick more categories, fewer questions per grade, or fewer " + (setup.mode === "teams" ? "teams." : "players.")
                 };
             }
-
-            const order = shuffled(picks, rng);
-            let k = 0;
-            for (let round = 0; round < setup.perGrade; round++) {
-                for (let p = 0; p < count; p++) turns.push(newTurn(p, grade, order[k++], false));
-            }
+            inGame.add(question.id);
+            picked.push(question);
+            turns.push(newTurn(slot.player, slot.grade, question, slot.final));
         }
-
-        // Final Challenge: the chosen subjects first, any subject if there aren't enough
-        let finalKeys = setup.subjects.map(s => "final-" + s).filter(key => poolSize(E, key) > 0);
-        if (finalKeys.reduce((n, key) => n + poolSize(E, key), 0) < count) {
-            finalKeys = SUBJECT_KEYS.map(s => "final-" + s).filter(key => poolSize(E, key) > 0);
-        }
-        const finals = E.pickMany(count, { categories: finalKeys, difficulties: ["hard", "medium", "easy"], history, session: sessionKey });
-        reserved.push(...finals);
-        if (finals.length < count) {
-            undo();
-            return { error: "There aren't enough Final Challenge questions for this many teams." };
-        }
-        finals.forEach((question, p) => turns.push(newTurn(p, 5, question, true)));
 
         const players = setup.names.map(name => ({
             name,
@@ -156,13 +234,15 @@ const GradeShow = (function () {
             wrong: 0,
             saved: 0,
             rescues: 0,
+            streak: 0,
+            bestStreak: 0,
             highestGrade: 0,
             finalCorrect: null,
             bySubject: {},
             lifelines: { peek: true, copy: true, save: true }
         }));
 
-        return { game: { setup, players, turns, index: 0, finished: false, sessionKey } };
+        return { game: { setup, players, turns, index: 0, finished: false, sessionKey, rng } };
 
         function newTurn(player, grade, question, isFinal) {
             return {
@@ -176,6 +256,8 @@ const GradeShow = (function () {
                 correct: false,
                 timedOut: false,
                 points: 0,
+                bonus: 0,
+                cheer: "",
                 peeked: false,
                 copy: null,
                 save: null
@@ -183,9 +265,11 @@ const GradeShow = (function () {
         }
     }
 
-    // Answer order is shuffled once, when the game is built
+    // Answer order is shuffled once, when the game is built.
+    // True/False stays in order; number answers go smallest to largest.
     function buildChoices(question, rng) {
         const items = question.answers.map((text, index) => ({ text, correct: index === question.correct }));
+        if (question.keepOrder) return items;
         if (items.every(item => isNumericAnswer(item.text))) {
             return items.sort((a, b) => numericValue(a.text) - numericValue(b.text));
         }
@@ -226,10 +310,23 @@ const GradeShow = (function () {
 
         subjectStats(player, turn.question.subject).answered++;
 
-        if (turn.correct) award(game, turn);
-        else {
+        const rng = game.rng || Math.random;
+
+        if (turn.correct) {
+            award(game, turn);
+            // Streak: from the 3rd correct answer in a row, +50 each (not in the Final)
+            player.streak++;
+            player.bestStreak = Math.max(player.bestStreak, player.streak);
+            if (!turn.final && player.streak >= STREAK_FROM) {
+                turn.bonus = STREAK_BONUS;
+                player.score += STREAK_BONUS;
+            }
+            turn.cheer = pickOneOf(CHEERS, rng);
+        } else {
             player.wrong++;
+            player.streak = 0;
             if (turn.final) player.finalCorrect = false;
+            turn.cheer = pickOneOf(ENCOURAGEMENT, rng);
         }
 
         return turn;
@@ -240,6 +337,9 @@ const GradeShow = (function () {
         if (!turn || turn.final || !LIFELINES.includes(lifeline)) return false;
         if (!game.players[turn.player].lifelines[lifeline]) return false;
         if (lifeline === "save") return turn.answered && !turn.correct && !turn.save;
+        // No PEEK on a True/False question without a hint: crossing out the
+        // wrong answer would give it away
+        if (lifeline === "peek" && !turn.question.hint && turn.answers.length <= 2) return false;
         return !turn.answered;
     }
 
@@ -340,7 +440,8 @@ const GradeShow = (function () {
                 strongest: strongest ? SUBJECTS[strongest.key].name : null,
                 finalCorrect: p.finalCorrect === true,
                 saved: p.saved,
-                rescues: p.rescues
+                rescues: p.rescues,
+                bestStreak: p.bestStreak
             };
         });
         const best = Math.max(...players.map(p => p.score));
@@ -421,9 +522,9 @@ const GradeShow = (function () {
         render(`
             <div class="gs-setup">
                 <div class="gs-chalk-title">
-                    <div class="gs-kicker">🍎 A LIFE QUEST CLASSROOM GAME</div>
+                    <div class="gs-kicker">🎤 THE LIFE QUEST GAME SHOW</div>
                     <h2 tabindex="-1" data-autofocus>${escapeHTML(TITLE)}</h2>
-                    <p>Climb from Grade 1 to Grade 5, then take on the 5th Grade Final Challenge!</p>
+                    <p>Climb from Grade 1 to Grade 5 (it gets harder as you go!), then take on the Final Challenge. 14 categories, from football to brain teasers.</p>
                 </div>
 
                 <div class="gs-setup-grid">
@@ -471,7 +572,7 @@ const GradeShow = (function () {
                         </div>
 
                         <div role="group" aria-labelledby="gs-subj-label">
-                            <strong id="gs-subj-label">Subjects</strong>
+                            <strong id="gs-subj-label">Categories</strong>
                             <div class="gs-choice-row gs-subjects">
                                 ${SUBJECT_KEYS.map(key => `
                                     <button class="gs-chip ${last.subjects.includes(key) ? "is-selected" : ""}" data-gs-subject="${key}" aria-pressed="${last.subjects.includes(key)}">
@@ -485,6 +586,7 @@ const GradeShow = (function () {
 
                 <div class="gs-rules">
                     <span>🍎 Grade 1 = 100 · Grade 2 = 200 · Grade 3 = 300 · Grade 4 = 400 · Grade 5 = 500</span>
+                    <span>🔥 3+ correct in a row = +${STREAK_BONUS} streak bonus each</span>
                     <span>⭐ Final Challenge = ${FINAL_BONUS.toLocaleString("en-US")} bonus</span>
                     <span>👀 Peek · 📝 Copy · 🛟 Save: once each per game</span>
                 </div>
@@ -636,7 +738,7 @@ const GradeShow = (function () {
         };
 
         render(`
-            <div class="gs-stage ${turn.final ? "is-final" : ""}">
+            <div class="gs-stage ${turn.final ? "is-final" : ""} ${firstShow ? "is-new" : ""}">
 
                 <div class="gs-topbar">
                     <ol class="gs-ladder" aria-label="Grade progress">
@@ -778,7 +880,9 @@ const GradeShow = (function () {
 
         return `
             <div class="gs-feedback ${turn.correct ? "is-correct" : "is-wrong"}" id="gs-feedback" tabindex="-1" data-autofocus>
+                ${turn.cheer ? `<div class="gs-cheer">${escapeHTML(turn.cheer)}</div>` : ""}
                 <div class="gs-feedback-title">${escapeHTML(title)}</div>
+                ${turn.bonus ? `<div class="gs-streak">🔥 ${who.streak} in a row! +${turn.bonus} streak bonus</div>` : ""}
                 ${saveFailed ? `<div>🛟 ${escapeHTML(turn.save.by)} tried to save it, but that wasn't right either.</div>` : ""}
                 ${!turn.correct ? `<div class="gs-right-answer">The answer is <strong>${letter(correctIndex)}: ${escapeHTML(right.text)}</strong></div>` : ""}
                 ${turn.question.explanation ? `<div class="gs-explain">💡 ${escapeHTML(turn.question.explanation)}</div>` : ""}
@@ -945,7 +1049,8 @@ const GradeShow = (function () {
                                 <div><dt>Accuracy</dt><dd>${p.accuracy}%</dd></div>
                                 <div><dt>Highest grade</dt><dd>${p.highestGrade ? "Grade " + p.highestGrade : "–"}</dd></div>
                                 <div><dt>Final Challenge</dt><dd>${p.finalCorrect ? "✅ Correct" : "❌ Missed"}</dd></div>
-                                <div><dt>Strongest subject</dt><dd>${p.strongest ? escapeHTML(p.strongest) : "–"}</dd></div>
+                                <div><dt>Best category</dt><dd>${p.strongest ? escapeHTML(p.strongest) : "–"}</dd></div>
+                                <div><dt>Best streak</dt><dd>🔥 ${p.bestStreak}</dd></div>
                             </dl>
                         </div>
                     `).join("")}
@@ -1008,6 +1113,9 @@ const GradeShow = (function () {
         FINAL_BONUS,
         SAVE_BONUS,
         SUBJECT_KEYS,
+        RUNG_DIFFICULTY,
+        STREAK_BONUS,
+        activeQuestions,
         // logic (tests)
         getEngine,
         cleanSetup,
